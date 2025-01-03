@@ -1,0 +1,18 @@
+/////////////////////////////////////////////////////////////////////////////
+// EAAsyncStream.cpp
+//
+// Copyright (c) 2019, Electronic Arts Inc. All rights reserved.
+/////////////////////////////////////////////////////////////////////////////
+
+
+#include <EAIO/EAAsyncStream.h>
+#include <EAIO/EAFileStream.h>
+
+namespace EA
+{
+namespace IO
+{
+
+} // namespace IO
+} // namespace EA
+

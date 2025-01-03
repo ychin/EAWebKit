@@ -32,21 +32,21 @@
 #include "PopupMenuClient.h"
 #include "PlatformScreen.h"
 #include "PageClientEA.h"
-#include "page.h"
-#include "chrome.h"
-#include "webframe.h"
+#include "Page.h"
+#include "Chrome.h"
+#include "WebFrame.h"
 #include "IntRect.h"
 #include "RenderText.h"
 #include "GraphicsContext.h"
 #include "RenderThemeEA.h"
-#include "ScrollBar.h"
+#include "Scrollbar.h"
 #include "RefPtrCairo.h"
 #include "TextRun.h"
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitView.h>
 #include <EAWebKit/EAWebKitSurface.h>
 #include <EAWebKit/EAWebKitInput.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitAssert.h>
 
 namespace ThemeEA
@@ -772,7 +772,7 @@ void PopupMenuEA::OnMouseButtonEvent(const EA::WebKit::MouseButtonEvent& mouseBu
     {
 		// On consoles, we don't actually move our cursor when selecting items. So we try to figure out if the we are
 		// in that situation.
-#if defined(EA_PLATFORM_CONSOLE)
+#if defined(EA_PLATFORM_CONSOLE) || defined(EA_PLATFORM_STADIA)
 		bool onConsole = true;
 #elif defined(EA_PLATFORM_WINDOWS)
 		bool onConsole = m_viewEA->IsEmulatingConsoleOnPC();

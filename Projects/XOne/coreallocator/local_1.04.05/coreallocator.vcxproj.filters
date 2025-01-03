@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="coreallocator">
+      <UniqueIdentifier>{84809069-50FF-302B-BA7A-19700854AE26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coreallocator\detail">
+      <UniqueIdentifier>{196996DE-E606-C8ED-1F1B-D738C3A6D53C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\detail\macro_impl.h">
+      <Filter>coreallocator\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocator.h">
+      <Filter>coreallocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocator_interface.h">
+      <Filter>coreallocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocatormacros.h">
+      <Filter>coreallocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icorealloclistener.h">
+      <Filter>coreallocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\version.h">
+      <Filter>coreallocator</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

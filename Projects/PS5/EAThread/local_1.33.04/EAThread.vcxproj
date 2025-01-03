@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>EAThread</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\libEAThread.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\EAThread" mkdir "ps5-clang-debug\build\EAThread" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\EAThread\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\EAThread\v.tlog\</TLogLocation>
+    <TargetName>libEAThread</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\libEAThread.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\EAThread" mkdir "ps5-clang-opt\build\EAThread" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\EAThread\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\EAThread\v.tlog\</TLogLocation>
+    <TargetName>libEAThread</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\EAThread.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\AdditionalReading.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Callstack.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\ClassDocumentation.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\DesignConsiderations.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\FAQ.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\PlatformThreadBehavior.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Readme.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\UserGuide.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_atomic.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_barrier.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack_context.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_condition.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_futex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_list.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_mutex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_pool.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex_ip.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwsemalock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlockw.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_semaphore.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_spinlock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_storage.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_sync.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_thread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_array_mt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_ptr_mt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\android\eathread_atomic_android_c11.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_callstack_apple.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_sync_apple.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\arm\eathread_sync_arm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\cpp11\eathread_atomic_cpp11.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\dllinfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_gcc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_msvc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_global.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\timings.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_atomic_x86.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_sync_x86.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_atomic_x86-64.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_sync_x86-64.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\EAThread_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\make_public.bat">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_barrier.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_barrier.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_barrier.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_callstack.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_callstack.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_callstack.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_condition.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_condition.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_condition.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_futex.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_futex.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_futex.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_mutex.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_mutex.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_mutex.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_pool.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_pool.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_pool.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_rwmutex.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_rwmutex.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex_ip.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_rwmutex_ip.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_rwmutex_ip.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_semaphore.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_semaphore.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_semaphore.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_storage.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_storage.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_storage.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_thread.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\eathread_thread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\eathread_thread.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\version.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAThread\version.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAThread\version.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_android.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_semaphore_android.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_callstack_apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_semaphore_apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\arm\eathread_callstack_arm.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_mutex_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_semaphore_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_thread_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\libunwind\eathread_callstack_libunwind.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\null\eathread_callstack_null.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win32.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win64.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_mutex_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_semaphore_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_thread_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_barrier_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_callstack_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_condition_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_mutex_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_pthread_stack_info.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_semaphore_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_thread_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_barrier_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_callstack_glibc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_condition_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_mutex_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_pthread_stack_info.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_semaphore_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_stadia.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_thread_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\x86\eathread_callstack_x86.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

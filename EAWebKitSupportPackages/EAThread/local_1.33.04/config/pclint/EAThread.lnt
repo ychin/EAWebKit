@@ -1,0 +1,13 @@
+// ===========================================================================
+// Pc-Lint policy for the EAThread package
+// ===========================================================================
+
+
+// ===========================================================================
+// Include the pclintconfig legacy policy file which contains the EAC minimal
+// pclint warnings set.
+// ===========================================================================
+policy_legacy.lnt
+
+-e830		// Location cited in prior message
+-e831		// Reference cited in prior message

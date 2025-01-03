@@ -116,7 +116,10 @@ extern "C" {
 
    Signals are ignored by the crash reporter on OS X so we must do better.
 */
-#if COMPILER(GCC_OR_CLANG) || COMPILER(MSVC)
+// + EAWebKit change
+// For some reason define 'NO_RETURN' gives error on latest PS4 and PS5 SDK's disabling this.
+#if (COMPILER(GCC_OR_CLANG) || COMPILER(MSVC)) && !(defined(EA_PLATFORM_PS5) || defined(EA_PLATFORM_PS4) || defined(EA_PLATFORM_STADIA))
+// - EAWebKit change
 #define NO_RETURN_DUE_TO_CRASH NO_RETURN
 #else
 #define NO_RETURN_DUE_TO_CRASH
@@ -315,10 +318,7 @@ while (0)
 
 /* COMPILE_ASSERT */
 #ifndef COMPILE_ASSERT
-//+EAWebKitChange
-//3/29/2015
-#if COMPILER_SUPPORTS(C_STATIC_ASSERT) || defined (EA_PLATFORM_PS4)
-//-EAWebKitChange
+#if COMPILER_SUPPORTS(C_STATIC_ASSERT)
 /* Unlike static_assert below, this also works in plain C code. */
 #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
 #else

@@ -1,0 +1,12 @@
+source/crypt/cryptrand.c
+source/dirtysock/dirtyaddr.c
+source/dirtysock/unix/dirtyerrunix.c
+source/dirtysock/unix/dirtylibunix.c
+source/dirtysock/unix/dirtynetunix.c
+source/dirtysock/unix/netconnunix.c
+source/proto/protohttp.c
+source/proto/protomangle.c
+source/proto/protossl.c
+source/proto/protowebsocket.c
+source/voip/stub/voipcommonstub.c
+source/voip/stub/voipstub.c

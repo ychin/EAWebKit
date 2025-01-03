@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="PPMalloc" default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-buildall" value="include" />
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<!-- Package declaration -->
+	<package name="PPMalloc" />
+
+	<property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+	<property name="config-processor" value="" unless="@{PropertyExists('config-processor')}" />
+
+	<!-- Options -->
+	<!-- To enable options with Framework3 or later, use the <globaldefines> feature to add global #defines to              -->
+	<!-- the masterconfig.xml (or equivalent) file. Example: <globaldefines>PPM_DEBUG=2</globaldefines>                     -->
+	<!-- This mechanism is preferred to using the globalproperties listed below because the globalproperties require        -->
+	<!-- every package that uses them to be aware of them, whereas globaldefines are automatically globally #defined.       -->
+	<!-- -->
+	<!-- Older Framework versions:-->
+	<!-- To enable options put (e.g.) <globalproperties>PPMalloc.PPM_DEBUG=2</globalproperties> -->
+	<!-- in your masterconfig file or use -D:PPM_DEBUG=2 on the nant command line.              -->
+	<!-- The PPMalloc.PPM_XXX values here directly correspond to PPMalloc config #defines.      -->
+	<property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+	<!--  See PPMalloc/internal/config.h for descriptions of these.
+        PPMalloc.PPMALLOC_USER_CONFIG_HEADER
+        PPMalloc.PPM_ASSERT_ENABLED
+        PPMalloc.PPM_AUTO_HEAP_VALIDATION_SUPPORTED
+        PPMalloc.PPM_CORE_INCREMENT_SIZE_DEFAULT
+        PPMalloc.PPM_CT_ASSERT
+        PPMalloc.PPM_DEBUG
+        PPMalloc.PPM_DEBUG_FAILURE
+        PPMalloc.PPM_DEBUG_FILL
+        PPMalloc.PPM_DEBUG_PRESERVE_PRIOR
+        PPMalloc.PPM_FASTBIN_TRIM_ENABLED
+        PPMalloc.PPM_HIGH_SUPPORTED
+        PPMalloc.PPM_HOOKS_SUPPORTED
+        PPMalloc.PPM_INTERNAL_CORE_FREE_ENABLED
+        PPMalloc.PPM_INTERRUPT_DISABLING_ENABLED
+        PPMalloc.PPM_MALLOC_AS_COREALLOC
+        PPMalloc.PPM_MALLOC_AS_MMAPALLOC
+        PPMalloc.PPM_MIN_ALIGN
+        PPMalloc.PPM_MMAP_CLEARS
+        PPMalloc.PPM_MMAP_SUPPORTED
+        PPMalloc.PPM_NEW_CORE_SIZE_DEFAULT
+        PPMalloc.PPM_NULL_POINTER_FREE_ENABLED
+        PPMalloc.PPM_REALLOC_C99_ENABLED
+        PPMalloc.PPM_THREAD_SAFETY_BY_DEFAULT
+        PPMalloc.PPM_THREAD_SAFETY_SUPPORTED
+        PPMalloc.PPM_TRACE_BUFFER_SIZE
+        PPMalloc.PPM_VIRTUAL_ENABLED
+        PPMalloc.PPM_ENABLE_EAALLOCATORINTERFACE
+        PPMalloc.PPM_DEBUG_CALLSTACK_AVAILABLE
+        PPMalloc.PPM_WIN_MEM_WATCH
+        PPMalloc.PPM_INCREMENTAL_OBJECTS_ENABLED
+        PPMalloc.PPM_ENABLED
+        PPMalloc.PPM_NLA_DEBUG_DATA_SUPPORTED
+        PPMalloc.PPM_NLA_METRICS_SUPPORTED
+        PPMalloc.PPM_NLA_HOOKS_SUPPORTED
+        PPMalloc.PPM_NLA_HEAP_VALIDATION_SUPPORTED
+        PPMalloc.PPM_NLA_MIN_ALIGN
+        PPMalloc.PPM_NLA_MIN_ALLOC_SIZE
+    -->
+
+
+	<!-- Create extra build types which simply add some additional compiler arguments -->
+	<optionset name="config-options-library-extra" fromoptionset="config-options-library">
+		<option name="buildset.name" value="LibraryExtra" />
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+	</optionset>
+	<task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+	<optionset name="LibraryExtra">
+	</optionset>
+
+
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+	<property name="runtime.buildmodules" value="PPMalloc" />
+	<property name="runtime.PPMalloc.buildtype" value="LibraryExtra" />
+	<property name="runtime.PPMalloc.buildtype" value="DynamicLibrary" if="${Dll}" />
+
+	<property name="runtime.PPMalloc.usedependencies">
+		EABase
+	</property>
+
+	<property name="runtime.PPMalloc.builddependencies">
+		${property.value}
+		EAThread
+		EACallstack
+	</property>
+
+	<property name="runtime.PPMalloc.defines">
+		PPM_HIGH_SUPPORTED=1
+	</property>
+
+	<property name="runtime.PPMalloc.defines" if="${Dll} and ${config-compiler} == 'vc'">
+		${property.value}
+		PPM_API=__declspec(dllexport)
+	</property>
+
+	<property name="PPMalloc.configDefineTypes">
+		PPMALLOC_USER_CONFIG_HEADER
+		PPM_ASSERT_ENABLED
+		PPM_AUTO_HEAP_VALIDATION_SUPPORTED
+		PPM_CORE_INCREMENT_SIZE_DEFAULT
+		PPM_CT_ASSERT
+		PPM_DEBUG
+		PPM_DEBUG_FAILURE
+		PPM_DEBUG_FILL
+		PPM_DEBUG_PRESERVE_PRIOR
+		PPM_FASTBIN_TRIM_ENABLED
+		<!-- PPM_HIGH_SUPPORTED - Disabled because now the package unilaterally enables it. -->
+		PPM_HOOKS_SUPPORTED
+		PPM_INTERNAL_CORE_FREE_ENABLED
+		PPM_INTERRUPT_DISABLING_ENABLED
+		PPM_MALLOC_AS_COREALLOC
+		PPM_MALLOC_AS_MMAPALLOC
+		PPM_MIN_ALIGN
+		PPM_MMAP_CLEARS
+		PPM_MMAP_SUPPORTED
+		PPM_NEW_CORE_SIZE_DEFAULT
+		PPM_NULL_POINTER_FREE_ENABLED
+		PPM_REALLOC_C99_ENABLED
+		PPM_THREAD_SAFETY_BY_DEFAULT
+		PPM_THREAD_SAFETY_SUPPORTED
+		PPM_TRACE_BUFFER_SIZE
+		PPM_VIRTUAL_ENABLED
+		PPM_ENABLE_EAALLOCATORINTERFACE
+		PPM_DEBUG_CALLSTACK_AVAILABLE
+		PPM_WIN_MEM_WATCH
+		PPM_INCREMENTAL_OBJECTS_ENABLED
+		PPM_ENABLED
+		PPM_NLA_DEBUG_DATA_SUPPORTED
+		PPM_NLA_METRICS_SUPPORTED
+		PPM_NLA_HOOKS_SUPPORTED
+		PPM_NLA_HEAP_VALIDATION_SUPPORTED
+		PPM_NLA_MIN_ALIGN
+		PPM_NLA_MIN_ALLOC_SIZE
+	</property>
+
+	<property name="PPMalloc.configDefines" />
+	<foreach item="String" in="${PPMalloc.configDefineTypes}" property="configDefineType">
+		<property name="PPMalloc.configDefines" if="@{PropertyExists('PPMalloc.${configDefineType}')}">
+			${property.value}
+			${configDefineType}=${PPMalloc.${configDefineType}}
+		</property>
+	</foreach>
+
+	<property name="runtime.PPMalloc.defines">
+		${property.value}
+		${PPMalloc.configDefines}
+	</property>
+
+	<property name="runtime.PPMalloc.defines" if="@{PropertyExists('EA_XBDM_ENABLED')}">
+		${property.value}
+		EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+	</property>
+
+	<fileset name="runtime.PPMalloc.sourcefiles">
+		<includes name="${package.dir}/source/cmn/*.cpp" />
+		<includes name="${package.dir}/extras/EASmallBlockAllocator.cpp" unless="${Dll}" /> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+		<includes name="${package.dir}/extras/EASmallBlockAllocatorPool.cpp" unless="${Dll}" /> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+		<includes name="${package.dir}/extras/EAAllocInfo.cpp" unless="${Dll}" /> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+		<includes name="${package.dir}/source/${config-system}/*.cpp" />
+	</fileset>
+
+	<fileset name="runtime.PPMalloc.headerfiles">
+		<includes name="${package.dir}/include/**/*.h" />
+		<includes name="${package.dir}/extras/*.h" />
+	</fileset>
+
+	<fileset name="runtime.PPMalloc.vcproj.excludedbuildfiles">
+		<includes name="${package.dir}/doc/**.*" />
+		<includes name="${package.dir}/scripts/**.*" />
+		<includes name="${package.dir}/*.build" />
+	</fileset>
+
+	<fileset name="runtime.PPMalloc.bulkbuild.sourcefiles" fromfileset="runtime.PPMalloc.sourcefiles" />
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+	<tests>
+		<Program name="PPMallocTest">
+			<copylocal value="true"/>
+			<config>
+				<defines>
+					${PPMalloc.configDefines}
+					PPM_HIGH_SUPPORTED=1
+					UTF_USE_EAASSERT=1
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+					<do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+						EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+					</do>
+				</defines>
+				<warningsuppression if="${config-compiler} == 'vc'">
+					-wd4217     <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+					-wd4530     <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+					-wd4619     <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+					-wd4548     <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+					-wd4365     <!-- disable warning: "'argument' : conversion from 'x' to 'y', signed/unsigned mismatch" -->
+					-wd4351     <!-- disable warning: elements of array <name> will be initialized -->
+				</warningsuppression>
+			</config>
+			<dependencies>
+				<use>
+					EABase
+				</use>
+				<interface>
+					coreallocator
+				</interface>
+				<build>
+					EASTL
+					EAStdC
+					EATest
+					EAMain
+					EAThread
+					EACallstack
+					EAAssert
+				</build>
+			</dependencies>
+
+			<includedirs>
+				${package.dir}/test/include
+				${package.dir}/include
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+				<includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" unless="${Dll}" /> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+			</sourcefiles>
+		</Program>
+		<fileset name="test.PPMallocTest.test-data-fileset" basedir="${package.dir}/test/source/">
+			<includes name="data/**" />
+		</fileset>
+
+		<!-- ******************************************************** -->
+		<!-- Test Extra configuration                                 -->
+		<!--                                                          -->
+		<!-- We test some of the PPM options that are non-default.    -->
+		<!-- Note that we can't arbitrarily define any options        -->
+		<!-- as some of them affect its compilation in a way that     -->
+		<!-- other packages would need to be consistent with.         -->
+		<!-- ******************************************************** -->
+		<do if="@{PropertyExists('PPMalloc.BuildExtraTests')} and !${Dll}"> <!-- Don't build this in DLL mode because other packages depend on PPMalloc and can't work if PPMalloc is linked only into our main executable. -->
+			<Program name="PPMallocExtraTests">
+				<copylocal value="true"/>
+				<config>
+					<defines>
+						${test.PPMallocTest.defines}
+						${PPMalloc.configDefines}
+						PPM_MIN_ALIGN=16
+						PPM_DEBUG=2
+					</defines>
+					<warningsuppression>
+						${test.PPMallocTest.warningsuppression}
+					</warningsuppression>
+				</config>
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<interface>
+						coreallocator
+					</interface>
+					<build>
+						EASTL
+						EAStdC
+						EATest
+						EAMain
+						EAThread
+						EACallstack
+						EAAssert
+					</build>
+				</dependencies>
+
+				<includedirs>
+					${test.PPMallocTest.includedirs}
+				</includedirs>
+
+				<sourcefiles>
+					<!-- We compile the runtime source files here instead of as part of a separate library. -->
+					<includes name="${package.dir}/source/cmn/*.cpp" />
+					<includes name="${package.dir}/source/${config-system}/*.cpp" />
+					<includes name="${package.dir}/source/win64/*.cpp" if="${config-compiler} == vc and ${config-system} != pc" />
+					<includes name="${package.dir}/source/apple/*.cpp" if="${config-system} == iphone || ${config-system} == iphonesim || ${config-system} == ipad || ${config-system} == ipadsim" /> <!-- No need to include OS X here, as it's covered under Unix. -->
+					<includes name="${package.dir}/test/source/*.cpp" />
+					<includes name="${package.dir}/extras/EASmallBlockAllocator.cpp" />
+					<includes name="${package.dir}/extras/EASmallBlockAllocatorPool.cpp" />
+					<includes name="${package.dir}/extras/EAAllocInfo.cpp" />
+					<includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" />
+				</sourcefiles>
+			</Program>
+
+			<fileset name="test.PPMallocTestExtra.test-data-fileset" basedir="${package.dir}/test/source/">
+				<includes name="data/**" />
+			</fileset>
+
+			<!-- ******************************************************** -->
+			<!-- PPMallocTestNoThreading configuration                    -->
+			<!--                                                          -->
+			<!-- We test some of the PPM options that are non-default.    -->
+			<!-- Note that we can't arbitrarily define any options        -->
+			<!-- as some of them affect its compilation in a way that     -->
+			<!-- other packages would need to be consistent with.         -->
+			<!-- ******************************************************** -->
+
+			<Program name="PPMallocTestNoThreading">
+				<copylocal value="true"/>
+				<config>
+					<defines>
+						${test.PPMallocTest.defines}
+						${runtime.PPMalloc.defines}
+						PPM_THREAD_SAFETY_SUPPORTED=0
+					</defines>
+					<warningsuppression>
+						${test.PPMallocTest.warningsuppression}
+					</warningsuppression>
+				</config>
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<interface>
+						coreallocator
+					</interface>
+					<build>
+						EAMain
+						EASTL
+						EAStdC
+						EATest
+						EAMain
+						EAThread
+						EACallstack
+						EAAssert
+					</build>
+				</dependencies>
+
+				<includedirs>
+					${test.PPMallocTest.includedirs}
+				</includedirs>
+
+				<sourcefiles>
+					<!-- We compile the runtime source files here instead of as part of a separate library. -->
+					<includes name="${package.dir}/source/cmn/*.cpp" />
+					<includes name="${package.dir}/source/${config-system}/*.cpp" />
+					<includes name="${package.dir}/source/win64/*.cpp" if="${config-compiler} == vc and ${config-system} != pc" />
+					<includes name="${package.dir}/source/apple/*.cpp" if="${config-system} == iphone || ${config-system} == iphonesim || ${config-system} == ipad || ${config-system} == ipadsim" /> <!-- No need to include OS X here, as it's covered under Unix. -->
+					<includes name="${package.dir}/test/source/*.cpp" />
+					<includes name="${package.dir}/extras/EASmallBlockAllocator.cpp" />
+					<includes name="${package.dir}/extras/EASmallBlockAllocatorPool.cpp" />
+					<includes name="${package.dir}/extras/EAAllocInfo.cpp" />
+					<includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" />
+				</sourcefiles>
+			</Program>
+			<fileset name="test.PPMallocTestNoThreading.test-data-fileset" basedir="${package.dir}/test/source/">
+				<includes name="data/**" />
+			</fileset>
+		</do>
+
+	</tests>
+
+	<!-- ********************* -->
+	<!-- Document generation   -->
+	<!-- ********************* -->
+
+	<property name="doc.type" value="Doxygen" />
+
+	<fileset name="package.doxygenfiles">
+		<includes name="${package.dir}/doc/doxygen/ppmalloc.doxygen.config" />
+	</fileset>
+
+</project>

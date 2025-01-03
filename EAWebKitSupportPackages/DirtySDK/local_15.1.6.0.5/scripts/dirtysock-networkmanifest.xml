@@ -1,0 +1,92 @@
+<mx:Extension Category="windows.xbox.networking" xmlns:mx="http://schemas.microsoft.com/appx/2013/xbox/manifest">
+    <mx:XboxNetworkingManifest>
+        <mx:SocketDescriptions>
+            <mx:SocketDescription Name="GameUdp" SecureIpProtocol="Udp" BoundPort="3659">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="Initiate" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveGameData" />
+                    <mx:SecureDeviceSocketUsage Type="SendGameData" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveChat" />
+                    <mx:SecureDeviceSocketUsage Type="SendChat" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <!-- wildcard port for binding -->
+            <mx:SocketDescription Name="insecure-tcp-any" SecureIpProtocol="Tcp" BoundPort="0">
+              <mx:AllowedUsages>
+                <mx:SecureDeviceSocketUsage Type="Initiate" />
+                <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+              </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <mx:SocketDescription Name="insecure-udp-any" SecureIpProtocol="Udp" BoundPort="0">
+              <mx:AllowedUsages>
+                <mx:SecureDeviceSocketUsage Type="Initiate" />
+                <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+              </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <!-- telemetry server -->
+            <mx:SocketDescription Name="insecure-tcp-9988" SecureIpProtocol="Tcp" BoundPort="9988">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="Initiate" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <mx:SocketDescription Name="insecure-tcp-9902" SecureIpProtocol="Tcp" BoundPort="9902">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="Initiate" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <!-- blaze servers -->
+            <mx:SocketDescription Name="insecure-tcp-10000-20000" SecureIpProtocol="Tcp" BoundPort="10000-20000">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <!-- dirtycast, qos servers -->
+            <mx:SocketDescription Name="insecure-udp-10000-20000" SecureIpProtocol="Udp" BoundPort="10000-20000">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+        </mx:SocketDescriptions>
+        <mx:SecureDeviceAssociationTemplates>
+            <!-- peer-to-peer -->
+            <mx:SecureDeviceAssociationTemplate Name="GameUdpTemplate" InitiatorSocketDescription="GameUdp" AcceptorSocketDescription="GameUdp" MultiplayerSessionRequirement="Optional">
+                <mx:AllowedUsages><mx:SecureDeviceAssociationUsage Type="Default" /></mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+            <!-- telemetry server -->
+            <mx:SecureDeviceAssociationTemplate Name="insecure-tcp-9988" InitiatorSocketDescription="insecure-tcp-any" AcceptorSocketDescription="insecure-tcp-9988" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages><mx:SecureDeviceAssociationUsage Type="Default" /></mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+            <mx:SecureDeviceAssociationTemplate Name="insecure-tcp-9902" InitiatorSocketDescription="insecure-tcp-any" AcceptorSocketDescription="insecure-tcp-9902" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages><mx:SecureDeviceAssociationUsage Type="Default" /></mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+            <!-- blaze servers -->
+            <mx:SecureDeviceAssociationTemplate Name="insecure-tcp-10000-20000" InitiatorSocketDescription="insecure-tcp-any" AcceptorSocketDescription="insecure-tcp-10000-20000" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceAssociationUsage Type="InitiateFromMicrosoftConsole" />
+                    <mx:SecureDeviceAssociationUsage Type="AcceptOnOtherDevice" />
+                </mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+            <!-- dirtycast, qos servers -->
+            <mx:SecureDeviceAssociationTemplate Name="insecure-udp-10000-20000" InitiatorSocketDescription="insecure-udp-any" AcceptorSocketDescription="insecure-udp-10000-20000" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceAssociationUsage Type="InitiateFromMicrosoftConsole" />
+                    <mx:SecureDeviceAssociationUsage Type="AcceptOnOtherDevice" />
+                </mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+        </mx:SecureDeviceAssociationTemplates>
+    </mx:XboxNetworkingManifest>
+</mx:Extension>
+

@@ -1,0 +1,281 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2217D233-E3A2-D60D-6888-A1F4F052FC87}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>EAController</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\Sony";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\libEAController.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\EAController" mkdir "ps5-clang-debug\build\EAController" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\EAController\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\EAController\v.tlog\</TLogLocation>
+    <TargetName>libEAController</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\Sony";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\libEAController.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\EAController" mkdir "ps5-clang-opt\build\EAController" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\EAController\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\EAController\v.tlog\</TLogLocation>
+    <TargetName>libEAController</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="..\..\EAAssert\local_1.05.11\EAAssert.vcxproj">
+      <Project>{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="IEAController.vcxproj">
+      <Project>{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EAStdC\local_1.26.08\EAStdC.vcxproj">
+      <Project>{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EASTL\local_3.16.05\EASTL.vcxproj">
+      <Project>{F741D66C-94C2-1776-A80D-5FE6FCCC8890}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EAThread\local_1.33.04\EAThread.vcxproj">
+      <Project>{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\EAController.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\index.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\changelog.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\index.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\toc.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\img\logo.png">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\highlight.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\1c.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\axapta.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\dynamic.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\javascript.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rib.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rsl.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\smalltalk.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\sql.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\static.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\vbscript.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\www.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\style_sheet\style_sheet.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\EAController.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\Sony\EAController\SonyController.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\EAController_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\source\Sony\SonyController.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EAController\SonyController.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EAController\SonyController.cpp.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

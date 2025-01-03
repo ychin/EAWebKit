@@ -1,0 +1,39 @@
+<project xmlns="schemas/ea/framework3.xsd">
+	<property name="EATHREAD_DEBUGFLAGS_ON" value="@{OptionSetGetValue('config-options-common', 'debugflags')} == on"/>
+	<property name="EA_SCEDBG_ENABLED" value="${EA_SCEDBG_ENABLED??0}" unless="${EATHREAD_DEBUGFLAGS_ON} == true"/>
+	<property name="EA_SCEDBG_ENABLED" value="${EA_SCEDBG_ENABLED??1}" if="${EATHREAD_DEBUGFLAGS_ON} == true"/>
+	<property name="EA_XBOX_DBG_ENABLED" value="${EA_XBOX_DBG_ENABLED??0}" unless="${EATHREAD_DEBUGFLAGS_ON} == true"/>
+	<property name="EA_XBOX_DBG_ENABLED" value="${EA_XBOX_DBG_ENABLED??1}" if="${EATHREAD_DEBUGFLAGS_ON} == true"/>
+
+	<fileset name="package.EAThread.java.classes" basedir="${package.EAThread.builddir}/${config}/bin/EAThread/classes" >
+		<includes name="**\*.class"/>
+	</fileset>
+
+	<!-- The build script is using custom buildtypes that extend these default build types,
+		but for determining the binary locations in the public data we can use the default build types -->
+	<property name="EAThreadBuildType" local="true" value="Library"/>
+	<property name="EAThreadBuildType" local="true" value="DynamicLibrary" if="${Dll??false}"/>
+
+	<!-- This property is deprecated and included for backwards compatibility only.  Please use the module specific property instead (package.EAThread.EAThread.includedirs). -->
+	<property name="package.EAThread.includedirs" value="${package.EAThread.dir}/include" />
+
+	<!-- EAThread exports one single runtime library and its include directories are in "include", so it can use all default values for this task. -->
+	<publicdata packagename="EAThread">
+		<runtime>
+			<module name="EAThread" buildtype="${EAThreadBuildType}">
+				<includedirs>
+					${package.EAThread.includedirs}
+				</includedirs>
+				<libs-external>
+					<includes name="${package.kettlesdk.libdir??}/libSceDbg_stub_weak.a"   if="${config-system} == 'kettle' and ${EA_SCEDBG_ENABLED} == 1"/>
+					<includes name="toolhelpx.lib" asis="true"                             if="${config-system} == 'capilano' and ${EA_XBOX_DBG_ENABLED} == 1 and !${gdk.enabled??false}"/>
+					<includes name="-ldl" asis="true"                                      if="${config-system} == unix or ${config-system} == unix64 or ${config-system} == android"/>
+					<!-- Link libdl.a, which implements dlopen, dlclose, etc. -->
+				</libs-external>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EAThreadTest"/>
+		</tests>
+	</publicdata>
+</project>

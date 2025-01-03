@@ -1,0 +1,11 @@
+<project>
+  <!-- pixman header files location. -->
+  <property name="package.pixman.includedirs">
+    ${package.pixman.dir}/include
+  </property>
+
+  <!-- pixman libraries location. -->
+  <fileset name="package.pixman.libs">
+    <includes name="${package.pixman.builddir}/${config}/lib/${lib-prefix}pixman${lib-suffix}" />
+  </fileset>
+</project>

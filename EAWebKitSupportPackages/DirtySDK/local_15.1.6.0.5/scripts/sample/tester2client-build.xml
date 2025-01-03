@@ -1,0 +1,30 @@
+<project>
+
+    <WindowsProgram name="T2Client" frompartial="WinDSProgram">
+        <includedirs>
+            ${package.dir}/sample/tester2/source
+            ${package.dir}/sample/tester2/source/${dirtyplat}/resource
+        </includedirs>
+
+        <headerfiles basedir="${package.dir}">
+            <includes name="sample/tester2/source/*.h"/>
+            <includes name="sample/tester2/source/${dirtyplat}/resource/*.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="${package.dir}/sample/tester2/project/${dirtyplat}/clientsource.txt"/>
+            <includes fromfile="${package.dir}/sample/tester2/project/${dirtyplat}/clientsourcecpp.txt"/>
+        </sourcefiles>
+
+        <resourcefiles basedir="${package.dir}">
+            <includes name="sample/tester2/source/pc/resource/T2Client.rc" />
+        </resourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+                DirtySDK/common
+            </auto>
+        </dependencies>
+    </WindowsProgram>
+</project>

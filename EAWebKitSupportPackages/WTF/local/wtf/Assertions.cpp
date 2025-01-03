@@ -413,47 +413,47 @@ void WTFSetCrashHook(WTFCrashHookFunction function)
 
 void WTFCrash()
 {
-	//+EAWebKitChange
-	//1/17/2014
-#if PLATFORM(EA)
-	//We don't want to crash in any situation especially when ASSERT macro also tries to crash.
-	return;
-#endif
-	//-EAWebKitChange
-
-	if (globalHook)
-        globalHook();
-
-    WTFReportBacktrace();
-    *(int *)(uintptr_t)0xbbadbeef = 0;
-    // More reliable, but doesn't say BBADBEEF.
-#if COMPILER(GCC_OR_CLANG)
-    __builtin_trap();
-#else
-    ((void(*)())0)();
-#endif
+//	//+EAWebKitChange
+//	//1/17/2014
+//#if PLATFORM(EA)
+//	//We don't want to crash in any situation especially when ASSERT macro also tries to crash.
+//	return;
+//#endif
+//	//-EAWebKitChange
+//
+//	if (globalHook)
+//        globalHook();
+//
+//    WTFReportBacktrace();
+//    *(int *)(uintptr_t)0xbbadbeef = 0;
+//    // More reliable, but doesn't say BBADBEEF.
+//#if COMPILER(GCC_OR_CLANG)
+// //   __builtin_trap();
+//#else
+//    ((void(*)())0)();
+//#endif
 }
     
 void WTFCrashWithSecurityImplication()
 {
-	//+EAWebKitChange
-	//1/27/2016
-#if PLATFORM(EA)
-	//We don't want to crash in any situation especially when ASSERT macro also tries to crash.
-	return;
-#endif
-	//-EAWebKitChange
-    
-    if (globalHook)
-        globalHook();
-    WTFReportBacktrace();
-    *(int *)(uintptr_t)0xfbadbeef = 0;
-    // More reliable, but doesn't say fbadbeef.
-#if COMPILER(GCC_OR_CLANG)
-    __builtin_trap();
-#else
-    ((void(*)())0)();
-#endif
+//	//+EAWebKitChange
+//	//1/27/2016
+//#if PLATFORM(EA)
+//	//We don't want to crash in any situation especially when ASSERT macro also tries to crash.
+//	return;
+//#endif
+//	//-EAWebKitChange
+//    
+//    if (globalHook)
+//        globalHook();
+//    WTFReportBacktrace();
+//    *(int *)(uintptr_t)0xfbadbeef = 0;
+//    // More reliable, but doesn't say fbadbeef.
+//#if COMPILER(GCC_OR_CLANG)
+//    __builtin_trap();
+//#else
+//    ((void(*)())0)();
+//#endif
 }
 
 #if HAVE(SIGNAL_H)

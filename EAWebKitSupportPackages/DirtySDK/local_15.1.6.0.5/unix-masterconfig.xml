@@ -1,0 +1,18 @@
+<project>
+    <masterversions>
+        <package name="UnixClang"                       version="4.0.1"/>
+        <package name="EABase"                          version="2.09.13"/>
+        <package name="EAThread"                        version="1.33.00"/>
+    </masterversions>
+
+    <globalproperties>
+      dirtysdk-distpktwindow-size
+      dirtysdk-samples
+      cc.std=c++14
+    </globalproperties>
+
+    <config package="eaconfig" default="unix64-clang-debug" includes="unix64-clang-*"/>
+    <buildroot>build</buildroot>
+    <ondemand>true</ondemand>
+    <ondemandroot>../../packages</ondemandroot>
+</project>

@@ -51,8 +51,8 @@
 #include "WindowsKeyboardCodes.h"
 #include "SpatialNavigation.h"
 #include "StyleProperties.h"
-#include "webpage.h"
-#include "webpage_p.h"
+#include "WebPage.h"
+#include "WebPage_p.h"
 
 #include <EAWebKit/EAWebKitInput.h>
 #include <EAWebKit/EAWebKitClient.h>
@@ -552,7 +552,7 @@ void EditorClientEA::setInputMethodState(bool active)
 	// If the node was focused by javascript, we make the cursor jump to the node. In addition, we blur <input>/<textarea> element 
 	// so that the user click can bring up the emulated keyboard.
 	EA::WebKit::View* pView = m_page->view();
-#if defined(EA_PLATFORM_CONSOLE)
+#if defined(EA_PLATFORM_CONSOLE) || defined(EA_PLATFORM_STADIA)
 	bool onConsole = true;
 #elif defined(EA_PLATFORM_WINDOWS)
 	bool onConsole = pView->IsEmulatingConsoleOnPC();

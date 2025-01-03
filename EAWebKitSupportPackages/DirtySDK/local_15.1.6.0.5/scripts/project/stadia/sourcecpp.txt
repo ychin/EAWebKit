@@ -1,0 +1,2 @@
+source/dirtysock/stadia/netconnstadia.cpp
+source/dirtysock/netconnlocaluser.cpp

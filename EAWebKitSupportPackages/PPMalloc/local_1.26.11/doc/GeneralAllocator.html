@@ -1,0 +1,700 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>GeneralAllocator</title>
+<meta content="Description of GeneralAllocator" name="description">
+<style type="text/css">
+<!--
+.style3 {color: #000099}
+.style4 {color: #339966}
+.Mono8 {font-family: "Lucida Console"; font-size: 8pt; }
+-->
+  </style>
+</head>
+<body>
+<h1>GeneralAllocator</h1>
+<p>The core allocator of PPMalloc is GeneralAllocator and its user-level debug layer, GeneralAllocatorDebug. GeneralAllocator is a replacement for new/delete and malloc/free and does a lot more as well. GeneralAllocator combined with GeneralAllocatorDebug provide a rich set of functionality not found in most memory allocation packages. </p>
+<h3>GeneralAllocator Features</h3>
+<p>See the <a href="DetailedFeatureList.html">Detailed Feature List</a> for more extensive descriptions of these features and others. </p>
+<ul>
+  <li>High performance and high efficiency. No generalized allocator is known to have a better combination.</li>
+  <li>Scales very well from small consoles with &lt; 10,000 blocks to large systems with &gt; 1,000,000 blocks.</li>
+  <li>Nominal overhead is only 4 bytes per block.</li>
+  <li>Highly resistant to both internal and external fragmentation.</li>
+  <li>Useful malloc variants, including MallocAligned, Calloc, Realloc, MallocMultiple.</li>
+  <li>Extensive internal consistency checking in debug builds.</li>
+  <li>Ability to create independent peer heaps and sub-heaps.</li>
+  <li>Portability to all platforms (including 64 bit platforms) yet isn't limited or crippled to any least-common denominator platform.</li>
+  <li>Fairly extensive heap tracing, reporting, hooking, snapshot taking, and validation functionality.</li>
+  <li>Extensive leak reporting output.</li>
+  <li>Optional thread-safety.</li>
+  <li>Can assign your own core memory to the heap or let it get it from the system itself.</li>
+  <li>Automated heap allocation activity recording and playback via AllocationRecorder.</li>
+  <li>Manual or automatic expansion of internal memory source.</li>
+  <li>Many compile time and runtime configurable options.</li>
+</ul>
+<h3>GeneralAllocatorDebug Features </h3>
+<ul>
+  <li>Delayed frees with user-definable delayed free policy (time-based, volume based, count based, etc.)</li>
+  <li>Advanced guard fill (a.k.a. sentinel) functionality such as scaling guard fill sizes and min/max fill size clamps.</li>
+  <li>Various debug fills, including new fill, free fill, delayed free fill, guard fill.</li>
+  <li>Pointer validation. Say goodbye to mysterious double-free bugs.</li>
+  <li>Ability to associate names with allocations.</li>
+  <li>Ability to automatically store call stacks with allocations (globally or on a per-allocation basis).</li>
+  <li>Ability to store file/line allocation place with allocations.</li>
+  <li>Ability to automatically store debug overhead with allocations.</li>
+  <li>Various other storage as well.</li>
+  <li>Ability for the user to associate any arbitrary data with an allocation.</li>
+</ul>
+<h3>Quick Interface Summary</h3>
+<p>The primary interface for GeneralAllocator is this (please refer to the Doxygen documentation or the source code itself for the most up-to-date version of this interface):</p>
+<blockquote>
+  <pre class="style3">class GeneralAllocator<br>{<br>public:<br>&nbsp;&nbsp; GeneralAllocator(void* pInitialCore = NULL, size_t nInitialCoreSize = 0, bool bShouldFreeInitialCore = true, bool bShouldTrimInitialCore = false, CoreFreeFunction pInitialCoreFreeFunction = NULL, void* pInitialCoreFreeFunctionContext = NULL)<br>&nbsp; ~GeneralAllocator();<br><br>&nbsp;&nbsp; bool   Init(void* pInitialCore = NULL, size_t nInitialCoreSize = 0, bool bShouldFreeInitialCore = true, bool bShouldTrimInitialCore = false, CoreFreeFunction pInitialCoreFreeFunction = NULL, void* pInitialCoreFreeFunctionContext = NULL);<br>   bool   Shutdown();<br><br>&nbsp;&nbsp; void*  Malloc(size_t nSize);<br>&nbsp;&nbsp; void*&nbsp; MallocAligned(size_t nSize, size_t nAlignment = 0, size_t nAlignmentOffset = 0);<br>&nbsp;&nbsp; void** MallocMultiple(size_t nElementCount, size_t nElementSize, void* pResultArray[]);<br>&nbsp;&nbsp; void** MallocMultiple(size_t nElementCount, const size_t nElementSizes[], void* pResultArray[]);<br>&nbsp;&nbsp; void*&nbsp; Calloc(size_t nElementCount, size_t nElementSize);<br>&nbsp;&nbsp; void*&nbsp; Realloc(void* p, size_t nNewSize);<br>&nbsp;&nbsp; void&nbsp;&nbsp; Free(void* p);<br><br>   bool&nbsp;&nbsp; AddCore(void* pInitialCore, size_t nInitialCoreSize);<br>&nbsp;&nbsp; size_t TrimCore(size_t nPadding);<br>   void   SetThreadSafetyEnabled(bool bEnable);<br>   void   Lock(bool bEnable);<br><br>&nbsp;&nbsp; size_t GetUsableSize(void* pData);<br>&nbsp;&nbsp; size_t GetBlockSize(const void* pData) const;<br>   void   SetTraceFunction(TraceFunction pTraceFunction, void* pContext);<br>   void   SetTraceFieldDelimiters(unsigned char fieldDelimiter, unsigned char recordDelimiter);<br>   bool&nbsp;&nbsp; ValidateAdress(void* pAddress, bool bPointerIsAllocation);<br>&nbsp;&nbsp; bool&nbsp;&nbsp; ValidateHeap(HeapValidationLevel heapValidationLevel = kHeapValidationLevelBasic);<br>&nbsp;&nbsp; void   SetAutoHeapValidation(HeapValidationLevel heapValidationLevel, size_t nFrequency);<br>   void&nbsp;&nbsp; SetMallocFailureFunction(MallocFailureFunction pMallocFailureFunction, void* pContext);<br>&nbsp;&nbsp; void   SetAssertionFailureFunction(AssertionFailureFunction pAssertionFailureFunction, void* pContext);<br>   void&nbsp;&nbsp; SetHookFuncton(HookFunction* pHookFunction, void* pContext);<br>&nbsp;&nbsp; void&nbsp;&nbsp; SetTraceFunction(TraceFunction pTraceFunction, void* pContext);<br>&nbsp;&nbsp; void&nbsp;&nbsp; TraceAllocatedMemory(TraceFunction pTraceFunction = NULL, void* pTraceFunctionContext = NULL);<br>&nbsp;&nbsp; size_t DescribeData(const void* pData, char* pBuffer, size_t nBufferLength);<br>   bool   ReportHeap(HeapReportFunction, void* pContext, int nBlockTypeFlags, bool bMakeCopy = false, void* pStorage = NULL, size_t nStorageSize = 0);<br>&nbsp;&nbsp; void*  TakeSnapshot(int nBlockTypeFlags = kBlockTypeAll, bool bMakeCopy = false, void* pStorage = NULL, size_t nStorageSize = 0); <br>   void&nbsp;&nbsp; FreeSnapshot(void* pSnapshot);<br>   void*  ReportBegin(void* pSnapshot = NULL, int nBlockTypeFlags = kBlockTypeAll, bool bMakeCopy = false, void* pStorage = NULL, size_t nStorageSize = 0);<br>   void*  ReportNext(const void* pContext, int nBlockTypeFlags = kBlockTypeAll);<br>   void   ReportEnd(const void* pContext);<br>};
+</pre>
+</blockquote>
+<p>  The primary interface for GeneralAllocatorDebug is this:</p>
+<blockquote>
+  <pre class="style3">class GeneralAllocatorDebug
+<span style="color: rgb(0, 0, 153);">{</span>
+   GeneralAllocatorDebug();
+  ~GeneralAllocatorDebug();
+   
+   bool     Init(void* pInitialCore = NULL, size_t nInitialCoreSize = 0);
+   bool     Shutdown();
+   
+   void*    Malloc(size_t nSize, unsigned nDebugDataFlags, const char* pName = NULL, const char* pFile = NULL, int nLine = 0);
+   void*    MallocAligned(size_t nSize, size_t nAlignment, size_t nAlignmentOffset, unsigned nDebugDataFlags, const char* pName = NULL, const char* pFile = NULL, int nLine = 0);
+   void*    Calloc(size_t nElementCount, size_t nElementSize, unsigned nDebugDataFlags, const char* pName = NULL, const char* pFile = NULL, int nLine = 0);
+   
+   void     SetAllocator(GeneralAllocator* pAllocator);
+   
+   unsigned GetDefaultDebugDataFlags() const;
+   bool     GetDefaultDebugDataFlag(unsigned debugDataFlag) const;
+   void     SetDefaultDebugDataFlags(unsigned flags);
+   void     SetDefaultDebugDataFlag(unsigned debugDataFlag);
+   
+   void     SetDelayedFreePolicy(DelayedFreePolicy policy, int value);
+   void     ClearDelayedFreeList();
+   
+   void     EnableValidPointerTracking(bool bEnable);
+   
+   bool     ValidateAddress(const void* pData, bool bPointerIsAllocation = true);
+   
+   void     SetGuardSize(float fGuardSizeRatio, size_t nMinGuardSize, size_t nMaxGuardSize);
+   void     SetFillValues(unsigned char cFree        = kDefaultFillValueFree, 
+                          unsigned char cDelayedFree = kDefaultFillValueDelayedFree, 
+                          unsigned char cNew         = kDefaultFillValueNew, 
+                          unsigned char cGuard       = kDefaultFillValueGuard,
+                          unsigned char cUnusedCore  = kDefaultFillValueUnusedCore);
+   int       GetCurrentGroupId() const;
+   void      SetDefaultDebugDataLocation(DebugDataLocation debugDataLocation);
+   size_t    GetDebugDataLength(const void* pData, DebugDataLocation debugDataLocation = kDebugDataLocationDefault, void** ppDebugData = NULL);
+   void*     GetDebugData(const void* pData, DebugDataIdType id, 
+                          void* pDebugData, size_t nDataLength, size_t* pActualDataLength = NULL, 
+                          DebugDataLocation debugDataLocation = kDebugDataLocationDefault);
+   void*     SetDebugData(void* pData, DebugDataIdType id, 
+                          const void* pDebugData, size_t nDataLength, 
+                          DebugDataLocation debugDataLocation = kDebugDataLocationDefault);
+    const     Metrics&amp; GetMetrics(MetricType metricsType);
+<span style="color: rgb(0, 0, 153);">};</span>   </pre>
+</blockquote>
+<h3>Compile-Time Configurable Options</h3>
+<p>There are a number of compile-time options for GeneralAllocator. Most of these you don't want to change, but the others may have some use.<br>
+</p>
+<div style="margin-left: 40px;">
+  <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="0">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><span style="font-weight: bold;">Option</span><br>
+        </td>
+        <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_DEBUG<br>
+        </td>
+        <td style="vertical-align: top;"><p>Defined as 0, 1, 2, or 3. Default is 1 for debug, 0 for release.
+             
+           </p>
+          <p>If you compile with PPM_DEBUG defined as non-zero, a number of assertion checks are enabled that will catch more memory errors. You probably won't be able to make much sense of the actual assertion errors, but they should help you locate incorrectly overwritten memory. The checking is fairly extensive, and will slow down execution noticeably. The higher the defined value, the more extensive the debugging. Basically, release builds should have PPM_DEBUG = 0, debug builds should have a PPM_DEBUG &gt;= 1, and builds done by maintainers of this library should have PPM_DEBUG &gt;= 3.
+               
+           Setting PPM_DEBUG may also be helpful if you are trying to modify this code. The assertions in the check routines spell out in more detail the assumptions and invariants underlying the algorithms.
+               
+           Setting PPM_DEBUG does not provide an automated mechanism for checking that all accesses to malloced memory stay within their bounds. This kind of functionality is generally considered to be outside the scope of the allocator, as it requires functionality that is often compiler- or platform-specific. </p>
+        <pre>
+          |-----------------|--------------------------|-----------------------------------------------------------------------------------------
+          | PPM_DEBUG value | Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Meaning
+          |-----------------|--------------------------|-----------------------------------------------------------------------------------------
+          |&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Release builds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - No GeneralAllocator automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - GeneralAllocatorDebug is not usable.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - No GeneralAllocatorDebuig automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - GeneralAllocator and GeneralAllocatorDebug asserts are disabled.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - PPM_DEBUG_PRESERVE_PRIOR disabled by default. You can override this.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - PPM_VIRTUAL_ENABLED disabled by default. You can override this.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Automatic heap validation is not supported. You can still manually call the function.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - This yields the highest performance.
+          |-----------------|--------------------------|-----------------------------------------------------------------------------------------
+          |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Basic debug builds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Very minimal GeneralAllocator automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - GeneralAllocatorDebug is usable.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Very minimal GeneralAllocatorDebug automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - PPM_DEBUG_PRESERVE_PRIOR enabled by default. You can override this.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - PPM_VIRTUAL_ENABLED enabled by default. You can override this, 
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; but PPM_VIRTUAL_ENABLED is required in order to use GeneralAllocatorDebug.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - PPM_AUTO_HEAP_VALIDATION_SUPPORTED is enabled by default. This merely means that
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; you can now set up automatic heap validations to occur.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - This yields the highest performance possible while using GeneralAllocatorDebug;
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; performance should be fast enough for all game and tool applications.
+          |-----------------|--------------------------|-----------------------------------------------------------------------------------------
+          |&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Extended debug builds&nbsp;&nbsp;&nbsp; | - Primary GeneralAllocator automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Primary GeneralAllocatorDebug automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - GeneralAllocatorDebug guard fills enabled by default.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - This yields performance that will be adequate for some purposes but slow for others.
+          |-----------------|--------------------------|-----------------------------------------------------------------------------------------
+          |&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Developer builds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Extended GeneralAllocator automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Extended GeneralAllocatorDebug automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - This mode is only intended for developing and testing the library; 
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; its performance will be slow for many large game applications.
+          <span style="font-family: monospace;">|-----------------|--------------------------|-----------------------------------------------------------------------------------------</span>
+          |&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Developer builds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Heavy GeneralAllocator automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - Heavy GeneralAllocatorDebug automatic validation functionality is present.
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | - This mode is only intended for developing and testing the library; 
+          |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; its performance will be slow for most large game applications.
+          |-----------------|--------------------------------------------------------------------------------------------------------------------
+         </pre></td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_VIRTUAL_ENABLED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_DEBUG.<br>
+          <br>
+          PPM_VIRTUAL is optionally defined as 'virtual' in order to allow PPMalloc functions to become virtual. For normal usage, virtual isn't required and would impose a performance penalty. However, there are times where virtual may be useful, particularly in the case where you want to subclass PPMalloc in order to provide a debug-time variation (e.g. class PPMallocDebug).<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_HOOKS_SUPPORTED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_DEBUG.<br>
+          <br>
+          If true, then the user can install callback hooks that notify the user of high level allocation events.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_THREAD_SAFETY_SUPPORTED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 if the platform supports it.<br>
+          <br>
+          Defines whether thread safety is supported, which is not the same thing as thread safety being enabled. You need the former before you can have the latter. If thread safety is supported, then you can optionally define PPM_THREAD_SAFETY_BY_DEFAULT to 1 to enable it by default. It can always be enabled or disabled at runtime by calling SetThreadSafetyEnabled, but if GeneralAllocator is being statically created, then you might need to have thread safety enabling defined ahead of time.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_THREAD_SAFETY_BY_DEFAULT</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_THREAD_SAFETY_SUPPORTED.<br>
+          <br>
+          Defines if upon initialization of a GeneralAllocation instance it is thread safe.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_INTERRUPT_DISABLING_ENABLED<br>
+        </td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 for console platforms with slow mutexes and if PPM_THREAD_SAFETY_SUPPORTED is enabled.<br>
+          <br>
+          If disabling of interrupts is allowed, then GeneralAllocator very briefly (~10 CPU cycles) disables interrupts on systems with slow mutexes in order to greatly speed mutex locking and unlocking. The PS2 console in particular has a reputation for having very slow mutex locking and so allocation speed greatly improves when this option is enabled.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_ASSERT_ENABLED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_DEBUG.<br>
+          <br>
+          If true, then assertion failures are reported via GeneralAllocator::AssertionFailure. Note that PPM_ASSERT_ENABLED is usable even if PPM_DEBUG is 0; this comes into play in particular when doing heap validations, as all validation failures are&nbsp; reported through the AssertionFailure mechanism. Note that you do not want this feature enabled in a shipping build, as it costs CPU cycles.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_DEBUG_FILL<br>
+        </td>
+        <td style="vertical-align: top;">Defined as 0 or 2+. Default is 0 for PPM_DEBUG &lt;= 1; otherwise same as PPM_DEBUG)<br>
+          <br>
+          Enables GeneralAllocator internal debug fills and validation of those fills. <br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_DEBUG_PRESERVE_PRIOR<br>
+        </td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_DEBUG<br>
+          <br>
+          This is a define that tells whether we are saving the mnPrior field of chunks for debug purposes instead of letting them be (intentionally) overrun by the previous chunk (in order to save memory). You generally don't want to change this value unless you are doing maintenance and testing work on this library.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_NULL_POINTER_FREE_ENABLED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1.<br>
+          <br>
+          Defines whether or not the Free function allows passing of a NULL pointer as an argument. Since the C language standard free()  allows passing NULL pointers, we duplicate this behaviour by default. </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_AUTO_HEAP_VALIDATION_SUPPORTED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is same as PPM_DEBUG.<br>
+          <br>
+          If defined as non-zero, then automatic heap validation code is compiled and usable via the SetAutomaticHeapValidation user function.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_FASTBIN_TRIM_ENABLED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 0.<br>
+          <br>
+          This controls whether Free() of a very small chunk can immediately lead to trimming. Setting to non-zero can reduce memory footprint, but will almost always slow down programs that use a lot of small chunks.</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_INTERNAL_CORE_FREE_ENABLED<br>
+        </td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1<br>
+          <br>
+          When defined to 1, core that is set to be freed but has no callback function will be freed via a call to the platform-specific memory freeing function. For basic console platforms this function is usually malloc, while for PC platforms this is VirtualFree.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_MALLOC_AS_COREALLOC</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 unless the platform supports advanced memory management.<br>
+          <br>
+          When defined to 1, this instructs the system to get core from malloc and not directly from the system. You must be careful with this in that if you are using this allocator to directly replace malloc, you probably don't want to set PPM_MALLOC_AS_COREALLOC to be 1, as it would cause an infinite loop at runtime if AddCoreInternal was called.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_MALLOC_AS_MMAPALLOC</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 0.<br>
+          <br>
+          When defined to 1, this causes the memory mapped allocations to instead use plain old malloc to retrieve the memory. You probably don't want to change this value unless you are doing some kind of testing during library maintenance.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_MMAP_SUPPORTED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 if the system supports mapped memory.<br>
+          <br>
+          If true, Malloc makes use mapped memory to allocate very large blocks. This also enables the use of mapped memory if normal core memory allocation mechanisms fail.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_HIGH_SUPPORTED</td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 for console platforms, and 0 for others.<br>
+          <br>
+          Defines whether or not the concept of requesting from 'high' memory is supported. The idea behind requesting high memory allocation is that you are requesting the allocator to return memory that is separate from normal memory. Usually this is done with the intent of reducing fragmentation. If you allocate memory that you know will be permanent as high but leave other more dynamic allocations as 'low', then you will likely get less fragmentation due to there being no holes in the high memory. The concept of high memory can be implemented by truly using high memory addresses or can also be implemented by having separate pools for high and low memory.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_NEW_CORE_SIZE_DEFAULT</td>
+        <td style="vertical-align: top;">Unsigned integer. Default value is platform-specific.<br>
+          <br>
+          Default size of new core memory blocks when they are automatically internally allocated.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_CORE_INCREMENT_SIZE_DEFAULT</td>
+        <td style="vertical-align: top;">Unsigned integer &lt;= PPM_NEW_CORE_SIZE_DEFAULT. Default value is platform-specific.<br>
+          <br>
+          Default size to add to core memory blocks when the system supports extending existing blocks.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">PPM_REALLOC_C99_ENABLED<br>
+        </td>
+        <td style="vertical-align: top;">Defined as 0 or 1. Default is 1 (C99 behaviour enabled).<br>
+          <br>
+          Defines whether or not the Realloc function behaves as per the C89 standard or per the C99 standard. There are small differences between the two which are documented with the GeneralAllocator::Realloc source code.<br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h3>Example Usage</h3>
+<p> Here we provide some basic examples showing how to use GeneralAllocator.</p>
+<p>Here's an example of how to simply create an allocator and use it.</p>
+<blockquote>
+  <pre class="style3">#include "PPMalloc/EAGeneralAllocator.h"
+     
+EA::Allocator::GeneralAllocator allocator;
+void* p = allocator.Malloc(20);
+allocator.Free(p);   </pre>
+</blockquote>
+<p>To use GeneralAllocatorDebug, you simply substitute that class for GeneralAllocator, like this:</p>
+<blockquote>
+  <pre class="style3">#include "PPMalloc/EAGeneralAllocator<span class="style4">Debug</span>.h"
+using namespace EA::Allocator;
+     
+GeneralAllocator<span class="style4">Debug</span> allocator;
+void* p = allocator.Malloc(20);
+allocator.Free(p);   </pre>
+</blockquote>
+<p>If you want to initialize the allocator with a large block of existing memory, you simply pass that memory into the constructor or Init function, like so:</p>
+<blockquote>
+  <pre class="style3">GeneralAllocator allocator(pMemory, nMemorySize);   </pre>
+</blockquote>
+<p>If you would like to use GeneralAllocatorDebug to allocate memory with a name attached to it, you would simply construct this:<br>
+</p>
+<div style="margin-left: 40px;">
+  <pre class="style3">allocator.MallocDebug(20, 0, "model");</pre>
+</div>
+<p>If you would like to use GeneralAllocatorDebug to allocate memory which tracks the full call stack and the allocation time along with a name, you would do this:</p>
+<blockquote>
+  <pre class="style3">unsigned flags = (1 &lt;&lt; GeneralAllocatorDebug::kDebugDataIdCallStack) || 
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (1 &lt;&lt; GeneralAllocatorDebug::kDebugDataIdAllocationTime<span style="font-family: monospace; color: rgb(0, 0, 153);">);</span>
+allocator.MallocDebug(20, flags, "model");   </pre>
+</blockquote>
+<p>If you would like to validate the heap to see if there has been any corruption, you would do this:</p>
+<blockquote>
+  <pre class="style3">allocator.ValidateHeap(GeneralAllocator::kHeapValidationLevelFull);   </pre>
+</blockquote>
+<p>If you would like to provide a C++ hook function to track all allocation activity, you would use SetHookFunction like this:</p>
+<blockquote>
+  <pre class="style3">void SomeClass::SetupHook()
+{
+ &nbsp;&nbsp; allocator.SetHookFunction(HookFunction, this<span style="color: rgb(0, 0, 153);">);</span>
+}
+     
+static void HookFunction(const GeneralAllocator::HookInfo* pHI, void* pContext)
+{
+ &nbsp;&nbsp; SomeClass* const pSomeClass = (SomeClass*)pContext; // Possibly use this.
+     
+    if(!pHookInfo-&gt;mbEntry) // If we are being called at the end of the function (so we can see the result)...
+    {
+        if(pHookInfo-&gt;mHookType == GeneralAllocator::kHookTypeMalloc)
+            pHookInfo-&gt;mnSizeInputTotal, pHookInfo-&gt;mpDataOutput;
+     <span style="font-family: monospace; color: rgb(0, 0, 153);"></span>   else if(pHookInfo-&gt;mHookType == GeneralAllocator::kHookTypeFree)
+            pHookInfo-&gt;mpDataInput;
+    }
+}</pre>
+</blockquote>
+<p>If you would like to use GeneralAllocator as a sub heap of some other heap (e.g. another GeneralAllocator), you would simply do this:</p>
+<blockquote>
+  <pre class="style3">GeneralAllocator gaParent;
+GeneralAllocator gaChild(gParent.Malloc(1000000), 1000000, false);    </pre>
+</blockquote>
+<p><span style="font-family: monospace; color: rgb(0, 0, 153);"> </span> If you want to have a sub heap that grows on demand, you would do this:</p>
+<blockquote>
+  <pre class="style3">size_t SubHeapCoreFreeFunction(GeneralAllocator* /*pChild*/, void* pCore, size_t nSize, void* pContext)
+{
+ &nbsp;&nbsp; GeneralAllocator* const pParent = (GeneralAllocator*)pContext;
+ &nbsp;&nbsp; pParent-&gt;Free(pCore);
+ &nbsp;&nbsp; return nSize;
+}
+     
+bool MallocFailureFunction(GeneralAllocator* pChild, size_t nMallocRequestedSize, 
+                            size_t nAllocatorRequestedSize, void* pContext)
+{
+ &nbsp;&nbsp; GeneralAllocator* const pParent = (GeneralAllocator*)pContext;
+
+ &nbsp;&nbsp; if(nAllocatorRequestedSize &lt; 1000000) // Allocate at least N bytes of new core.
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nAllocatorRequestedSize = 1000000; // This is not necessarily required.
+
+    nAllocatorRequestedSize = EA::Allocator::PPM_AlignUp(nSize, EA::Allocator::GetPageSize());
+        
+ &nbsp;&nbsp; void* const pNewCore = pParent-&gt;Malloc(nAllocatorRequestedSize);
+
+ &nbsp;&nbsp; if(pNewCore)
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pChild-&gt;AddCore(pNewCore, nAllocatorRequestedSize, true, false, SubHeapCoreFreeFunction, pParent);
+
+ &nbsp;&nbsp; return (pNewCore != NULL);
+}
+       
+// Create a main heap.
+GeneralAllocator gaParent;
+       
+// Create a sub heap from the main heap.
+GeneralAllocator gaChild(gaParent.Malloc(1000000), 1000000, false, false, SubHeapCoreFreeFunction, &amp;gaParent);
+gaChild.SetMallocFailureFunction(MallocFailureFunction, &amp;gaParent);
+gaChild.SetOption(GeneralAllocator::kOptionEnableSystemAlloc, 0);
+   </pre>
+</blockquote>
+<h3> Block Overhead</h3>
+<p>Here we make a table showing block size overhead for GeneralAllocator when compiled with optimizations enabled. All user request sizes are rounded up to the next 4 byte boundary in GeneralAllocator. We show only up to allocation sizes of 128; the pattern of actual memory usage is evident and can be scaled up to any allocation size. These overhead values apply to both normally allocated blocks and blocks allocated with a specified alignment. In summary, blocks have an overhead of 4 or 8 bytes above the user request size, depending on the size.<br>
+</p>
+<div style="margin-left: 40px;">
+  <table border="1" cellspacing="0" cols="2">
+    <tbody>
+      <tr>
+        <td align="center">User Request Size</td>
+        <td align="center">Actual Memory Usage</td>
+      </tr>
+      <tr>
+        <td sdnum="1033;0;@" align="center">0</td>
+        <td sdval="16" sdnum="1033;" align="center">16</td>
+      </tr>
+      <tr>
+        <td sdval="4" sdnum="1033;" align="center">4</td>
+        <td sdval="16" sdnum="1033;" align="center">16</td>
+      </tr>
+      <tr>
+        <td sdval="8" sdnum="1033;" align="center">8</td>
+        <td sdval="16" sdnum="1033;" align="center">16</td>
+      </tr>
+      <tr>
+        <td sdval="12" sdnum="1033;" align="center">12</td>
+        <td sdval="16" sdnum="1033;" align="center">16</td>
+      </tr>
+      <tr>
+        <td sdval="16" sdnum="1033;" align="center">16</td>
+        <td sdval="24" sdnum="1033;" align="center">24</td>
+      </tr>
+      <tr>
+        <td sdval="20" sdnum="1033;" align="center">20</td>
+        <td sdval="24" sdnum="1033;" align="center">24</td>
+      </tr>
+      <tr>
+        <td sdval="24" sdnum="1033;" align="center">24</td>
+        <td sdval="32" sdnum="1033;" align="center">32</td>
+      </tr>
+      <tr>
+        <td sdval="28" sdnum="1033;" align="center">28</td>
+        <td sdval="32" sdnum="1033;" align="center">32</td>
+      </tr>
+      <tr>
+        <td sdval="32" sdnum="1033;" align="center">32</td>
+        <td sdval="40" sdnum="1033;" align="center">40</td>
+      </tr>
+      <tr>
+        <td sdval="36" sdnum="1033;" align="center">36</td>
+        <td sdval="40" sdnum="1033;" align="center">40</td>
+      </tr>
+      <tr>
+        <td sdval="40" sdnum="1033;" align="center">40</td>
+        <td sdval="48" sdnum="1033;" align="center">48</td>
+      </tr>
+      <tr>
+        <td sdval="44" sdnum="1033;" align="center">44</td>
+        <td sdval="48" sdnum="1033;" align="center">48</td>
+      </tr>
+      <tr>
+        <td sdval="48" sdnum="1033;" align="center">48</td>
+        <td sdval="56" sdnum="1033;" align="center">56</td>
+      </tr>
+      <tr>
+        <td sdval="52" sdnum="1033;" align="center">52</td>
+        <td sdval="56" sdnum="1033;" align="center">56</td>
+      </tr>
+      <tr>
+        <td sdval="56" sdnum="1033;" align="center">56</td>
+        <td sdval="64" sdnum="1033;" align="center">64</td>
+      </tr>
+      <tr>
+        <td sdval="60" sdnum="1033;" align="center">60</td>
+        <td sdval="64" sdnum="1033;" align="center">64</td>
+      </tr>
+      <tr>
+        <td sdval="64" sdnum="1033;" align="center">64</td>
+        <td sdval="72" sdnum="1033;" align="center">72</td>
+      </tr>
+      <tr>
+        <td sdval="68" sdnum="1033;" align="center">68</td>
+        <td sdval="72" sdnum="1033;" align="center">72</td>
+      </tr>
+      <tr>
+        <td sdval="72" sdnum="1033;" align="center">72</td>
+        <td sdval="80" sdnum="1033;" align="center">80</td>
+      </tr>
+      <tr>
+        <td sdval="76" sdnum="1033;" align="center">76</td>
+        <td sdval="80" sdnum="1033;" align="center">80</td>
+      </tr>
+      <tr>
+        <td sdval="80" sdnum="1033;" align="center">80</td>
+        <td sdval="88" sdnum="1033;" align="center">88</td>
+      </tr>
+      <tr>
+        <td sdval="84" sdnum="1033;" align="center">84</td>
+        <td sdval="88" sdnum="1033;" align="center">88</td>
+      </tr>
+      <tr>
+        <td sdval="88" sdnum="1033;" align="center">88</td>
+        <td sdval="96" sdnum="1033;" align="center">96</td>
+      </tr>
+      <tr>
+        <td sdval="92" sdnum="1033;" align="center">92</td>
+        <td sdval="96" sdnum="1033;" align="center">96</td>
+      </tr>
+      <tr>
+        <td sdval="96" sdnum="1033;" align="center">96</td>
+        <td sdval="104" sdnum="1033;" align="center">104</td>
+      </tr>
+      <tr>
+        <td sdval="100" sdnum="1033;" align="center">100</td>
+        <td sdval="104" sdnum="1033;" align="center">104</td>
+      </tr>
+      <tr>
+        <td sdval="104" sdnum="1033;" align="center">104</td>
+        <td sdval="112" sdnum="1033;" align="center">112</td>
+      </tr>
+      <tr>
+        <td sdval="108" sdnum="1033;" align="center">108</td>
+        <td sdval="112" sdnum="1033;" align="center">112</td>
+      </tr>
+      <tr>
+        <td sdval="112" sdnum="1033;" align="center">112</td>
+        <td sdval="120" sdnum="1033;" align="center">120</td>
+      </tr>
+      <tr>
+        <td sdval="116" sdnum="1033;" align="center">116</td>
+        <td sdval="120" sdnum="1033;" align="center">120</td>
+      </tr>
+      <tr>
+        <td sdval="120" sdnum="1033;" align="center">120</td>
+        <td sdval="128" sdnum="1033;" align="center">128</td>
+      </tr>
+      <tr>
+        <td sdval="124" sdnum="1033;" align="center">124</td>
+        <td sdval="128" sdnum="1033;" align="center">128</td>
+      </tr>
+      <tr>
+        <td sdval="128" sdnum="1033;" align="center">128</td>
+        <td sdval="136" sdnum="1033;" align="center">136</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h3>Debugging Chunk corruption </h3>
+<p>One way to track down Chunk corruption is to find out exactly how the Chunk is being corrupted and put a memory change watch on a byte being corrupted. To do that requires a small amount of knowledge about how the Chunks are organized.</p>
+<p>Allocated Chunk</p>
+<blockquote>
+  <p class="Mono8">struct Chunk {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;size_type mnPriorSize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;size_type mnSize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;char userData[]; // This is at least 8 bytes.<br>
+    };</p>
+</blockquote>
+<p>Free Chunk</p>
+<blockquote>
+  <p class="Mono8">struct Chunk {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;size_type mnPriorSize;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;size_type mnSize; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// bit 0 tells if previous Chunk in memory is allocated.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;Chunk* &nbsp;&nbsp;&nbsp;mpPrevChunk;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;Chunk*&nbsp;&nbsp;&nbsp; mpNextChunk;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;// 0 or more bytes here<br>
+  };</p>
+</blockquote>
+<p>In a new heap there is just one free Chunk, and it has an mnSize of some big value. In a heap with a bunch of allocated memory, there is a bunch of Chunks of variable size in memory one after another, like so:</p>
+<blockquote>
+  <p class="Mono8">Chunk 0 (low memory)<br>
+  Chunk 1<br>
+  Chunk 2<br>
+  Chunk 3 (high memory)</p>
+</blockquote>
+<p>The diagram above makes it look like each chunk is of the same size, but they are of variable sizes but a minimum of 16 bytes each. When you have a pointer to an object, it is the userData section of a Chunk, and the start of the Chunk is 8 bytes prior to it. In the case of a C++ array, the pointer that operator new[] returns to you is going to be 4 or 8 bytes beyond userData (depending on the alignment requirements of your class), as the compiler stores its own 'array count' variable at the beginning of the userData. </p>
+<p>When a Chunk is corrupted, usually the mnPriorSize or mnSize variables are overwritten. The heap can tell they are corrupted because they will have an overly high value or because there will be a mismatch between a Chunk's mnSize and the next Chunk in memory's mnPriorSize. So if you are freeing an array belonging to Chunk 1 above and you get an error saying that Chunk 2 is corrupted, then you want to watch the mnPriorSize and mnSize fields of Chunk2.</p>
+<h3>GeneralAllocatorDebug Chunks </h3>
+<h4>Chunk</h4>
+<p>The primary allocation unit of a GeneralAllocator heap is a Chunk. A Chunk is what is returned to the user from an allocation call, though the user is given a pointer to 8 bytes within the Chunk, after the header. The user data of a chunk is of variable size and is of course based on the requested allocation size. </p>
+<blockquote>
+<table width="651" border="1">
+  <tr>
+    <td width="64" scope="col"><span class="Mono8">Head[8]</span></td>
+    <td width="574" scope="col"><span class="Mono8">Data[]</span></td>
+  </tr>
+</table>
+</blockquote>
+<h4>Heap</h4>
+<p>A GeneralAllocator heap consists of a big block of memory (called Core) which is a bunch of Chunks one after another. As memory is allocated the Core space is dynamically divided into Chunks which are returned to the user. When memory is freed, newly contiguous free Chunks may be coalesced into larger free Chunks. </p>
+<blockquote>
+<table width="695" border="1">
+  <tr>
+    <td width="20" scope="col"><span class="Mono8">H[8]</span></td>
+    <td width="101" scope="col"><span class="Mono8">D[]</span></td>
+    <td width="20" scope="col"><span class="Mono8">H[8]</span></td>
+    <td width="58" scope="col"><span class="Mono8">D[]</span></td>
+    <td width="20" scope="col"><span class="Mono8">H[8]</span></td>
+    <td width="400" scope="col"><span class="Mono8">D[]</span></td>
+    <td width="30" scope="col"><span class="Mono8">... </span></td>
+  </tr>
+</table>
+</blockquote>
+<h4>Debug Chunk</h4>
+<p>GeneralAllocatorDebug associates meta-data with each Chunk, based on the debug options enabled by the user. The user can choose, for example, to enable saving the allocation time and allocation call stack for the allocation. See enum DebugDataId for more. This is accomplished by making a making a little database of tagged info at the end debug Chunks and increasing the size of the Chunk to accomodate this storage. GeneralAllocatorDebug intercepts all allocation calls in order to bump up this size before the memory is actually allocated by GeneralAllocator. The format of the storage is: </p>
+<blockquote>
+  <p class="Mono8"> uint16_t debugInfoSize &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(size of all debug info, not including this uint16_t) <br />
+      <br />
+    uint16_t info1Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(size of all of info1, not including this uitn16_t) <br />
+    uint16_t info1Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(arbitrary unique numeric id for the given type) <br />
+    char[] &nbsp;&nbsp;info1Data<br />
+    <br />
+    uint16_t info2Size<br />
+    uint16_t info2Type<br />
+    char[] &nbsp;&nbsp;info2Data<br />
+    <br />
+    etc. </p>
+</blockquote>
+<p>This variable data struct is written backwards in the Chunk, starting from the end, and it isn't aligned on any boundary. So a debug Chunk in memory that has two debug info entries looks like this:</p>
+<blockquote>
+<table border="1">
+  <tr class="Mono8">
+    <td scope="col">H</td>
+    <td scope="col">D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">info2Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">info2Type</td>
+    <td scope="col">info2Size</td>
+    <td scope="col">info1Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">info1Type</td>
+    <td scope="col">info1Size</td>
+    <td scope="col">debugInfoSize</td>
+  </tr>
+</table>
+</blockquote>
+<p>GeneralAllocatorDebug also supports guard fills, which is extra padding beyond the user-requested amount of memory. Guard fills are placed after the user data and before the debug data:</p>
+<blockquote>
+<table border="1">
+  <tr class="Mono8">
+    <td scope="col">H</td>
+    <td scope="col">D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">0xababababababab</td>
+    <td scope="col">info2Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">info2Type</td>
+    <td scope="col">info2Size</td>
+    <td scope="col">info1Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td scope="col">info1Type</td>
+    <td scope="col">info1Size</td>
+    <td scope="col">debugInfoSize</td>
+  </tr>
+</table>
+</blockquote>
+<p>When debug data is looked up with the GeneralAllocatorDebug::GetDebugData function, it goes to the end of the block and reads debugInfoSize. It asserts that the size is sane and then walks info1Size, info1Type, info2Size, info2Type, etc. to find the type of data it's looking for. It asserts along the way that the sizes are sane. If one of the sanity checks fails, then it means one of two things:</p>
+<ul>
+  <li>The heap has been corrupted by some misplaced memory write.</li>
+  <li>Somehow GeneralAllocatorDebug's attempts to intercept calls and write the debug info struct have been subverted. This isn't supposed to happen, but a bug in PPMalloc or a miscompile of some sort could be a cause of it. </li>
+</ul>
+<h3>PPMalloc Debug Fills</h3>
+<table border="1">
+  <tr>
+    <th scope="col">Fill Type </th>
+    <th scope="col">Fill Pattern Default </th>
+    <th scope="col">Meaning</th>
+  </tr>
+  <tr>
+    <td>Free</td>
+    <td>0xdd</td>
+    <td>Fill value for user memory that has been freed.</td>
+  </tr>
+  <tr>
+    <td>Delayed Free </td>
+    <td>0xde</td>
+    <td>Fill value for user memory which is in delayed free state. Delayed free memory is memory that has been freed by the user but is kept in limbo and not yet available for new allocations. </td>
+  </tr>
+  <tr>
+    <td>New</td>
+    <td>0xcd</td>
+    <td>Fill value for newly allocated user memory.</td>
+  </tr>
+  <tr>
+    <td>Guard</td>
+    <td>0xab</td>
+    <td>Fill value for guard memory returned in new user memory. Guard memory is extra padding beyond the user-requested amount of memory. </td>
+  </tr>
+  <tr>
+    <td>Unused Core </td>
+    <td>0xfe</td>
+    <td>Fill value for core that is unassigned to free or allocated memory. Core memory is the large blocks of memory obtained from the system which are used to fund the allocator. </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

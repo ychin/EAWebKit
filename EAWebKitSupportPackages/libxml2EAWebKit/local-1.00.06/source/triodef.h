@@ -25,6 +25,9 @@
 # define TRIO_COMPILER_GCC
 #elif defined(__SUNPRO_C)
 # define TRIO_COMPILER_SUNPRO
+#elif defined(__SUNPRO_CC)
+# define TRIO_COMPILER_SUNPRO
+# define __SUNPRO_C __SUNPRO_CC
 #elif defined(__xlC__) || defined(__IBMC__) || defined(__IBMCPP__)
 # define TRIO_COMPILER_XLC
 #elif defined(_AIX) && !defined(__GNUC__)
@@ -45,6 +48,9 @@
  * based on the DECC compiler later on.
  */
 # define TRIO_PLATFORM_VMS
+#elif defined(__QNX__)
+# define TRIO_PLATFORM_UNIX
+# define TRIO_PLATFORM_QNX
 #elif defined(unix) || defined(__unix) || defined(__unix__)
 # define TRIO_PLATFORM_UNIX
 #elif defined(TRIO_COMPILER_XLC) || defined(_AIX)
@@ -90,7 +96,7 @@
 #  if (__STDC_VERSION__ >= 199409L)
 #   define TRIO_COMPILER_SUPPORTS_C94
 #  endif
-#  if (__STDC_VERSION__ >= 199901L && !defined(CS_UNDEFINED_STRING)) // The Android SDK doesn't necessarily support nan, despite supporting other C99 functionality. 
+#  if (__STDC_VERSION__ >= 199901L && !defined(__ANDROID__)) // The Android SDK doesn't necessarily support nan, despite supporting other C99 functionality. 
 #   define TRIO_COMPILER_SUPPORTS_C99
 #  endif
 # elif defined(TRIO_COMPILER_SUNPRO)

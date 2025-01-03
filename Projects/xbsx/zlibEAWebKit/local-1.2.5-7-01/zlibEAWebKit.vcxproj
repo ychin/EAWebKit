@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\framework_tmp\GDK-220600\GdkBuild.Gaming.Xbox.Scarlett.x64.v142.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>xbsx-vc-debug</Configuration>
+    <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="xbsx-vc-debug|Gaming.Xbox.Scarlett.x64">
+      <Configuration>xbsx-vc-debug</Configuration>
+      <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="xbsx-vc-opt|Gaming.Xbox.Scarlett.x64">
+      <Configuration>xbsx-vc-opt</Configuration>
+      <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{03994ABE-57B1-4D7C-896F-62AEE8658914}</ProjectGuid>
+    <Keyword>Gaming.Xbox.Scarlett.x64Proj</Keyword>
+    <ProjectName>zlibEAWebKit</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+    <XdkEditionTarget>220600</XdkEditionTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64 /Zf -d2vzeroupper -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4210; 4244; 4255; 4131; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_GAMING_XBOX;_GAMING_XBOX_SCARLETT;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_GDK;EA_PLATFORM_XBOX_GDK;EA_PLATFORM_XBSX;EA_SLN_BUILD=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;MY_ZCALLOC;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xbsx-vc-debug\lib\zlibEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xbsx-vc-debug\lib/zlibEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xbsx-vc-debug\lib" mkdir "xbsx-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xbsx-vc-debug\build\zlibEAWebKit" mkdir "xbsx-vc-debug\build\zlibEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">
+    <OutDir>xbsx-vc-debug\lib\</OutDir>
+    <IntDir>xbsx-vc-debug\build\zlibEAWebKit\v\</IntDir>
+    <TLogLocation>xbsx-vc-debug\build\zlibEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>zlibEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\Scarlett</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -d2vzeroupper -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4210; 4244; 4255; 4131; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_GAMING_XBOX;_GAMING_XBOX_SCARLETT;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_GDK;EA_PLATFORM_XBOX_GDK;EA_PLATFORM_XBSX;EA_SLN_BUILD=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;MY_ZCALLOC;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xbsx-vc-opt\lib\zlibEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xbsx-vc-opt\lib/zlibEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xbsx-vc-opt\lib" mkdir "xbsx-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xbsx-vc-opt\build\zlibEAWebKit" mkdir "xbsx-vc-opt\build\zlibEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' ">
+    <OutDir>xbsx-vc-opt\lib\</OutDir>
+    <IntDir>xbsx-vc-opt\build\zlibEAWebKit\v\</IntDir>
+    <TLogLocation>xbsx-vc-opt\build\zlibEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>zlibEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\Scarlett</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

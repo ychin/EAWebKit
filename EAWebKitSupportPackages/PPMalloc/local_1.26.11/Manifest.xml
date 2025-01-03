@@ -1,0 +1,56 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>Frostbite Foundation</contactName>
+  <contactEmail>Frostbite.Support.Foundation@ea.com</contactEmail>
+  <componentName>Foundation</componentName>
+  <summary> PPMalloc </summary>
+  <description>
+		PPMalloc is a package that implements a suite of 
+		high performance C++ memory allocation facilities. 
+		At the core of this suite is GeneralAllocator, 
+		which is a generalized memory allocator which 
+		replaces new/delete malloc/free and does a bit more as well.
+	</description>
+  <homePageUrl>http://easites.ea.com/EATech/Core/UTF/Pages/default.aspx</homePageUrl>
+  <changes>See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/PPMalloc-1.26.11/PPMalloc/1.26.11/doc/Changes.html">changelog</a>.</changes>
+  <status>Official</status>
+  <statusComment />
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <tags>eatech, core</tags>
+  <licenseDetails>
+	<license>EA Proprietary (Internal Use Only)</license>
+	<licenseComment />
+  </licenseDetails>
+  <sourceLocation>//packages/PPMalloc/1.26.11</sourceLocation>
+  <driftVersion>1.26.11</driftVersion>
+  <versionName>1.26.11</versionName>
+  <relationship>
+	<builds>
+	  <build name="solution" supported="true" />
+	  <build name="nant" supported="true" targets="build test-build example-build" />
+	  <build name="test" supported="true" targets="test-run-fast" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc pc-vc-dll pc-vc-dll-tool" defines="eaconfig-run-response-timeout=1200" name="pc" test="Supported" />
+	  <platform build="Supported" configs="pc64-vc pc64-vc-dll pc64-vc-dll-tool" defines="eaconfig-run-response-timeout=1200" name="pc64" test="Supported" />
+	  <platform build="Supported" name="unix" test="Supported" />
+	  <platform build="Supported" name="unix64" test="Supported" />
+	  <platform build="Supported" name="osx" test="Supported" />
+	  <platform build="Supported" name="iphone" test="Supported" />
+	  <platform build="Supported" name="android" test="Supported" />
+	  <platform build="Supported" name="capilano" test="Supported" />
+	  <platform build="Supported" name="kettle" test="Supported" />
+	  <platform build="Supported" name="nx" test="Supported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

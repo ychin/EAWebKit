@@ -1,0 +1,574 @@
+<project>
+    <masterversions>
+        <package name="EABase" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EABase/2.09.09?cl=5104975" version="2.09.09" />
+        <package name="rwmath" version="3.01.01" />
+
+        <package name="EASharp" version="1.02.03" />
+        <package host="core_easharp_eaos" name="EASharpTest" version="1.02.03" />
+        <package name="Scintilla" version="1.00.07" />
+        <package name="FunctionInvoker" version="0.90.02" />
+        <package name="snsystemssdk" version="310.001" />
+        <package name="jdk" version="1.8.0_112-pc64">
+            <exception propertyname="config-system">
+                <condition host="frostbite_sdk" value="osx" version="1.8.0_74-osx" />
+                <condition host="frostbite_sdk" value="iphone" version="1.8.0_74-osx" />
+            </exception>
+        </package>
+        <package name="AndroidEmulator" version="1.18.00" />
+        <package host="frostbite_packages" name="android_config" version="4.06.01" />
+        <package host="frostbite_sdk" name="AndroidAPI" version="27" />
+        <package host="frostbite_sdk" name="AndroidBuildTools" version="27.0.2" />
+        <package host="frostbite_sdk" name="AndroidNDK" version="r15c" />
+        <package host="frostbite_sdk" name="AndroidPlatformTools" version="27" />
+        <package host="frostbite_sdk" name="AndroidSDK" version="25.2.3-2" />
+        <package host="frostbite_sdk" name="NsightTegra" version="3.5" />
+        <package host="frostbite_sdk" name="gradle" version="4.1" />
+        <package name="blast_config" version="1.00.03" />
+        <package host="frostbite_packages" name="eaconfig" version="5.14.05" /> 
+        <package host="frostbite_packages" name="ios_config" version="1.14.01" /> 
+        <package name="UnixGCC" version="0.10.00" /> 
+        <package host="frostbite_sdk" name="UnixClang" version="4.0.0-1" /> 
+        <package host="frostbite_sdk" name="UnixCrossTools" version="2.02.00" /> 
+        <package name="osx_config" version="1.20.02" /> 
+        <package name="IPhoneRunner" version="3.01.00" />
+        <package name="iphonesdk" version="10.0-proxy-4" />
+        <package name="RemoteBuild" version="4.02.01" />
+        <package name="vstomaketools" version="2.06.09" />
+        <package host="frostbite_sdk" name="vsimake" version="3.80" />
+        <package name="MarmaladeSDK" version="1.00.01-proxy" />
+        <package name="marmalade_config" version="1.00.00" />
+        <package host="frostbite_packages" name="Framework" version="7.19.01" />
+        <package name="LibGit2Sharp" uri="nuget-https://www.nuget.org/api/v2/" version="0.24.0" />
+        <package name="XGEAddin" version="3.1.0" />
+        <package name="CoreFileSystemRw" version="1.05.03" />
+        <package name="psp2_config" version="1.01.00" />
+        <package host="frostbite_packages" name="XcodeProjectizer" version="3.08.01" />
+        <package name="freebox_ndk" version="0.106-2" />
+        <package name="LevelDB" version="1.15.0-1" />
+        <package name="BloxUnitTesting" version="1.00.00" />
+        <package name="BloxPropertyEditor" version="2.04.00" />
+        <package name="BloxWindows" version="2.05.01" />
+        <package name="BloxControls" version="8.00.00" />
+        <package name="BloxDataANT" version="1.00.00" />
+        <package name="BloxLogging" version="3.00.00" />
+        <package name="BloxDialogs" version="2.04.00" />
+        <package name="BloxDataRuntime" version="1.00.00" />
+        <package name="BloxClipboard" version="4.00.00" />
+        <package name="BloxDragAndDrop" version="4.00.02" />
+        <package name="BloxMenus" version="1.01.00" />
+        <package name="BloxRPC" version="1.00.05" />
+        <package name="BloxDiagramming" version="6.00.00" />
+        <package host="blox_packages_dev" name="BloxExpression" version="stable" />
+        <package name="BloxCurve" version="0.04.04" />
+        <package name="BloxILWeaving" version="1.00.00" />
+        <package name="BloxMultiTrack" version="0.08.00" />
+        <package name="BloxSystem" version="2.02.00" />
+        <package name="BloxServices" version="2.01.01" />
+        <package name="BloxNAntBuild" version="1.04.03" />
+        <package name="BloxArgs" version="1.01.02" />
+        <package name="BloxThemes" version="1.03.00" />
+        <package name="BloxData" version="3.00.00" />
+        <package name="BloxUndoRedo" version="1.00.03" />
+        <package name="BloxAssetExplorer" version="0.08.00" />
+        <package name="BloxAssetStore" version="3.02.00" />
+        <package name="BloxCache" version="1.00.00" />
+        <package name="PerforceServer" version="2014.1" />
+        <package name="cecil" version="0.9.5" />
+        <package name="KinectSDK" version="1.7" />
+        <package name="nunit" version="2.6.0.12051-net45" />
+        <package name="EA3_SDK_pc" version="3.29.17" />
+        <package host="ea3" name="EA3_SDK_light" version="1.00.05" />
+        <package name="EAGameState" version="1.00.07" />
+        <package name="EADotNet" version="02.05" />
+        <package name="EADotNetMath" version="2.03.00" />
+        <package host="core_rwmath_eaos_release" name="EADotNetMathTest" version="2.03.00" />
+        <package name="EADotNetRenderer" version="1.09.05" />
+        <package name="EADotNetEA3" version="1.03.00" />
+        <package name="EAExpressionScript" version="3.00.00" />
+        <package name="EAGenericData" version="2.00.14" />
+        <package name="EADotNetGraph" version="1.00.00" />
+        <package name="DockPanel" version="2.3.1-8" />
+        <package name="EALockFreeAlloc" version="1.00.03" />
+        <package name="EADebugDraw" version="1.00.00" />
+        <package name="SmartPropertyGrid" version="3.2.0.45-beta-1" />
+        <package name="ParallelExtensions" version="1.0.3058.34407" />
+        <package name="EAGranite" version="0.08.00" />
+        <package name="DotNet" version="4.61-2-proxy"> 
+            <exception propertyname="use_vs_2015">
+                <condition value="true" version="4.61" />
+            </exception>
+            <exception propertyname="use_vs_2013">
+                <condition value="true" version="4.51" />
+            </exception>
+            <exception propertyname="use_vs_2012">
+                <condition value="true" version="4.51" />
+            </exception>
+        </package>
+		<package host="frostbite_packages" name="VisualStudio" version="15.9.28307.665-proxy" />
+        <package name="DotNetSDK" version="2.0-4" />
+        <package name="EACouchFileSystem" version="1.00.02" />
+        <package name="p4api_net" version="2015.1-2" />
+        <package name="SharpDX" version="3.1.1" />
+        <package name="log4net" version="1.2.10-ea-2" />
+        <package name="spubuildpipe" version="0.00.12" />
+        <package name="AdManager" version="3.08.06" />
+        <package name="Allocator" version="1.07.01" />
+        <package name="coreallocator" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/coreallocator/1.04.04?cl=5104906" version="1.04.04" />
+        <package name="EAAssert" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAAssert/1.05.10?cl=5104980" version="1.05.10" />
+        <package name="eacore_locale" version="2.02.07" />
+        <package name="eadxt" version="1.07.05" />
+        <package name="eadxt_samples" version="1.07.00" />
+        <package host="core_tests_eaossb" name="eadxt_test" version="1.07.05" />
+        <package name="EAJson" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAJson/1.07.03?cl=5104959" version="1.07.03" />
+        <package name="job_manager" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/job_manager/4.05.05?cl=5104951" version="4.05.05" />
+        <package host="core_concurrency_eaos" name="job_test" version="3.24.04-1" />
+        <package name="job_util" version="3.06.02" />
+        <package name="job_profiler" version="0.08.01" />
+        <package name="job_profiler_tool" version="0.07.00-1" />
+        <package name="RadialPS3" version="20090422" />
+        <package name="rwbigfile" version="2.02.05" />
+        <package name="rwbigfiledriver" version="1.02.03" />
+        <package name="rwcodec" version="1.11.04" />
+        <package host="utf_research_eaos_release" name="rwcontroller" version="1.05.00-sn" />
+        <package name="rwfilesystem" version="1.27.10" />
+        <package name="filesyshio2" version="2.00.00" />
+        <package name="rwsocket" version="1.00.02" />
+        <package name="rwtimer" version="1.01.03" />
+        <package host="utf_research_eaos_release" name="rwxml" version="1.02.01-eastdc" />
+        <package name="xceedzip" version="5.0.0-17" />
+        <package name="EACamera" version="1.02.01" />
+        <package host="core_eacamera_eaos" name="EACameraExample" version="1.01.00" />
+        <package host="core_eacamera_eaos" name="EACameraTest" version="1.02.00" />
+        <package host="core_qa_eaos" name="qautil" version="0.07.00" />
+        <package host="core_tests_eaossb" name="rwCommonQA" version="1.02.07" />
+        <package host="eatechcoreqa_externalmodified" name="rwbigfile_test" version="2.02.05-1" />
+        <package host="core_tests_eaossb" name="rwcodec_test" version="1.11.04" />
+        <package host="eatechcoreqa_externalmodified" name="rwfilesystem_test" version="1.27.10" />
+        <package host="frostbite_packages" name="rwmath_test" version="3.01.01" />
+        <package name="EAStringIntern" version="1.05.04" />
+        <package name="EAApp" version="1.05.02" />
+        <package name="EACallstack" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EACallstack/2.02.00?cl=5104915" version="2.02.00" />
+        <package host="utf_diagnostics_eaos_release" name="EACallstack.NET" version="2.00.00" />
+        <package name="EACOM" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EACOM/3.00.05?cl=5104918" version="3.00.05" />
+        <package host="utf_tools_eaos_release" name="EADeploy" version="1.00.00" />
+        <package host="utf_app_eaos_release" name="EAGimex" version="3.03.15" />
+        <package name="EAIO" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAIO/3.01.01?cl=5104973" version="3.01.01" />
+        <package name="EALocale" version="2.07.00" />
+        <package name="EAMessage" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAMessage/2.10.06?cl=5104901" version="2.10.06" />
+        <package name="EAPlatform" version="1.04.00" />
+        <package name="EATest" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EATest/2.08.08?cl=5104944" version="2.08.08" />
+        <package name="EATestPrintServer" version="2.03.00" />
+        <package name="EAReportUploader" version="1.02.04-1" />
+        <package name="EAReportCooker" version="1.02.04-1" />
+        <package name="EARunner" version="1.09.04" />
+        <package name="EACrypto" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EACrypto/1.03.04?cl=5104923" version="1.03.04" />
+        <package name="EAStdC" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAStdC/1.26.06?cl=5104909" version="1.26.06" />
+        <package host="frostbite_packages" name="EASTL" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EASTL/3.15.00?cl=5104894" version="3.15.00" />
+        <package name="EAConcurrentHeap" version="0.40.06" />
+        <package name="EAText" version="1.17.01" />
+        <package name="EATextRNA" version="1.07.03" />
+        <package name="EATextViewer" version="0.95.04" />
+        <package name="ConsoleRemote" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/ConsoleRemote/0.03.06?cl=5105001" version="0.03.06" />
+        <package name="ConsoleRemoteServer" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/ConsoleRemoteServer/0.03.06?cl=5104999" version="0.03.06" />
+        <package name="EAThread" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAThread/1.32.17?cl=5104890" version="1.32.17" />
+        <package name="EATrace" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EATrace/2.12.06?cl=5104938" version="2.12.06" />
+        <package name="EAXml" version="1.02.01" />
+        <package name="ExceptionHandler" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/ExceptionHandler/1.19.12?cl=5104929" version="1.19.12" />
+        <package name="InputMan" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/InputMan/2.35.00?cl=5104995" version="2.35.00" />
+        <package name="MemoryMan" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/MemoryMan/2.01.02?cl=5104941" version="2.01.02" />
+        <package name="MemoryFramework" version="1.18.00" />
+        <package name="PPMalloc" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/PPMalloc/1.26.06?cl=5104925" version="1.26.06" />
+        <package name="Symmogrifier" version="1.08.03" />
+        <package name="UTFDraw2D" version="1.03.05" />
+        <package host="utf_kernel_eaos_release" name="UTFFoundation" version="2.14.03" />
+        <package name="UTFInternet" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/UTFInternet/3.08.01?cl=5104955" version="3.08.01" />
+        <package host="frostbite_packages" name="UTFSockets" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/UTFSockets/2.15.13?cl=5104963" version="2.15.13" />
+        <package name="UTFWinSamples" version="1.18.01" />
+        <package name="UTFXml" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/UTFXml/3.08.12?cl=5104934" version="3.08.12" />
+        <package name="XHTML" version="2.07.01" />
+		<package host="frostbite_packages" name="ZSTD" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/ZSTD/1.04.02?cl=5104913" version="1.04.02" />
+        <package name="SafeCom" version="2.00.01" />
+        <package name="ResourceMan" version="2.05.08" />
+        <package name="ResourceConfig" version="2.04.08" />
+        <package name="ResourceManPackageToolkit" version="1.01.01" />
+        <package host="utf_app_eaos_release" name="EASkeleton" version="0.05.10" />
+        <package host="utf_app_eaos_release" name="EASkeletonAppFramework" version="0.05.01" />
+        <package host="core_tests_eaossb" name="EASkeletonTest" version="0.05.09" />
+        <package name="MemoryViewer" version="0.05.01" />
+        <package host="audio_eaos_release" name="Harmony" version="1.05.03" />
+        <package name="aemsup" version="1.11.00" />
+        <package name="aemsupgpl" version="1.11.00" />
+        <package name="csis" version="4.00.00" />
+        <package name="csisfw2" version="5.07.01" />
+        <package name="EAAudioBase" version="0.04.00" />
+        <package host="frostbite_packages" name="EAAudioBase_Tests" version="0.04.02-1" />
+        <package name="EAAudioController" version="1.06.01" />
+        <package name="EAAudioControllerAudition" version="1.05.02" />
+        <package name="EAAudioControllerBuilder" version="1.05.01" />
+        <package host="frostbite_packages" name="EAAudioController_Tests" version="1.06.01" />
+        <package name="EAAudioSampleBank" version="1.02.00" />
+        <package name="EAAudioCore" version="10.12.00" />
+        <package name="EAAudioCore_Samples" version="10.12.00" />
+        <package host="frostbite_packages" name="EAAudioCore_Tests" version="10.12.00" />
+        <package name="eajpeg" version="1.00.05" />
+        <package name="rwaudioprofile" version="2.01.00" />
+        <package name="rwmovietools" version="1.09.00" />
+        <package name="GameTalk" version="4.3.11" />
+        <package name="simex" version="19.03.01" />
+        <package name="sx" version="5.06.00" />
+        <package name="sinfo" version="1.74.00" />
+        <package name="gpllame" version="8.00.00" />
+        <package name="sxgpl" version="4.14.00" />
+        <package name="rwmovie" version="3.20.00" />
+        <package name="rwmovie_eaaudiocore_modules" version="2.09.00" />
+        <package name="rwmovie_example" version="3.20.00" />
+        <package name="vp6" version="2.13.00" />
+        <package name="VirtualDub" version="1.7.0" />
+        <package name="eanetsolver" version="1.05.02" />
+        <package name="eacollision_heightfield" version="2.04.00" />
+        <package name="eacollision_contactgen" version="2.18.02" />
+        <package name="eacollision_convexhull" version="2.03.00" />
+        <package name="eacollision_convexhullbuilders" version="1.05.01" />
+        <package name="eacollision_features" version="1.11.02" />
+        <package name="eacollision_primitives" version="1.19.00" />
+        <package name="eacollision_spatialmaps" version="1.13.00" />
+        <package name="eaphysics_base" version="1.08.00" />
+        <package name="eaphysics_world" version="0.15.01" />
+        <package name="eaphysics_characters" version="1.34.00" />
+        <package name="eacollision_gjk" version="1.02.01" />
+        <package name="eaphysics_dataformat" version="5.01.00" />
+        <package name="eaphysics_inertiautils" version="1.06.00" />
+        <package name="eaphysics_maya_visualizer" version="4.04.01" />
+        <package name="eaphysics_maya_authoring" version="1.12.03" />
+        <package name="eaphysics_maya_tools" version="5.06.00" />
+        <package name="eaphysics_databuilders" version="5.03.00" />
+        <package name="eaphysics_maya_databuilders" version="4.03.04" />
+        <package name="eaphysics_simulation" version="1.22.04" />
+        <package name="eaphysics_simulation_jobs" version="1.04.00" />
+        <package name="eaphysics_unitframework" version="1.10.00" />
+        <package name="maya_utils" version="0.08.00" />
+        <package name="eacompute" version="1.07.00" />
+        <package name="easoftbody" version="0.05.03" />
+        <package name="easoftbody_maya" version="0.05.02" />
+        <package name="rwcollision_volumes" version="6.16.02" />
+        <package name="rwphysics_draw" version="6.10.00" />
+        <package name="rwphysics_parts" version="6.09.00" />
+        <package name="rwphysics_samples" version="5.10.00" />
+        <package name="visualdebugger_base" version="3.03.00" />
+        <package name="visualdebugger_app" version="5.04.00" />
+        <package name="visualdebugger_havok" version="2.01.01" />
+        <package name="benchmarkenvironment" version="5.04.00" />
+        <package name="databuilders_base" version="5.00.02" />
+        <package name="dataiterator_base" version="1.03.02" />
+        <package name="FreeType" version="2.9.0.01" />
+        <package name="libxml2" version="1.00.11" />
+        <package name="PVRTC" version="3.1-1" />
+        <package name="ATITC" version="1.81-1" />
+        <package host="renderengine_eaos_release" name="imageoperate_base" version="6.00.07" />
+        <package name="maya_databuilders" version="4.00.02" />
+        <package name="meshoperate_meshutils" version="0.07.02" />
+        <package name="meshoperate_samples" version="3.04.00" />
+        <package name="meshoperate_tools" version="10.01.00" />
+        <package name="meshoperate_base" version="2.09.00" />
+        <package name="meshoperate_convexhull" version="2.01.03" />
+        <package name="meshoperate_halfedgemesh" version="3.00.04" />
+        <package name="meshoperate_halffacemesh" version="3.00.00" />
+        <package name="meshoperate_maya" version="2.06.00" />
+        <package name="meshoperate_serialization" version="2.04.03" />
+        <package host="renderengine_eaos_release" name="renderengine_base" version="1.07.00-wiifix" />
+        <package name="serialization" version="2.00.04" />
+        <package name="serialization_imaging_archives" version="1.08.04" />
+        <package name="serialization_rwmath" version="2.00.00" />
+        <package name="serialization_xml_archive" version="3.11.02" />
+        <package name="simd" version="2.04.01" />
+        <package name="eastasissolver" version="1.02.01" />        
+        <package host="ant15_ext_eaos_release" name="NaturalInputManager" version="2.01.00" />
+        <package host="ant15_ext_eaos_release" name="NaturalInputGesture" version="2.01.00" />
+        <package host="ant15_ext_eaos_release" name="NaturalInputSpeech" version="2.01.00" />                
+        <package name="libjpeg" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/libjpeg/1.01.06?cl=5104949" version="1.01.06" />
+        <package name="libpng" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/libpng/1.6.34.00-5?cl=5104970" version="1.6.34.00-5" />
+        <package name="lzma" version="4.65-8" />
+        <package name="libtiff" version="1.00.00-7" />
+        <package name="OpenCover" version="4.5.2506-1" />
+        <package name="ReportGenerator" version="1.9.1.0" />
+        <package host="eatechbuilds" name="dippybird" version="stable" />
+        <package name="MySqlDotNet" version="5.2.3" />
+        <package host="eatechbuilds" name="ETBFCommandLine" version="stable" />
+        <package host="eatechbuilds" name="ETBFConfiguration" version="stable" />
+        <package host="eatechbuilds" name="ETBFHandles" version="stable" />
+        <package host="eatechbuilds" name="ETBFInfrastructureError" version="stable" />
+        <package host="eatechbuilds" name="ETBFManifest" version="stable" />
+        <package host="eatechbuilds" name="ETBFTaskDefUtils" version="stable" />
+        <package host="eatechbuilds" name="ETBFXmlUtils" version="stable" />
+        <package host="eatechbuilds" name="ETBFExtensions" version="stable" />
+        <package host="eatechbuilds" name="ETBFMasterconfig" version="stable" />
+        <package host="eatechbuilds" name="ETBFCommon" version="stable" />
+        <package host="eatechbuilds" name="ETBFDynamic" version="stable" />
+        <package host="eatechbuilds" name="ETBFPerforce" version="stable" />
+        <package host="eatechbuilds" name="ETBFProcess" version="stable" />
+        <package host="eatechbuilds" name="ETBFPlatform" version="stable" />
+        <package host="eatechbuilds" name="ETBFEC" version="stable" />
+        <package host="eatechbuilds" name="ETBFFileUtils" version="stable" />
+        <package host="eatechbuilds" name="ETBFWeb" version="stable" />
+        <package host="eatechbuilds" name="ETBFLog" version="stable" />
+        <package host="eatechbuilds" name="ETBFNant" version="stable" />
+        <package host="eatechbuilds" name="MonoPosix" version="stable" />
+        <package host="frostbite_packages" name="mono" version="dev-proxy" />
+        <package name="DirectX" version="11.0.2010.06-1" />
+        <package name="ps3sdk" version="470.001-1-lite" />
+        <package name="PlayStation3NPEx" version="370.001" />
+        <package name="xenonsdk" version="2.0.21256.1" />
+        <package name="IncrediBuild" version="5.0.1496" />
+        <package name="Maya" version="2008.0-1" />
+        <package name="MayaSDK" version="2015.0.0">
+            <exception propertyname="config-system">
+                <condition value="pc" version="2012.0.0" />
+            </exception>
+        </package>
+        <package name="MayaRuntime" version="2015.0.0">
+            <exception propertyname="config-system">
+                <condition value="pc" version="2012.0.0-2" />
+            </exception>
+        </package>
+        <package name="WindowsSDK" version="10.0.16299">
+		    <exception propertyname="use_vs_2015">
+                <condition value="true" version="10.0.15063" />
+            </exception>
+            <exception propertyname="use_vs_2013">
+                <condition value="true" version="8.0.50727-5" />
+            </exception>
+            <exception propertyname="use_vs_2012">
+                <condition value="true" version="8.0.50727-5" />
+            </exception>
+        </package>
+        <package host="cm_eaos_release" name="sndbs" version="2.0.19" />
+        <package name="snvsi" version="2.1.7.3-proxy" />
+        <package name="ActivePython" version="2.7.6.9" />
+        <package name="ActivePerl" version="5.16.3" />
+        <package name="HelpToolkit" version="5.00.01" />
+        <package name="bison" version="1.35" />
+        <package name="Doxygen" version="1.8.6" />
+        <package name="CriterionDocTools" version="1.2.2" />
+        <package name="flex" version="2.5.4" />
+        <package name="PcLint" version="9.00k-nonproxy" />
+        <package name="Bullseye" version="7.13.25" />
+        <package name="trap2" version="2.03.00" />
+        <package name="unit" version="2.07.03" />
+        <package host="core_qa_eaos" name="unit_test" version="2.07.01" />
+        <package name="Wiicorder" version="1.00.00" />
+        <package name="pc64_test_server" version="1.00.00" />
+        <package name="pclintconfig" version="0.16.04" />
+        <package name="LanguageDatabaseExporter" version="2.00.03" />
+        <package name="fbxsdk" version="2009.1-lite" />
+        <package name="LUA" version="5.3.1.04" />
+        <package name="zlib" version="1.2.11-4" />
+        <package name="lz4" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/lz4/1.8.0-3?cl=5104898" version="1.8.0-3" />
+        <package name="CygwinGCC" version="1.00.00" />
+        <package name="sony_edge" version="1.1.0-1" />
+        <package name="Putty" version="2010-07-13-1" />
+        <package name="psp2sdk" version="1.650" />
+        <package name="psp2npex" version="0.945" />
+        <package name="CodeStripper" version="1.09.00" />
+        <package name="BitmapFontGenerator" version="2.05.00" />
+        <package name="cafe_config" version="1.01.01" />
+        <package name="cafesdk" version="2.08.07" />
+        <package name="EAMain" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAMain/3.01.07?cl=5104977" version="3.01.07" />
+        <package name="eacloth_maya" version="3.02.00" />
+        <package name="simplecloth" version="2.14.00" />
+        <package name="meshoperate_dotnet" version="0.04.01" />
+        <package name="DirtySDK" version="15.1.6.0.0" />
+        <package name="PlayStation4AudioInEx" version="6.508.001" />
+        <package name="vp8" version="1.03.00" />
+        <package name="vorbis" version="1.00.01" />
+        <package name="JsonDotNet" version="5.0.6-1" />
+        <package name="EASTLICA" version="1.02.00" />
+        <package name="CoreFileSystem" version="1.06.00" />
+        <package name="CoreFileSystemEAIO" version="1.05.01" />
+        <package name="RimQnxSDK" version="10.1.0" />
+        <package name="rimqnx_config" version="0.03.01" />
+        <package name="stv_config" version="1.02.00" />
+        <package name="stv_ndk" version="1001-2" />
+        <package name="AutodeskDCCLink" version="1.00.11" />
+        <package name="CoreStream" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/CoreStream/1.05.03?cl=5105003" version="1.05.03" />
+        <package name="Sandcastle" version="1.9.8.0" />
+        <package name="antphysics" version="3.11.01" />
+        <package name="antphysics_test" version="3.11.02" />
+        <package name="antphysicsdatabuilder" version="3.04.01" />
+        <package host="frostbite_packages" name="capilano_config" version="2.07.02" /> 
+        <package name="EAController" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAController/1.07.00?cl=5104993" version="1.07.00" />
+        <package name="EAControllerUserPairing" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAControllerUserPairing/1.11.05?cl=5104983" version="1.11.05" />
+        <package name="EASaveLoad" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EASaveLoad/1.09.01?cl=5104968" version="1.09.01" />
+        <package host="frostbite_packages" name="EASaveLoadTest" version="1.07.05" />
+        <package name="EASaveLoadTool" version="1.02.00" />
+        <package host="utf_app_eaos_release" name="EASaveLoadToolTest" version="1.02.00" />
+        <package name="EASystemEventMessageDispatcher" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EASystemEventMessageDispatcher/1.05.00?cl=5104988" version="1.05.00" />
+        <package host="frostbite_packages" name="EASystemEventMessageDispatcherTest" version="1.04.01" />
+        <package name="EAUser" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAUser/1.07.00?cl=5104990" version="1.07.00" />
+        <package name="IEAController" version="1.02.05" />
+        <package name="IEASaveLoad" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEASaveLoad/1.09.01?cl=5104947" version="1.09.01" />
+        <package name="IEASystemEventMessageDispatcher" version="1.00.05" />
+        <package name="IEAUser" version="1.03.01" />
+        <package name="kettle_config" version="2.11.01" /> 
+        <package name="KettlePublishingTools" version="1.29.00" />
+        <package name="CapilanoSDK" version="180600" />
+        <package name="kettlesdk" version="6.508.031" />
+		<package host="frostbite_sdk" name="ProDG_VSI" version="2.5.0.5" />
+        <package name="EAPatchDemo" version="1.00.00" />
+		<package name="EAPatchClient" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAPatchClient/1.12.01?cl=5104961" version="1.12.01" />
+        <package name="EAMEmulator" version="2.04.00" />
+        <package name="CoreFileSystemObbZip" version="1.00.04" />
+        <package name="irrlicht" version="2.07.17" />
+        <package name="EAMGameSkeleton" version="1.17.01" />
+        <package name="EAMTestApp" version="1.17.01" />
+        <package name="EAMTestHarness" version="1.17.00" />
+        <package name="Box2D" version="1.01.06" />        
+        <package name="chipmunk" version="1.00.05" />
+        <package name="opus" version="1.00.00" />
+        
+        <package name="cocos2dx" version="3.00.09" />
+        <package name="cocosdension" version="1.01.05" />
+        <package name="CoreFileSystemMix" version="1.00.01" />
+        <package name="EAMAudio" version="1.06.11" />
+        <package name="EAMContentManager" version="1.04.14" />
+        <package name="EAMCore" version="2.04.03" />
+        <package name="EAMEmulatorSDK" version="1.12.00" />
+        <package name="EAMGameLinkRuntime" version="1.02.03" />
+        <package name="EAMGameTalk" version="1.02.00" />
+        <package name="EAGooglePlayServices" version="1.00.00" />
+        <package name="EAMGraphics" version="1.07.06" />
+        <package name="EAMGraphicsDriver" version="1.00.08" />
+        <package name="EAMInAppWebBrowser" version="2.02.05" />
+        <package name="EAMIO" version="1.03.03" />
+        <package name="EAMIrrlicht" version="1.04.07" />
+        <package name="EAMIrrlichtWidgets" version="1.04.07" />
+        <package name="EAMJni" version="1.02.00" />
+        <package name="EAMLanguageBridge" version="1.00.02" />
+        <package name="EAMLibrarySkeleton" version="1.11.02" />
+        <package name="EAMLogViewerRuntime" version="1.00.09" />
+        <package name="EAMNativeTextField" version="1.04.02" />
+        <package name="EAMNetworkUtil" version="1.02.04" />
+        <package name="EAMPandaRuntime" version="0.10.00" />
+        <package name="EAMSDK" version="1.17.00" /> 
+        <package name="EAMSDKTools" version="1.17.00" />
+        <package name="EAMSprite" version="0.00.13" />
+        <package name="EAMText" version="1.06.13" />
+        <package name="EAMToolManager" version="1.01.07" />
+        <package name="EAMUTFWin" version="1.10.07" />
+        <package name="EAMVideoPlayer" version="1.03.04" />
+        <package name="EAMWebKit" version="1.01.04" />
+        <package name="NvTriStrip" version="1.00.06" /> 
+        <package name="OGLESLoader" version="1.05.01" />
+        <package name="scaleform" version="4.3.28-2" />
+        <package name="UTFWin" version="1.18.02" />
+        <package name="UTFWinDotNet" version="1.13.00" />
+        <package name="EAMSpriteDotNet" version="0.10.00" />
+        <package name="EAWebKit" version="16.1.1.0.0" />
+        <package host="eamt_eaos_release" name="EAWebKitUtil" version="13.1.1.0.0-mobile03" />
+        <package name="Grolar" version="0.10.01" />
+        <package name="PandaCore" version="0.11.03" />
+        <package name="PandaEAMCore" version="0.10.00" />
+        <package name="PandaEAMIO" version="0.10.00" />
+        <package name="PandaEAMSprite" version="0.10.00" />
+        <package name="PandaEAMUTFWin" version="0.10.00" />
+        <package name="PandaEAText" version="0.10.00" />
+        <package name="PandaMemoryMonitor" version="0.10.00" />
+        <package name="PandaResourceMan" version="0.10.00" />
+        <package name="PandaUTFWin" version="0.10.00" />
+        <package host="panda_eaos_release" name="AssetWorks" version="1.01.00" />
+        <package name="WindowsPhoneSDK" version="8.0.9900-3-proxy" />
+        <package name="cwRsync" version="4.02.00-3" />
+        <package host="frostbite_packages" name="testenvironment" version="dev" />
+        <package name="ApacheAnt" version="1.9.7" />
+		<package host="frostbite_packages" name="gtest" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/gtest/1.8.0.ea.18?cl=5104930" version="1.8.0.ea.18" />
+        <package host="frostbite_packages" name="benchmark" version="dev" />
+        <package host="frostbite_packages" name="nx_config" version="1.00.05" /> 
+        <package host="frostbite_sdk" name="nxsdk" version="9.0.0" />
+		<package name="Rx-Main" version="2.2.5" />
+        <package name="Moq" version="4.8.1" />
+		<package name="System.Collections.Immutable" version="1.3.1" />
+        <package host="frostbite_packages" name="Oodle" version="2.7.2-1" /> 
+        <package localondemand="false" name="NuGet.Core" uri="nuget-https://www.nuget.org/api/v2/" version="2.14.0" />
+    </masterversions>
+    <config default="pc-vc-dev-debug" package="eaconfig" />
+    <buildroot>build</buildroot>
+    <globalproperties>
+android-use-device
+android-use-emulator
+android-use-target
+android-deploy-timeout=300000
+buildlistfile
+bulkbuild
+cc.parallelcompiler
+dippybird.build.sln
+dippybird.run.tests
+dirtysdk-samples=false
+EAAudioCore.enablexmaencoder
+eacollision_spatialmaps.enable_vdb_tests=false
+eaconfig.debugsymbols
+eaconfig.deploy-contents
+eaconfig.optimization.ltcg=off
+eaconfig.xenon.forceredeploy=true
+EAMAIN_INCLUDE_TESTMM
+eaphysics_characters.debugsupport=true
+eaphysics_maya_visualizer.disable_visualdebugger_app=true
+EATech.Simex.disable_quicktime=true
+EATEST_INCLUDE_TESTMM
+EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED
+EAText.EATEXT_USE_FREETYPE=1
+EAWebKitUtil.ENABLE_EAWEBKITUTIL_CONFIG_FILE_READER=1
+ExcludeHumanIK=true
+iphone-extra-frameworks="CFNetwork CoreLocation CoreMotion MediaPlayer SystemConfiguration GLKit GameController Security"
+LIBJPEG_EA_SUPPORT_ENABLED=1
+LIBPVRTC_SUPPORT_ENABLED=1
+nant.build-package-modules-in-parallel=false
+osx-extra-frameworks="-framework AppKit -framework AudioUnit -framework CoreAudio -framework CoreLocation -framework IOKit -framework OpenGL -framework QTKit -framework QuartzCore -framework WebKit"
+package.android_config.minSdkVersion=25
+package.android_config.imageSDKVersion=25
+android_ndk_api=24
+package.android_config.system-image-type=google_apis
+package.AndroidSDK.EnableGLESv2=true
+package.AndroidSDK.EnableOpenSLES=true
+package.configs
+package.consoledeployment
+package.EAGameState.enable_tracking=true
+package.EAMGraphics.customdefines
+package.GameTalk.protocol=UTFSockets
+package.job_manager.allow_profiling=true
+package.run.console
+package.rwfilesystem.enableprofiler=true
+package.scaleform.option.autodesk.libjpeg=false
+package.scaleform.option.pcrenderer=gl
+package.scaleform.option.use-eam-graphics=true
+package.unit.use_eamain_report=true
+package.UnixClang.include-SDL-lib=true
+package.UnixGCC.include-SDL-lib=true
+package.visualdebugger.builddir
+pkg.cocos2dx=0
+pkg.MemoryMonitor=0
+plugins
+ps3sdk.enablepsgl
+ps3target
+test.run.args="-v"
+test_packages
+universal-binary=false
+use_scaleform=true
+use_vs_2012
+use_vs_2013
+use_vs_2015
+use_vs_2017
+UTFSockets.UTFSOCKETS_AUTO_INIT=0
+UTFWin.DEFAULT_WINDOW_FILL_ENABLED=0
+UTFWin.DEFAULT_WINDOW_SIZE_ENABLED=0
+UTFWin.UTFWIN_DRIVER
+visualdebugger_base.64bit_ids
+visualdebugger_base.support_rwcollision_volumes
+visualdebugger_base.support_rwphysics_parts
+wait-for-results=0
+xaml-add-windows-forms-dll=true
+xcode-application-directory="Xcode.app"
+xenontarget
+EA_SCEDBG_ENABLED=1
+eaconfig.msbuild.use32bit=true
+android-runtarget-emulator-restart=false
+    </globalproperties>
+    <packageroots><packageroot>../..</packageroot></packageroots><ondemand>true</ondemand><ondemandroot>F:/build/ondemand</ondemandroot></project>

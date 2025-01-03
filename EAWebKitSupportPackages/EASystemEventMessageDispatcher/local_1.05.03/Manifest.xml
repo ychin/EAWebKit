@@ -1,0 +1,50 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>Frostbite Game Framework Foundation</contactName>
+  <contactEmail>Frostbite.Team.GameFramework.Foundation@ea.com</contactEmail>
+  <componentName>Game Framework - Foundation</componentName>
+  <summary />
+  <description />
+  <changes>See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/EASystemEventMessageDispatcher-1.05.03/EASystemEventMessageDispatcher/1.05.03/doc/html/changelog.html">changelog</a>.</changes>
+  <status>Official</status>
+  <statusComment />
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <tags>Frostbite, Foundation</tags>
+  <sourceLocation>//packages/EASystemEventMessageDispatcher/1.05.03</sourceLocation>
+  <driftVersion>1.05.03</driftVersion>
+  <versionName>1.05.03</versionName>
+  <relationship>
+	<builds>
+	  <build name="solution" supported="true" />
+	  <build name="nant" supported="true" targets="test-build" />
+	  <build name="test" supported="true" targets="test-run-fast" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc" name="pc" test="Supported" />
+	  <platform build="Supported" configs="pc64-vc" name="pc64" test="Supported" />
+	  <platform build="NotSupported" name="xenon" test="NotSupported" />
+	  <platform build="NotSupported" name="ps3" test="NotSupported" />
+	  <platform build="NotSupported" name="unix" test="NotSupported" />
+	  <platform build="Supported" name="unix64" test="Supported" />
+	  <platform build="Supported" name="osx" test="Supported" />
+	  <platform build="Supported" name="iphone" test="Supported" />
+	  <platform build="NotSupported" name="iphonesim" test="NotSupported" />
+	  <platform build="Supported" name="android" test="Supported" />
+	  <platform build="NotSupported" name="winrt" test="NotSupported" />
+	  <platform build="NotSupported" name="winprt" test="NotSupported" />
+	  <platform build="Supported" name="capilano" test="Supported" />
+	  <platform build="Supported" name="kettle" test="Supported" />
+	  <platform build="Supported" name="nx" test="Supported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

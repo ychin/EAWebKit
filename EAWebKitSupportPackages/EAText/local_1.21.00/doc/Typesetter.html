@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+  <title>Introduction to Typesetter</title>
+  <style type="text/css">
+  	dt { font-weight: bold; }
+  	dd { margin-bottom: 4px; }
+.style2 {font-size: 20}
+  </style>
+</head>
+<body>
+<h1>EAText::Typesetter</h1>
+<h2>What is Typesetter?</h2>
+<p>Typesetter is 
+one of the major features of EAText. It is a class which is responsible for 
+formatting the display of text.</p>
+<p>Why is it 
+called Typesetter? In the days of manual printing presses, skilled artisans 
+known as <i>typesetters </i>would be responsible for arranging the small brass 
+letters into a frame, which would be covered with ink and then pressed against 
+the paper to produce a printed page. The Typesetter class does many of the same 
+functions as a human typesetter:</p>
+<ul>
+  <li>Handles the breaking of text into individual lines.</li>
+  <li>Aligns the text on the left, right, or center of the page, or can perform 
+  justification, which is the spreading of text to the view extents.</li>
+  <li>Chooses character shapes which correspond to the currently selected <i>font</i>, and 
+  allows for multiple fonts of mixed sizes to be used simultaneously on a   line.</li>
+  <li>Supports the required functionality for the creation of a multi-locale GUI text editor. </li>
+  <li>Adds appropriate <i>text decorations</i>, such as underline and strikethrough.</li>
+  <li>Handles right-to-left languages such as Hebrew and Arabic.</li>
+  <li>Handles <i> bi-directional text</i>, which is the mixing of right-to-left and left-to-right text on the same line or paragraph.</li>
+  <li>Allows for embedding of <i>non-text objects</i>, such as images or borders, into the flow 
+  of text.</li>
+  <li>Applies font-specified custom <em>kerning</em> between text glyphs. </li>
+  <li>Automatically inserts <i>ligatures</i>, which are adjacent characters that are 'fused' together, like 'æ', '&#64260;', or Arabic's  <span class="style2">&#1604;&#1575;</span>). 
+  Ligatures are  important in  languages such as Arabic and Hindi.</li>
+  <li>Allows for properly truncating lines or paragraphs with ellipses when needed.</li>
+  <li>Allows for properly laying out text as password text. </li>
+</ul>
+<p>Like a human typesetter, the Typesetter  works from <i>source 
+text</i>. The source text contains mostly regular text, but can also contain 
+other items - text style changes, non-text objects, paragraph breaks, and so on. 
+Typesetter refers to this text as a <i>schedule</i>, because it contains a list of 
+items to be processed. Like a real schedule, it also allows for 
+schedule changes - as long as the scheduled items have not yet occured (you can 
+change the future, but you can't change the past.)</p>
+<p>Typesetter can be used to quickly lay out a simple unformatted string of text, and it can be used as the text engine behind a fully formatted display such as HTML. Typesetter can also be used as the text engine behind an interactive multi-language text editor. In fact we have implemented each of these with EAText. </p>
+<h2>Basic Examples</h2>
+<p>The following is a simple example of how to use Typesetter to lay out a simple unwrapped line of text.</p>
+<pre><p class="code-example">Typesetter typesetter;
+
+typesetter.LayoutLine(pSomeTextParagraph, paragraphLength, 0, 0, pSomeTextStyle);
+LineLayout&amp; lineLayout = typesetter.GetLineLayout();<br>
+<span class="code-example-comment">// Draw the text here using lineLayout.</span></p></pre>
+<p>The following is a simple example of how to use Typesetter to lay out a properly paragraph of text.</p>
+<pre><p class="code-example">Typesetter typesetter;
+LineLayout lineLayout;<br>
+typesetter.LayoutParagraph(pSomeTextParagraph, paragraphLength, 0, 0, 100, 100, pSomeTextStyle, lineLayout);<br>
+<span class="code-example-comment">// Draw the text here using lineLayout.</span></p></pre>
+<p>To do more advanced layout, you probably want to use Typesetter's lower level functionality, which allows you to lay out a paragraph line by line. You can, for example, alter the paragraph width between lines in order to wrap text around something on the display. </p>
+<pre><p class="code-example"><span class="code-example-comment">// Create the typesetter</span><br>Typesetter typesetter;<br>
+<span class="code-example-comment">// Set the text style (font family, size, etc.)</span>
+typesetter.SetDefaultTextStyle(pSomeTextStyle);<br>
+<span class="code-example-comment">// Add a text run</span>
+typesetter.AddTextRun(pSomeTextParagraph, paragraphLength);<br>
+<span class="code-example-comment">// Do the layout</span>
+typesetter.SetLayoutSpace(200, 0, 0);<br>
+while(typesetter.GetLineState() != Typesetter::kLineStateComplete)
+{
+&nbsp;&nbsp;&nbsp; typesetter.FinalizeLine();<br>
+&nbsp;&nbsp;&nbsp; LineLayout&amp; lineLayout = typesetter.GetLineLayout();
+
+    <span class="code-example-comment">// Draw the text here using lineLayout.</span><br>
+&nbsp;&nbsp;&nbsp; typesetter.NextLine(true);
+
+    <span class="code-example-comment">// Possibly modify something, such as the layout space.</span>
+}</p></pre>
+<p>Typesetter can be used to do quite a bit more than the above. You can use its scheduling functionality to lay out a paragraph of text of mixed font styles, inline graphical objects, and bidi direction changes. </p>
+<h2>Advanced Operation</h2>
+<p align="left">The following (somewhat oversimplified) diagram shows the basic theory of 
+operation of the Typesetter scheduling system:</p>
+<p align="center">
+<img border="0" src="images/typesetter.png" width="505" height="326"></p>
+<p>Initially, the process starts by creating a Typesetter instance and adding 
+some schedule items to it. The Typesetter will process schedule items until it 
+has enough items to make up a complete line. Calling <code>
+Typesetter::FinalizeLine()</code> at this point will generate a LineLayout 
+structure (which is embedded within the Typesetter, but accessible to the 
+application), which contains the positions of all of the character glyphs and 
+other line content. If there isn't enough to fill a complete line, <code>
+FinalizeLine()</code> will still generate a 'partial' line, such as the line at 
+the end of a paragraph.</p>
+<p>After the line has been drawn, calling <code>Typesetter::NextLine()</code> 
+will proceed to the next line.</p>
+<p>At any point, you can call <code>Typesetter::GetLineState()</code> to 
+determine if there is sufficient material remaining in the schedule to form a 
+complete line. There are three possible return states: <code>kLineStateFull</code>, 
+to indicate that there is at least one full line of text to be processed; <code>
+kLineStatePartial</code> to indicate that there is less than a full line, and
+<code>kLineStateComplete</code> to indicate that the schedule has been exhausted 
+and there are no more items to process.</p>
+<h2>Layout Pipeline</h2>
+<p>This section is of interest only to programmers who want to understand how advanced layout is done by Typesetter.</p>
+<p>Here we describe the design of a proper pipeline (ordered steps) for layout of styled text with mixed scripts and mixed font support. Said a different way, this section describes a  pipeline for the layout and display of HTML text that is savvy to currently significant writing systems, including bidirectional systems. This pipeline is a superset of simpler pipelines, such as the pipeline to&nbsp; layout a single line of ASCII English text. You don't need to be doing bidirectional text or HTML or even your own kind of styled text to use this layout pipeline, but using such a pipeline will give you an upwardly compatible pathway for a day in which you want such functionality. </p>
+<ol>
+  <li>Divide text into paragraphs.</li>
+  <ul>
+    <li>A paragraph is delimited by newline characters or is simply any self-contained text. In HTML, paragraphs are defined by block block elements. </li>
+  </ul>
+  <li>Divide the paragraph into runs of same direction.</li>
+  <ul>
+    <li>These runs are given a direction embedding level, based on Unicode UAX9 (The Bidirectional Algorithm).</li>
+    <li>It's not necessary that new paragraph strings be created, it's only necessary to know the run information.</li>
+    <li>This step is only necessary if there is script of differing directions in the paragraph.</li>
+  </ul>
+  <li>Do shaping of text.</li>
+  <ul>
+    <li>This means making a string of font glyph ids from the original Unicode paragraph text.</li>
+    <li>It will be useful or necessary to provide a way to map items from the glyph string back to the original text.</li>
+    <li>It may be useful to attach additional information to the glyphs, such as clustering information.</li>
+    <li>Use font info to decide if you can merge characters (e.g. &agrave; instead of a + `) or need to split characters (e.g. a + ` instead of just &agrave;).
+      <ul>
+        <li>This includes making choices about which font to use for individual glyphs, as a single font may not support all required glyphs, especially when a run includes text of two differing scripts.</li>
+      </ul>
+    </li>
+    <li>Do script-specific glyph substituations and repositioning, such as Thai decoration substitutions and Arabic or Hindi contextual substitutions.
+        <ul>
+          <li>This includes implementation of ligatures. </li>
+          <li>This includes the application of custom kerning pair information.</li>
+        </ul>
+    </li>
+    <li>No bidirectional reordering is done here; the text is shaped in logical order (not visual order).</li>
+    <li>Some steps here may be necessary only for complex scripts (e.g. Arabic, Devanagari, Thai).</li>
+  </ul>
+  <li>Do line breaking.</li>
+  <ul>
+    <li>Line breaking is done based on Unicode TR14 (Line Breaking Properties), with a dictionary approach suggested for Thai.</li>
+    <li>Line breaking is based on the shaped glyph metrics and not the original text.</li>
+    <li>Line breaking is done on the entire paragraph and not individual runs, though you can break and lay out one line at a time in a paragraph.</li>
+    <li>Line breaking is done based on the advance widths of the shaped character text in logical order (not visual order) and is done <em>before</em>any justification and reordering is done.</li>
+    <li style="text-align: left;">Some kinds of line breaking (e.g. hyphenation) might require going back to step 3 (shaping).</li>
+    <li>This step is only necessary if the text needs to wrap within some boundary; it is unnecesary if the text is on a single line without bounds.</li>
+  </ul>
+  <li>Apply ellipsis if enabled.</li>
+  <ul>
+    <li style="text-align: left;">Ellipsis is applied only to the final line of a paragraph. </li>
+    <li>Ellipsis replaces the trailing glyphs at the last fitting glyph cluster boundary. </li>
+  </ul>
+  <li>Apply justification if enabled.</li>
+  <ul>
+    <li style="text-align: left;">Justification is not applied to the final line of a paragraph.</li>
+    <li>Justificiation is implemented via inserting spaces and/or kashidas (Arabic) between words and/or characters.</li>
+    <li style="text-align: left;">This either generates a new set of advance widths and/or inserts space and/or kashida characters.</li>
+  </ul>
+  <li style="text-align: left;">Do reordering of runs
+      <ul>
+        <li>Apply the methods described in Unicode UAX9 (The Bidirectional Algorithm). </li>
+        <li>Reordering is applied to the glyph indexes generated earlier and is done per line.</li>
+        <li>This step is only necessary if bidirectional script is supported and present.</li>
+      </ul>
+  </li>
+  <li>Generate a display list.</li>
+  <ul>
+    <li style="text-align: left;">This is based on the font's glyph metrics and texture (bitmap) metrics.</li>
+    <li style="text-align: left;">Information about font coloring or any other rendering or texture shading settings would be associated with this display list.</li>
+    <li style="text-align: left;">Algorithmic effects such as underlines and strike-throughs would be associated with this display list.</li>
+    <li style="text-align: left;">This step is only necessary if you need to draw the text.</li>
+  </ul>
+</ol>
+<br>
+<h2>Typesetter Glossary</h2>
+<dl>
+  <p>This is a list of terms used in conjunction with Typesetter, For a general EAText glossary, refer to <a href="Glossary.html">this page</a>.</p>
+  <dt>Bidi</dt>
+  <dd>Refers to bidirectionality of text, whereby with some languages the text direction changes from going left-to-right to going right-to-left midstream.</dd>
+  <dt></dt>
+  <dt>Font</dt>
+  <dd>A font consists of a collection of glyph shapes, mappings of unicode characters to specific glyph shapes, and information about how to place those glyphs. </dd>
+  <dt>FontSelection</dt>
+  <dd>A collection of fonts that are selected based on a given text style. Because any given font may not have a complete mapping from characters to glyphs, it may be neccessary to utilize more than one font to represent a single block of text, even if that text is all the same &quot;style&quot;.</dd>
+  <dt>Glyph</dt>
+  <dd>An on-screen unit of text. Often a glyph corresponds to a single Unicode character, though this is not always the case.</dd>
+  <dt>Index</dt>
+  <dd>The offset of a character within a character string. (See also 'Position')</dd>
+  <dt>Line</dt>
+  <dd>A horizontal row of text glyphs.</dd>
+  <dt>Line Break</dt>
+  <dd>The division between two adjacent lines. Line breaks can be <i>explicit</i>, as a result of a 'line break' instruction in the schedule, or <i>implicit</i>, as a result of the word-wrap algorithm.</dd>
+  <dt>Metrics</dt>
+  <dd>A data structing containing various measurements relating to text, such as line height, paragraph height, line length, etc.</dd>
+  <dt>Object</dt>
+  <dd>A non-textual item to be inserted in the flow of text, such as an image or border.</dd>
+  <dt>Paragraph</dt>
+  <dd>A collection of adjacent lines delimited on each side by a paragraph break. Paragraphs are typically rendered such that each paragraph is visually separated from its neighbors, either by inserting extra vertical space between paragraphs, or by indenting the first line of each paragraph.</dd>
+  <dt>Paragraph Break</dt>
+  <dd>A schedule instruction that causes the typesetter to end the current paragraph and start a new one.</dd>
+  <dt>Pick</dt>
+  <dd>The act of selecting (via the mouse or other pointing device) a specific character within a line or paragraph. Typically used as a verb, although can also refer to the result of a picking operation.</dd>
+  <dt>Position</dt>
+  <dd>The on-screen location of a glyph or other text element, in pixel coordinates. (See also 'Index')</dd>
+  <dt>Schedule</dt>
+  <dd>The list of items to be processed by the typesetter. The schedule can contain text runs, style changes, non-text objects, and various kinds of breaks.</dd>
+  <dt>TextStyle</dt>
+  <dd>A collection of parameters which influence the appearance of a text run, such as font family, size, alignment, color, and so on.</dd>
+  <dt>Text Run</dt>
+  <dd>A sequence of text characters having all the same text style.</dd>
+</dl>
+<h2></h2>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

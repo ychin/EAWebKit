@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFileNotification</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFileNotification</h1>
+
+<h2>Introduction</h2>
+<p>EAFileNotification detects file system changes as they occur. This is useful for having asset management systems whereby you want to detect changes during development time. It's also useful for implementing user plug-in systems whereby you want to detect that the user has added something at runtime.</p>
+<p>EAFileNotification works on all platforms, even if the platform doesn't have native support for automatic file change detection. However, it works more efficiently on those platforms which have automatic detection. </p>
+<h2>Example usage </h2>
+<p>Here is some basic example usage of FileChangeNotification via a fictitious AssetManager class: </p>
+<pre class="code-example">class AssetManager
+{
+public:
+    void Init()
+    {
+        mFCN.Init();
+        mFCN.SetWatchedDirectory(L"/app/data/");
+        mFCN.SetChangeTypeFlags(FileChangeNotification::kChangeTypeFlagModified);
+        mFCN.SetOptionFlags(FileChangeNotification::kOptionFlagWatchSubdirectories);
+        mFCN.SetNotificationCallback(StaticNotification, this);
+        mFCN.Start();
+    }
+
+    void Shutdown()
+    {
+        mFCN.Shutdown();
+    }
+
+	static void StaticNotification(FileChangeNotification* pFCN, const char16_t* pDirectoryPath,<br>                                   const char16_t* pFileName, int nChangeTypeFlags, void* pContext)
+    {
+        return static_cast&lt;AssetManager*&gt;(pContext)-&gt;Notification(pFCN, pDirectoryPath, pFileName, nChangeTypeFlags);
+    }
+
+	void Notification(FileChangeNotification* pFCN, const char16_t* pDirectoryPath,<br>                      const char16_t* pFileName, int nChangeTypeFlags, void* pContext)
+    {
+        // Do something here.
+    }
+
+protected:
+    FileChangeNotification mFCN;
+}; </pre>
+<h2>Interface</h2>
+<p>FileChangeCallback</p>
+<pre class="code-example"><span class="code-example-comment">/// FileChangeCallback
+///
+/// Defines a callback function the user supplies for notification callbacks.
+/// Do not save the directory path or file name pointers beyond this call.
+/// Note that directory paths in this EAFile/EADirectory system are defined as 
+/// ending with a directory separator. This is done because it makes it simpler
+/// to work with directories and makes the specification of what a directory 
+/// path is be more concise.
+///
+/// Example implementation:
+///    void MyCallback(FileChangeNotification* pFCN, const char16_t* pDirectoryPath,
+///                     const char16_t* pFileName, int nChangeTypeFlags, void* pContext)
+///    {
+///        printf("Changed file path: %ls%ls.\n", pDirectoryPath, pFileName);
+///    }
+///
+</span>typedef void (*FileChangeCallback)(FileChangeNotification* pFileChangeNotification,
+                                    const char16_t* pDirectoryPath,
+                                    const char16_t* pFileName,
+                                    int nChangeTypeFlags,
+                                    void* pContext);</pre>
+<p>FileChangeNotification</p>
+<pre class="code-example"><span class="code-example-comment">///////////////////////////////////////////////////////////////////////////////
+/// FileChangeNotification
+///
+/// The FileChangeNotification class detects file system changes as they occur.
+/// This is useful for having asset management systems whereby you want to 
+/// detect changes during development time. It's also useful for implementing
+/// user plug-in systems whereby you want to detect that the user has added
+/// something at runtime.
+///
+</span>class FileChangeNotification
+{
+public:
+<span class="code-example-comment">    /// enum ChangeTypeFlags
+    /// Allows the user to specify what kind of changes the user wants to be 
+    /// notified about. Not all platforms support all of these flags.
+</span>    enum ChangeTypeFlags
+    {
+        kChangeTypeFlagNone          = 0x0000,
+        kChangeTypeFlagFileName      = 0x0001,
+        kChangeTypeFlagDirectoryName = 0x0002,
+        kChangeTypeFlagModified      = 0x0004,
+        kChangeTypeFlagAttributes    = 0x0008,
+        kChangeTypeFlagSize          = 0x0010,
+        kChangeTypeFlagDefaults      = kChangeTypeFlagNone
+    };
+
+
+<span class="code-example-comment">    /// enum OptionFlags
+    /// Specifies options regarding the notification mechanism.
+    /// These are flags, so they can be or'd together.
+</span>    enum OptionFlags
+    {
+        kOptionFlagNone                       = 0x00,
+        kOptionFlagWatchSubdirectories        = 0x01,
+        kOptionFlagStopAfterFirstNotification = 0x02,
+        kOptionFlagMultithreaded              = 0x04,
+        kOptionFlagDefaults                   = kOptionFlagMultithreaded
+    };
+
+
+<span class="code-example-comment">    /// FileChangeNotification
+    ///
+    /// Default constructor. 
+    /// This function allocates no memory, sets the default ChangeTypeFlags to 
+    /// kChangeTypeFlagDefaults, sets the default option flags to kOptionFlagDefaults.
+    /// Initialization of a FileChangeNotification instance must be done separately
+    /// from construction, due to the requirements of initialization. See Init for more.
+    ///
+</span>    FileChangeNotification();
+
+
+<span class="code-example-comment">    /// ~FileChangeNotification
+    ///
+    /// Destructor.
+    /// Stops the file change notification if it was Started.
+    /// Shuts down the file change notification if it was initialized.
+    ///
+</span>    virtual ~FileChangeNotification();
+
+
+<span class="code-example-comment">    /// Init
+    ///
+    /// Initializes an instance of this class for use (Start, Stop, Poll, etc.).
+    /// Does any required setup to make a class instance ready for use. This may
+    /// including calling operating system services. 
+    ///
+    /// Returns true if the Initialization was successful. On some platforms, the 
+    /// initialization is guaranteed to always be successful. These platforms currenly
+    /// include Windows, XBox, XBox 360, PS3, and Mac OSX.
+    ///
+</span>    bool Init();
+
+
+<span class="code-example-comment">    /// Shutdown
+    ///
+    /// Shuts down an instance which was initialized via Init. Returns the state to 
+    /// that before Init was called. Stops the file change notification if it was
+    /// started.
+    /// 
+    /// Returns true if the class is initialized upon the call to Shutdown.
+    ///
+</span>    bool Shutdown();
+
+
+<span class="code-example-comment">    /// Start
+    ///
+    /// Starts file change notification with the current options if file change 
+    /// notification hasn't already been started. You must set all options before
+    /// calling this function, and no options can be changed after calling this 
+    /// function unless otherwise specified. This function will allocate any 
+    /// required memory for data structures via the user-supplied allocator.
+    /// On some platforms, additional memory may be allocated after the Start,
+    /// but only if the directory structure changes.
+    ///
+    /// Returns true if the file change notification could be started. Change notfication
+    /// will fail if the directory specfied by SetWatchedDirectory doesn't exist.
+    /// If the directory specifed by SetWatchedDirectory is deleted after Start,
+    /// file change notification is still considered to be started.
+    ///
+</span>    bool Start();
+
+
+<span class="code-example-comment">    /// GetIsStarted
+    ///
+    /// Returns true if file change notification is started.
+    ///
+</span>    bool GetIsStarted() const;
+
+
+<span class="code-example-comment">    /// Stop
+    ///
+    /// Stops file change notification and returns the class instance to the same state
+    /// as before Start was called. Note that under mulithreaded implementations 
+    /// of FileChangeNotification (currently only Windows) it is possible that a file
+    /// change notice could occur just as you call this function and which completes 
+    /// after this function completes. 
+    ///
+    /// Returns true if file change notification was started upon the call to Stop.
+    ///
+</span>    bool Stop();
+
+
+<span class="code-example-comment">    /// Poll
+    ///
+    /// Polls for file changes. This function will result in one or more callback notifications
+    /// if file changes were detected during the poll. The user is expected to call this 
+    /// function periodically, usually once every few seconds.
+    ///
+    /// This function only works if FCN_POLL_ENABLED is defined, otherwise it does nothing.
+    ///
+    /// Example usage:
+    ///    void DoAppLoop()
+    ///    {
+    ///        #ifdef FCN_POLL_ENABLED // This isn't required, but saves a function call if it's not needed.
+    ///            if((++gFrameCount % 512) == 0
+    ///                gFileNotification.Poll(30);
+    ///        #endif
+    ///    }
+    ///
+</span>    void Poll(int timeoutMS = 100000);
+
+
+<span class="code-example-comment">    /// GetWatchedDirectory
+    ///
+    /// Returns the directory which was set by SetWatchedDirectory as a nul-terminated string.
+    /// The directory path ends with a path separator.
+    ///
+</span>    const char16_t* GetWatchedDirectory() const;
+
+
+<span class="code-example-comment">    /// SetWatchedDirectory
+    ///
+    /// Sets the base directory to be watched. This must be called before Start is called.
+    ///
+    /// Note that this function and all other functions in the EAFile/EADirectory system requires
+    /// a directory path name that ends in a path separator. This is by design as it simplifies
+    /// the specification of and manipulation of paths.
+    ///
+    /// Returns true if the input directory could be set, which will be so if the file change
+    /// notification hasn't been started.
+    ///
+</span>    bool SetWatchedDirectory(const char16_t* pDirectory);
+
+
+<span class="code-example-comment">    /// SetNotificationCallback
+    ///
+    /// Sets the FileChangeCallback function, which is called when file changes are detected.
+    /// The pContext parameter is passed to the callback function and is usually used to pass
+    /// a 'this' pointer to a C++ class.
+    ///
+    /// The callback function will be called from the thread that calls Poll if FCN_POLL_ENABLED
+    /// is enabled, and will be called from an arbitrary other othread if FCN_POLL_ENABLED is disabled.
+    ///
+    /// This function can be called at any time, including after file notification has been started.
+    ///
+</span>    void SetNotificationCallback(FileChangeCallback pFileChangeCallback, void* pContext);
+
+
+<span class="code-example-comment">    /// SendNotification
+    ///
+    /// This function manually executes a file change callback to the registered callback function.
+    /// You can use this function to force a file change notification to occur for an arbitrary file.
+    ///
+    /// Note that this function and all other functions in the EAFile/EADirectory system requires
+    /// a directory path name that ends in a path separator. This is by design as it simplifies
+    /// the specification of and manipulation of paths.
+    ///
+</span>    void SendNotification(const char16_t* pDirectory, const char16_t* pFile, int nChangeTypeFlags);
+
+
+<span class="code-example-comment">    /// GetChangeTypeFlags
+    ///
+    /// Returns the ChangeTypeFlags set by SetChangeTypeFlags. 
+    ///
+</span>    int GetChangeTypeFlags() const;
+
+
+<span class="code-example-comment">    /// SetChangeTypeFlags
+    ///
+    /// Sets the ChangeTypeFlags, which can be or'd together. This must be called before Start is called.
+    /// Returns true if the flags could be set, which will be so if the file change
+    /// notification hasn't been started.
+    ///
+    /// Example usage:
+    ///     mFileChangeNotification.SetChangeTypeFlags(FileChangeNotification::kChangeTypeFlagFileName | 
+    ///                                                FileChangeNotification::kChangeTypeFlagModified);
+    ///
+</span>    bool SetChangeTypeFlags(int nChangeTypeFlags);
+
+
+<span class="code-example-comment">    /// GetOptionFlags
+    ///
+    /// Returns the OptionFlags set by SetOptionFlags. 
+    ///
+</span>    int GetOptionFlags() const;
+
+
+<span class="code-example-comment">    /// SetOptionFlags
+    ///
+    /// Sets the OptionFlags, which can be or'd together. This must be called before Start is called.
+    /// Returns true if the flags could be set, which will be so if the file change
+    /// notification hasn't been started.
+    ///
+    /// Example usage:
+    ///     mFileChangeNotification.SetOptionFlags(FileChangeNotification::kOptionFlagWatchSubdirectories);
+    ///
+</span>    bool SetOptionFlags(int nOptionFlags);
+
+};
+</pre>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p> </p>
+</body>
+</html>
+
+
+

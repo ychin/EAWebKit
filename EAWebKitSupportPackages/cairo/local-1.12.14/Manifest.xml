@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+	<contactName>EAWebKit Team</contactName>
+	<contactEmail>EAWebKitSupport@ea.com</contactEmail>
+
+	<summary>cairo</summary>
+
+	<changes>
+		Changes are detailed in the package doc/Changes.html file.
+	</changes>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+	<license>EA Proprietary (Internal Use Only)</license>
+	<frameworkVersion>2</frameworkVersion>
+	<buildable>true</buildable>
+</package>

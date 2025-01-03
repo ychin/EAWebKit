@@ -1,0 +1,1214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAIO Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between package versions.">
+  <style type="text/css">
+	.small {
+		font-size: smaller
+    }
+	.code {
+		font-family: "Courier New", Courier, mono;
+		font-size: 9pt;
+	}
+  .style1 {color: #999999}
+  </style>
+</head>
+
+<body>
+
+<h1>EAIO Changes</h1>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.13</span></p>
+<p>Changes:</p>
+<ul>
+    <li>EAIO Framework 8 compatibility. https://jira.frostbite.ea.com/browse/SUP-1073</li>
+    <li>Fixing android test driver.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.12</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Added missing include to fix compile warning.</li>
+</ul>
+
+ <hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.11</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Added Unix implementation to IsFilePathStringValid.</li>
+    <li>Added unit test for IsFilePathStringValid.</li>
+    <li>Fixed parsing issue causing directory paths to always fail in IsFilePathStringValid.</li>
+    <li>Windows filename restrictions are now enforced on all File Systems.</li>
+    <li>Fixed bug in GetSpecialDirectory to also check if HOME and TMPDIR are empty and not just null.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.10</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fix for UnixFileStream IsValidHandle()</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.09</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Added asynchronous I/O support for Linux.</li>
+    <li>Removed the dependency on job_manager</li>
+    <li>Updated to support April GDK.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.08</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Removed the usage of job_manager/atomic_allocator.  Only one dependency left.</li>
+    <li>Replaced AsyncExecutor notification system to use a semaphore.  Improved performance by about 2-3%.</li>
+    <li>Added support for polled asynchronous I/O.  This is required for some console platforms.</li>
+    <li>Added ability to set the polling delta.  Older platforms using 1ms while newer platforms using 0ms.</li>
+    <li>Added API support for Direct Storage.  This includes the ability to create multiple read request I/Os.</li>
+    <li>Fixed issue where error code from OS wasn't being returned.</li>
+    <li>Changed I/O request dispatch algorithm to more agressively queue I/O prior to checking for more requests or performing I/O completion waits.</li>
+    <li>Fixed an assortment of spelling errors and typos.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.07</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed PS5 command buffer allocation to use the allocator supplied to the async executor init call.</li>
+    <li>Fixed the completed command buffer execution count.</li>
+    <li>Fixed lockup issue when PS4 receives a very large number of requests at one time.  Unit test was locking up.</li>
+    <li>Fixed memory leak issue on shutdown for PS4/PS5</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.06</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Made the command buffer allocator not associated with an executor.</li>
+    <li>Made available a AMPR request builder class that can be used outside of EAIO internals.</li>
+    <li>Modified the base AMPR request class to provide a default implementation and only requires the notification to be implemented.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.05</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed support for Async Ampr requests.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.04</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Changed job_manager to a build dependency, to prevent it from being transtively propagated to other packages.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.03</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Updated to support PS5 0.9 SDK.</li>
+    <li>Updated test module to compile with bulkbuild files.</li>
+    <li>Added PS5 special directory paths that differ from the PS4.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.02</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed drive separators for NX and Sony platforms.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.01</span></p>
+<p>Changes:</p>
+<ul>
+    <li>VS solution now has docs, scripts and build files.</li>
+	<li>Gitlab CI addition.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.01.00</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Built in support for Balin I/O and Memory Mapping.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.00.02</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed compile issue when using EAIO with the core IO systems.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.00.01</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed a mutex problem in AsyncExecutorStdC.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 3.00.00</span></p>
+<p>Changes:</p>
+<ul>
+    <li>AsyncExecutor system added to support the managing of asyncronous notification of blocking and non-blocking I/O.</li>
+    <li>Extended IStream to support doing asyncronous notification of I/O.</li>
+    <li>Added platform specific support of non-blocking I/O for Windows systems (including XB1) and Sony platforms.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.24.03</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Updated GetSpecialDirectory for kSpecialDirectoryCurrentApplication for NX to return "host" to match the behavior of other platforms.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.24.02</span></p>
+<p>Changes:</p>
+<ul>
+    <li>Removed the mounting of the cache storage from the NX InitializeFileSystem because the name of the mount could be anything.  It is up to the user to mount the drive manually.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.24.01</span> (May 30, 2019) </p>
+<p>Changes:</p>
+<ul>
+    <li>Added support for EA_WINAPI_FAMILY_GAMES.</li>
+    <li>Removed the EA_WINAPI_FAMILY, EA_WINAPI_PARTITION and EA_WINAPI_FAMILY_PARTITION backward compatible defines from Config.h.</li>
+    <li>Stripped ps3, psp2, xenon, Wii, WiiU, and 3DS support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.24.00</span> (Apr 23, 2019) </p>
+<p>Changes:</p>
+<ul>
+    <li>Resolving a crash when initializing filesystem on NX in a production environment.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.05</span> (Apr 19, 2019) </p>
+<p>Changes:</p>
+<ul>
+    <li>Reposting the release version due to package server issues.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.04</span> (March 15, 2019) </p>
+<p>Changes:</p>
+<ul>
+    <li>Removed more deprecated platform code.</li>
+    <li>Updated the GetTime function for NX to return 0 instead of asserting.  Getting the file time is not supported on NX.</li>
+    <li>Added method to expose a FileStream's file descriptor.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.03</span> (December 13th, 2018) </p>
+<p>Changes:</p>
+<ul>
+    <li>Removed PSP2, Xbox360 and PS3 support.</li>
+    <li>Updated code to use EA_PLATFORM_SONY where possible.</li>
+    <li>Cleaned up some defines that were added to EABase.  This requires you to use a more recent version of EABase.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.02</span> (December 13th, 2018) </p>
+<p>Changes:</p>
+<ul>
+    <li>Rewrote several areas of the code to use the nn filesystem API for the Nintendo Switch.  This gave better results when querying for file and directory information.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.01</span> (July 30th, 2018) </p>
+<p>Changes:</p>
+<ul>
+    <li>Disabled support for readdir_r on unix unless you are using an glibc 2.23 or earlier as the function is now deprecated. Users should consider switching EAIO to always use the alternative 'readdir' instead as readdir_r is considered harmful https://womble.decadent.org.uk/readdir_r-advisory.html. You can do so by defining EAIO_READDIR_R_PRESENT=0 globally.</li>
+	<li>Allows Nintendo Switch Temporary, and Download (Cache Storage) mount sizes to be configured via EAIO.NXMETA_CONFIG.ENABLED, EAIO.NXMETA_CONFIG.TEMP_SIZE, EAIO.NXMETA_CONFIG.CACHE_SIZE, and EAIO.NXMETA_CONFIG.CACHE_JOURNAL_SIZE properties. Note that if EAIO.NXMETA_CONFIG.ENABLED is not equal to 1 all other EAIO.NXMETA_CONFIG.xxxx properties will be ignored.</li>
+	<li>EAIO will now return the proper mount/directory when querying EA::IO::GetSpecialDirectory() on the Nintendo Switch, whereas previously it was returning Unix system paths which did not map to anything valid.</li>
+	<li>EAIO will now return the proper directory when querying EA::IO::GetSpecialDirectory() on iPhone for kSpecialDirectoryUserApplicationData and kSpecialDirectoryTemp which map the the application Resource and device tmp directory respectively.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.23.00</span> (June 20th, 2018) </p>
+<p>Changes:</p>
+<ul>
+    <li>Added support for the NX platform.</li>
+	<li>Avoids a VS2017 linker error where empty string literals may have mismatched alignment causing a warning.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.13</span> (February 16th, 2018) </p>
+<p>Changes:</p>
+<ul>
+    <li>Corrects EAIO's EntryFindDataKettle from allocating internally using an alignment of 0, since 0 alignment is not a requirement of EAIO.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.12</span> (January 12th, 2018) </p>
+<p>Changes:</p>
+<ul>
+	<li>Adds support for getting the file root for android via the GetSpecialDirectory() function with 'kSpecialDirectoryUserApplicationData'. This is useful since the default asset root, appbundle:/, on android is read only. The file directory is a directory which exists only as long as your application is installed and is writeable.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.11</span> (September 22nd, 2017) </p>
+<p>Changes:</p>
+<ul>
+	<li>Added char16_t support to EAIni which previously only worked with wchar_t.</li>
+	<li>Fixes potential build issue when using EAIO in Capilano SharedOS applications.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.10</span> (March 17th, 2017) </p>
+<p>Changes:</p>
+<ul>
+	<li>Updated public dependencies in the initialize.xml to make the package work with Framework's automatic outsourcing tools.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.09</span> (October 21st, 2016) </p>
+<p>Changes:</p>
+<ul>
+	<li>Updated Build and Initialize scripts to remove warnings generated by Framework 3.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.08</span> (August 10th, 2016) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fixes Android compilation error when building under Visual Studio due to a duplicate source file include.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.07</span> (July 8, 2016) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fixes warnings found by Xbox One XDK March QFE 2.</li>
+    <li>Adds the ability to set the release allocator for the FileStream class.  This is specifically the allocator that will be used to free the object itself when its ref count hits 0.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.06</span> (February 23, 2016) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fix for the includedirs from the dependency on CoreStream.</li>
+    <li>Fix VS 2015 warnings.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.05</span> (November 9th, 2015) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fixed a bug with Kettle Directory Interation which would present itself if the size of the directory returned by fstat was 0.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.04</span> (September 25th, 2015) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fixed export of includedirectories for CoreStream dependency.</li>
+	<li>Fixed an error in Kettle Directory Iteration where if there were plenty of directory entries, not all of them would be reported.</li>
+    <li>Converted initialize.xml to structured-XML which fixes warnings generated by Framework.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.03</span> (June 15, 2015) </p>
+<p>Changes:</p>
+<ul>
+	<li>Fixed an issue where EAIO failed to compile if <span class="small">EAIO.EAIO_FILEPATH_ENABLED</span> was set to 1 and EAIO was being built with VS2015.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.02</span> (April 30th, 2015) </p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed max file name and directory name length setting for Xbox One.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.01</span> (May 4th, 2015) </p>
+<p>Changes:</p>
+<ul>
+  <li>Added char overloads for IsFileNameStringValid(), IsDirectoryNameStringValid(), IsFilePathStringValid().</li>
+  <li>Fixed additional warnings encountered when compiling with VS2015.</li>
+    <li>Fixed additional warnings encountered when compiling with VS2015.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.01</span> (March 16th, 2015) </p>
+<p>Changes:</p>
+<ul>
+  <li>Altered code style to align more closely to Frostbite coding style.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.22.00</span> (February 9th, 2015) </p>
+<p>Changes:</p>
+<ul>
+  <li>Fixed a bug in FilePath::RemoveLastDirectory() that would not handle alternate file path separators in some cases.</li>
+  <li>Introduced several wchar_t variations of API's to support PS3SDK 460.001.</li>
+  <li>Default to using  <span class="small">EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=1</span>. This has been in since 2009, but is a potentially breaking change for integrators. Pass in <span class="small">eaio.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=0</span> build property to restore deprecated behavior</li>
+  <li>Fixed compilation issues for VS2015 and added some API's that accept wchar_t parameters.</li>
+  <li>Fixed a compile error when using mkstemp to ensure we are using the proper glibc version rather than simply checking for compiler version</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.21.00</span> (July 4th, 2014) </p>
+<p>Changes:</p>
+<ul>
+  <li>Fixed a JNI error that is known to occur on Android Samsung Galaxy Note 3's (but could occur on other Android devices as well).  Game teams shipping on Android
+  should update to this release to avoid potential crashes on Android devices.</li>
+  <li>Added a generic string version of ReadLine to complement the basic char buffer version and make usage safer and easier. 
+    <blockquote>
+      <p> <span class="code">/// Reads line of text from a file. The returned line will not have a trailing \r or \n character.<br>
+        /// In case of returning kSizeTypeError or kSizeTypeDone, the returned string will be empty.<br>
+        /// Requires a stream which supports rewinding to at least the starting position at the time of this call.<br>
+        /// Upon error (return of kSizeTypeError), the string will be cleared, but not necessarily freed of capacity.<br>
+        /// <br>
+        /// Example usage:<br>
+        /// &nbsp;&nbsp;&nbsp;eastl::string8 s8;<br>
+        /// &nbsp;&nbsp;&nbsp;while(EA::IO::ReadLine(&amp;fileStream, s8) &lt; kSizeTypeDone)<span class="style1"> // While there were more lines and there was no error...</span><br>
+        /// &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; <span class="style1">// do something</span><br>
+        ///
+        <br>
+        template &lt;typename String&gt;<br>
+size_type ReadLine(IStream* pIS, String&amp; s, Endian endianSource = kEndianBig);</span></p>
+    </blockquote>
+  </li>
+  <li>Added a public version.h header.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.20.02</span> (May 12th, 2014) </p>
+<p>Changes:</p>
+<ul>
+  <li>Fixed a bug in EntryFindFirst under Unix whereby if no files matched a user-supplied filter the function would mistakenly return a non-NULL value.</li>
+  <li>Made EntryFindFirst and EntryFindNext handle the case whereby found files aren't UTF8-encoded, which we found could happen when mounting a Windows share, and which theoretically could happen even without such as share because Unix file systems don't have any defined encoding. </li>
+  <li> Fixed the definition of <span class="small">EAIO_MKSTEMPS_AVAILABLE</span> to handle older GCC/GLIBC versions.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.20.01</span> (February 11, 2014) </p>
+<p>Changes:</p>
+<ul>
+  <li>Fixed a bug in the directory iteration functionality (e.g. EntryFindFirst, DirectoryIterator) on Apple platforms whereby it was not searching case-insensitively like it should be. </li>
+  <li>Removed support for the following platforms due to their deprecation:</li>
+  <ul>
+    <li>Bada</li>
+    <li>Freebox</li>
+    <li>GameCube</li>
+    <li>Marmalade / Airplay</li>
+    <li>Nintendo 3DS / CTR</li>
+    <li>Palm</li>
+    <li>Playbook / BB10</li>
+    <li>Playstation 2</li>
+    <li>Playstation Portable</li>
+    <li>Wii U / Cafe</li>
+    <li>Wii / Revolution</li>
+    <li>WinCE</li>
+  </ul>
+  <li>Fixed some potential compile problems in &lt;EAIO/compat/EAFilePath.h&gt;</li>
+  <li>Added  kSpecialDirectoryUserPictures and  kSpecialDirectoryUserMovies support to some platforms.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.20.00</span> (December 13, 2013) </p>
+<p>Changes:</p>
+<ul>
+    <li>Added formal support for PS4 and XBox One platforms.</li>
+    <li>Modified the initialize script to ensure that defines are consistent for the EAIO library and packages including its headers.</li>
+    <li>Removed Microsoft stat/_wstat usage, as Microsoft's implementation of these functions is broken due to returning local time instead of universal time. Reported by Laurent Benes. </li>
+    <li>Fixed a bug in Directory::Create whereby it wouldn't create a directory if the path included a single directory. Submitted by Jason Beardsley. </li>
+    <li>Fixed a bug in File::SetAttributes for Unix platforms where it would mistakenly return false. Submitted by Jason Beardsley. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.19.01</span> (November 15th, 2013) </p>
+<p>Changes:</p>
+<ul>
+    <li>Fixed an issue where the define for <span class="small">EAIO_64_BIT_SIZE_ENABLED</span> could differ between
+        user code including EAIO's headers and the code compiled into the EAIO library.</li>
+    <li>Fixed the definition of <span class="small">EA_FILE_SYSTEM_CASE_SENSITIVE</span> mistakenly being set to 0 for some platforms in which it should be 1.</li>
+    <li>Moved a call to EntryFindFinish to the bottom of DirectoryIterator::Read. This doesn't fix a bug and the original code was correct (though it may look like it); rather it is simply better form and it stops analysis tools like Coverity from thinking it's a bug.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.19.00</span> (Oct 3, 2013) </p>
+<p>Changes:</p>
+<ul>
+	<li>Support for relative paths in application bundles (.apk)</li>
+  <li>Fix file descriptor resource leak on Android. </li>
+    <li>Modified the default current working directory for PS4.  Instead of <tt>/hostapp/</tt> EAIO now defaults to <tt>/app0/</tt>.  Users relying
+  on the value of the CWD may need to modify their code.  This change was made because retail applications should not read from <tt>/hostapp/</tt>.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.18.01</span> (July 29, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Updates to test harness to work with EAMain 2.00.00</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.18.00</span> (July 12, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Removed unnecessary boolean syntax from FnMatch(). Reported by Luc Isaak.</li>
+  <li>Made StreamBuffer::SetPosition return false for any case where the resulting position would be negative. </li>
+  <li> Added kSpecialDirectoryDevScratch and kSpecialDirectoryDownloadData to enum SpecialDirectory, plus support for them in GetSpecialDirectory.</li>
+  <li>On Linux, MakeTempPathName now uses mkstemps when possible. </li>
+  <li>Added support for relative paths in application bundles (.apk)</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.17.04</span> (April 3rd, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Added statvfs usage for the Playbook family of platforms. Suggested by Michael Martel.</li>
+  <li>Changed EAIOZoneObject to have an allocation offset of 16 instead of (2 * sizeof(void*)). This fixes runtime assertions you can get in PPMalloc on some platforms. </li>
+  <li>Implemented fix for Android &quot;JNI ERROR (app bug): local reference table overflow (max=512)&quot;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.17.03</span> (March 04, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Made InitializeFileSystem have a 0 second timeout instead of a 2 second timeout. For media builds it just caused startup delays. Suggested by Ning Tang. </li>
+  <li>Implemented fix for PS3 GetTempDirectory for the case that EA::IO::SetPS3GameDataNames was not called on startup. There's a bug in the PS3 itself that causes one of its functions to misbehave and this change works around that bug.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.17.02</span> (February 4th, 2013) </p>
+<p>Additions:</p>
+<ul>
+  <li>Added two new PS3 functions, which allow somewhat seamless use of PS3 Game Data (hard drive storage):
+    <ul class="code">
+      <li> void SetPS3GameDataNames(const char* pTitle, const char* pTitleId, const char* pVersion, const char* pDirName);</li>
+      <li>void GetPS3GameDataNames(char* pTitle, char* pTitleId, char* pVersion, char* pDirName);</li>
+    </ul>
+  </li>
+</ul>
+<p>Changes:</p>
+<ul>
+  <li>Worked around some potential strict-aliasing problems in EAStreamAdapter's ReadFloat, etc. </li>
+  <li>Revised FindFileFirst and FindFileNext to use less stack memory for Unix-like platforms, especially for the case of 32 bit wchar_t. Previously the stack usage could cause stack overflow on platforms with small default stack sizes, such as OS X.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in FileChangeNotification for non-Windows platforms, where it would stop iterating subdirectories after the first one. </li>
+  <li>Fixed a bug in DirectoryIterator whereby it's possible the parent directory &quot;..&quot; wouldn't be enumerated.</li>
+  <li>Worked around  a couple spurious compiler warnings that VS2012 generates. <br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.17.01</span> (December 10th, 2012) </p>
+<p>Bug Fixes</p>
+<ul>
+  <li>Corrects wchar issues on Android when using Framework 2.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.17.00</span> (December 7th, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Added workaround for S_ISWHT file types on Apple OSs.</li>
+  <li>Added MemoryStream::SetReleaseAllocator.</li>
+  <li>Added WiiU support.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed EAIniFile's support for .iniFiles using text that's not 8 bit, and added a unit test to exercise it. The tested support now includes UCS2 big endian, UCS2 little endian, UCS4 bit endian, UCS4 little endian.</li>
+  <li>Fixed bug in definition of kMaxDirectoryLength, kMaxFileNameLength, kMaxDirectoryNameLength, kMaxExtensionLength for Unix file systems. Previously they were set to 256 while kMax<strong>Path</strong>Length was 1024, whereas they should all be set to whatever kMaxPathLength is. This could result in too short a path being specified in some cases. Reported by Alex Zvenigorodsky. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.16.03</span> (Novemeber 5th, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Supressed warning 4574 ('_SECURE_SCL' is defined to be '0': did you mean to use '#if _SECURE_SCL'?) occuring in Windows 8 release configurations.</li>
+  <li>Revised size_type casting code slightly to extend an earlier fix by Derek Sibelle to include a couple additional functions.</li>
+  <li>Fixed a bug in DirectoryIterator::Read which would cause a it to effectively ignore a user request to report a &quot;.&quot; dir when the user also requested a &quot;..&quot; dir. It is unlikely that anybody has been affected by this, as it's an unusual pathway that's not normally used. </li>
+  <li>Fixed FileStream::operator= to check for assignment to itself. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fix for File::SetTime() for WinPRT</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.16.02</span> (October 1, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a problem with GetDriveInfo returning drives that Windows later decides are invalid. GetDriveInfo now tests the drives returned by Windows before returning them to the user.  This appears to be a weakness or bug in Windows' implementation of  GetLogicalDriveStrings.</li>
+  <li>Added <span class="small">EA_HAVE_SYS_STAT_H</span> and usage, for portability of support under Unix and Unix-like OSs. </li>
+  <li>Fixed 32 bit overflow on Unix-based platforms in GetDriveFreeSpace.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.16.01</span> (August, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Added proper GetTempDirectory implementation for WinRT targets.</li>
+  <li>Added testing for DLL builds</li>
+  <li>Removed WinSock2.h dependency since it cause Windows Phone builds to fail</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.16.00</span> (July 3, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Added WinRT (Windows Metro) support.</li>
+  <li>Added FreeBSD support (32 and 64 bit). </li>
+  <li>Added char,  char16_t and char32_t overloads for DirectoryIterator::ReadRecursive and EntryFindFirst.</li>
+  <li>Removed support for the PS2 and GameCube platforms. </li>
+  <li>Removed directory size sanity checks from EAFileDirectory, as the files we are now using can be huge.</li>
+  <li>Made it so FileStream on Unix and Appls OSs fails to open directory paths. Unix sometimes allows you to use fopen on a directory, though not consistently nor with standardized behavior. </li>
+  <li>Cleaned up the  PathString8/16/32 implementations.</li>
+  <li>Fixed a build error for the case of non-bulk builds (i.e. building each .cpp individually).</li>
+  <li>Fixed build errors on platforms where wchar_t is a type distinct from char16_t and char32_t in order to support stricter C++11 compilers.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.15.01</span> (May 7, 2012) </p>
+<p>Changes</p>
+<ul>
+  <li>Implemented Android Fix in FileChangeNotification ensure that the path comparaison is done between pointers.</li>
+  <li>Implemented Marmalade fix where closedir() should have been called before returning NULL. Thanks to Martin Benoit who reported this issue.</li>
+  <li>Fixed  EAIOTime() for PSVita to return values in seconds as per the specification.</li>
+  <li>Updated EAIO to be EA_WCHAR_NATIVE aware.</li>
+  <li>Enabled Windows API emulation for non-Windows platforms.</li>
+  <li>Moved EAStreamAdapter assertion enforcement code to EAStreamAdapter.cpp</li>
+  <li>Made small change to FileStream::GetSize() function for Microsoft platforms</li>
+  <li>Fixed an issue for older Windows versions.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.15.00</span> (March 6th, 2012) </p>
+Additions
+<ul>
+  <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+  <li>Fixed dirEntryData memory leaks in EAFileDirectory under  QNX  (e.g. Playbook gaming platform).</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed memory leaks in PSVita EAFileDirectory.</li>
+  <li>Fixed temp paths on OS X.</li>
+  <li>Changed temp directory for the playbook to now explicitly return "./tmp/" rather than "/tmp/". OS2.0 has removed privileges for users to write to the system root, and instead using "./" will refer to the application's root directory.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.14.01</span> (February 10, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed GetDriveFreeSpace under Unix. Previously it could return incorrect values. The solution was to use f_frsize instead of f_bsize. </li>
+  <li>Changed GetDriveFreeSpace under Marmalade (Airplay) to not use EA_FAIL, as it's a case of &quot;cannot be supported&quot; as opposed to &quot;not yet supported.&quot; </li>
+  <li>Changed FileChangeNotification temp buffer initialization to be more efficient. </li>
+  <li>Fixed a mistaken pragma warning pop location in EAIniFile.h. Reported by Alexandre Ouimet.</li>
+  <li>Fixed a bug in PS3 EAFileDirectory which neglected to release a directory handle in some cases.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.14.00</span> (February 3, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added EntryFindData::mbReadFileStat, which allows users to avoid collecting file stat information while iterating. </li>
+  <li> Fixed some warnings generated by VC++ /analyze.</li>
+  <li>Changed file checking code from
+
+
+(S_ISDIR == 0)  to (S_ISREG != 0). Suggested by Arpit Baldeva.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.13.03</span> (December 21, 2011)</p>
+<p>Changes</p>
+<ul>
+  <li>Made directory iteration and file notification more efficient by coalescing the calls to get file modification time, creation time, and size into a single 'stat' call on Unix platforms.</li>
+  <li>Added a File::Stat function, which acts like Unix stat but in a cross-platform way.</li>
+  <li>File::GetTime now works better for Android 'appbundle' files. </li>
+  <li>Fixed a bug in the (deprecated) EAFilePath.h/cpp's FullPath and ResolvePath functions for Unix-like file systems.</li>
+  <li>IniFile: Added char path constructor.</li>
+  <li>Made the (deprecated) EAFilePath module support DLL builds.</li>
+  <li>Made it so EntryFindFirst accepts a NULL filter spec to mean the same as *.</li>
+  <li>Fixed a potential memory leak on Android. Submitted by Martin Benoit.</li>
+  <li>Fixed a compile error in EAFileStreamStdC.cpp. Most users wouldn't see this error because it doesn't affect any major EA platforms. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.13.02</span> (October 19, 2011)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed File::SetTime(char16_t*, ...) for iOS. char version didn't need any fixing. </li>
+  <li>Fixed ComputeRelative function and added unit test and documentation for it.</li>
+  <li>Added <span class="small">EAIO_APPLE_USE_UNIX_IO</span> config define (defaults to 0), which if enabled (1) uses Unix file system calls instead of Apple framework calls. </li>
+  <li>Added char32_t support. This includes support for wchar_t as 32 bit instead of 16 bit. </li>
+  <li>Fixed a couple OSX bugs and the unit tests how succeed on OSX.</li>
+  <li>Added support for the clang compiler, which is new for the iPhone iOS5 SDK. This amounted simply to avoiding a couple compiler warnings. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.13.01</span> (August 31, 2011)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed File::Exists and Directory::Exists for Android 8 bit paths. This was mistakenly broken in the 2.13.00 release.</li>
+  <li>Fixed the XBox 360 definition of kMaxFileNameLength/kMaxDirectoryNameLength/kMaxExtensionLength to be 40.</li>
+  <li>Fixed the Unix defintion of kMaxFileNameLength/kMaxDirectoryNameLength/kMaxExtensionLength to be 255.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.13.00</span> (August 21, 2011)</p>
+<p>Additions</p>
+<ul>
+  <li>Added Android support for the GetDriveFreeSpace. This works for both the regular file system and the appbundle file system. </li>
+  <li>Added Directory::Move. </li>
+  <li>Added StreamBuffer ctor that lets the user provide buffer memory. There was already a member function that did this. Also added ability to allow the user to switch between user-provided memory and dynamic memory with the same StreamBuffer object, whereas previously that wasn't explicitly supported. </li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed StreamChild::SetPosition infinite loop. Reported by Soleil Lapierre.</li>
+  <li>Fixed a compile error for the Airplay platform (mobile middleware) due to undefined <span class="small">S_IRUSR</span>, etc. </li>
+  <li>Fixed Directory::IsDirectoryEmpty linker failure due to the Directory:: prefix being missing. Reported by Thomas Bruckschlegel.</li>
+  <li>Fixed File::Exists for Unix-like platforms. Previously it returned true if you passed in the name of an existing directory. </li>
+  <li>Fixed a DirectoryIterator bug under QNX/Playbook which would result in the first directory entry mistakenly being labeled a file. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Implemented File::SetTime for PS3 and 360 platforms. It was previously not implemented for those platforms. </li>
+  <li>The Java EAIO.Startup method now expects to be passed an Activity instance instead of an AssetManager.  Users will need to modify their initialization code to pass the expected type.  This change simplifies the requirements for initializing the library.</li>
+  <li>Revised all L&quot;&quot; usage to <span class="small">EA_CHAR16</span>(&quot;&quot;). </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.12.01</span> (May 4, 2011)</p>
+<p>Additions</p>
+<ul>
+  <li>Added codestripper support</li>
+  <li>Added Playbook support</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Revised MakeTempPathName to be more reliable. Previously it could fail if you called it many times quickly in succession. Reported by Andrew Willmott. </li>
+  <li>Fixed a bug in the File::Copy function which would result in it mistakenly returning success when the source file didn't exist.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added support for Android appbundle data to the File::Copy, File::Move, and  File::GetSize functions. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+<p><span style="font-weight: bold;">Version 2.12.00</span> (January 19, 2011)</p>
+<p>Additions </p>
+<ul>
+  <li>Implemented File::Exists for Android application bundles.</li>
+  <li>Implemented mostly complete EntryFindFirst/Next/Last for Android appbundles (some things like filtering are not implemented). Due to limitations in the Android API, we can't tell directories from files and assume entries are directories based on whether the name has an extension or not. </li>
+  <li>Added a SplitPath function based on pointers instead of PathString objects.</li>
+  <li>Added support for Directory::Exists on Android.</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed the Vsscanf methods in EAIniFile.cpp on xenon, by adding a call to '_set_printf_count_output'.  This enables the use of %n format in scanf calls (which is neccessary for that method to work).  This should only be a temporary fix; eventually, this library should be modified to use EAStdC in order to avoid platform irregularities when using the printf/scanf methods. </li>
+  <li>Fixed a PathString bug. There is another that needs to be fixed yet. These are old bugs in uncommonly used functions.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added a default char8 temp directory for PS3 (previously, it would only give you a default only if you called the char16 version).</li>
+  <li>Added a call to _set_printf_count_output( 1 ) on xenon in the surrogate vsscanf method in EAIniFile, as the xenon crt library by default disables use of the %n for counting on both printf and scanf commands (due to a supposed security risk, however it is improperly applied on this platform, since the security risk technically only exists for printf, and it is being used only for scanf).</li>
+  <li>Made File::GetTime() return 0 on Wii. Getting a file's timestamp is not supported through the DVD API but, as this EAIO method is used when iterating over directories, it should not fail as was the previous behavior.</li>
+  <li>Added documentation and unit tests to the PathString FindComponentFwd and FindComponentRvs functions.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+<p><span style="font-weight: bold;">Version 2.11.00</span> (November 5, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added new fields to the returned directory iterator information (file size, creation date, modification date).</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed bugs related to working with directories that have (invalid) empty names. Reported by Sam Umbach.</li>
+  <li>Fixed EAIniFile bug regardin reading 16 bit text files.</li>
+  <li>Fixed bug in Win32 FileStream where 64 bit file reads on Win64 would be truncated to 32 bit results. Reported by Stephen Kiazyk.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.10.00</span> (July 20, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added support for reading from Android .apk packages.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.09.02</span> (May 31, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version has been updated to be compatible with PS3 SN 330, CodeWarrior 1.3, and Android platform.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added 8 bit API support to EAIniFile.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in File::CreateAlias. Submitted by Andrew Willmott. </li>
+  <li>Fixed bug in Directory::SetAttributes for recursive usage. Submitted by Andrew Willmott. </li>
+  <li>Fixed bug in File::Exists, File::Create, and Directory::Exists whereby an overly long file or directory name would be truncated to a valid length before using it. That's a bug because the overly long file name is not the same as the truncated version. </li>
+</ul>
+Changes
+<ul>
+  <li>Latest compiler compatibility. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.09.01</span> (April 5, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added Mobile support: iPhone, Palm Pre, and Android. More mobile platforms to follow. </li>
+  <li>Added to PathString: GetDirectoryString, GetFileNameString, GetFileExtensionString. Suggested by Terrence Guo. </li>
+  <li>Added  compat/EAFilePath.h/cpp, which provides optional backwards compatibility with the older UTFFoundation </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Replaced some usage of double_t with double.</li>
+  <li>Fixed bug in StrlcpyUTF8ToUTF16 which could cause it to mistakenly fail if the user passed the source strlen instead of -1. Reported by Arpit Baldeva. </li>
+  <li>A couple PathString functions didn't use kEndAuto8/kEndAuto16 when the user explicitly passed it. All PathString functions do so now. </li>
+  <li>Fixed PathStringNormalize so that leading relative path specifiers aren't stripped. Implemented by Tom Bui.</li>
+  <li>Fixed PathString Append so that it doesn't put a path separator at the front of empty destination paths. </li>
+  <li>Fixed EA::IO::Directory::Copy to not return false when the copied directory is empty. Reported by Tom Bui.</li>
+  <li>Removed some GCC 4.4 Linux warnings related to strict aliasing. </li>
+</ul>
+Changes
+<ul>
+  <li>Added PS3 SN compiler v320 and later compatibility. The new compiler was generating some new warnings. </li>
+  <li>Added IStream() call to FileStream ctor to remove a warning that can occur with GCC. </li>
+  <li>Modified <span class="small">EA_XBDM_ENABLED</span> slightly. Now it keys off of being equal to 0 or 1 instead of being undefined or defined. A result of this is that you may need to globally define <span class="small">EA_XBDM_ENABLED</span> to 1 in a release build if you want it to work there. For Framework2/Nant users, the EAIO.build file supports using <span class="small">EA_XBDM_ENABLED=[0|1]</span> in the masterconfig.xml file. Suggested by Kevin Perry.</li>
+  <li>Brought in the UTFFoundation EAFilePath.h/cpp files into EAIO in a &quot;compat&quot; directory. These are for backwards compatibility with older uses of UTFFoundation. You can enable the compiling of EAFilePath.cpp in EAIO.build via the <span class="small">EAIO.EAIO_FILEPATH_ENABLED</span> nant build property.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version 2.09.00</span> (September 9, 2009)</p>
+<p>Additions </p>
+<ul>
+  <li>Added bool IsDirectoryEmpty(const char_t* pDirectory, int nDirectoryEntryFlags = kDirectoryEntryFile, bool bRecursive = true).</li>
+  <li>Added the StreamAdapter class, which is an ease of use wrapper around portable endian-savvy read/write functionality. For example, you could read base data types from a file by creating a StreamAdapter, specifying the endian-ness they were stored with, then just call adapter.ReadUint32(), adapter.ReadFloat(), etc. </li>
+  <li>Added IsFileNameValid, IsFilePathValid, IsFileNameCharValid, IsDirectoryNameValid.</li>
+  <li>Added <font size="-1">EAIO_DEFAULT_ALLOCATOR_IMPL_ENABLED</font> option, which causes DLL builds to not define ICoreAllocator::GetDefaultAllocator.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in char version of Directory::Rename.</li>
+  <li>Fixed PathString::TruncateComponent function to take a string by reference instead of value. Reported by Cyril Saint Girons.</li>
+  <li>Fixed bug in Wii McsFileSystem ctor whereby mbInitialized was not initialized. Reported by Dave Cope.</li>
+  <li>Fixed some Linux64 / GCC 4.3 compiler warnings / errors. Implemented some to-do items for Linux in general. All unit tests now pass on Linux32 and Linux64. </li>
+</ul>
+Changes
+<ul>
+  <li>Added .build file options to control config parameters without modifying code or environment variables.</li>
+  <li>Added support for GCC strict aliasing. </li>
+  <li>Added option for disabling thread safety and use of EAThread.</li>
+  <li>UpRevised StreamBuffer::Realloc to not call the user's allocator if the alloc size is zero. This makes it easier for users whose allocators don't want to accept an allocation size of zero, though the C Standard malloc and realloc require that it be supported.</li>
+  <li>Implemented EA::IO::GetDriveFreeSpace for PS3.</li>
+  <li>Worked around Wii removal of dvdeth.h from SDK. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.08.03</span> (February 25, 2009)</p>
+<p>Additions </p>
+<ul>
+  <li>Added EAIniFile, which was moved from the (deprecated) UTFFoundation package. Currently it is controlled by <span class="small">EAIO_INIFILE_ENABLED</span> until UTFFoundation completely goes away. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in Wii hfinit (HIO2 support). Reported by Bob Flanagan.</li>
+  <li>Fixed bug in InitializeFileSystem whereby it wouldn't specify a return value. Reported by Bob Flanagan. </li>
+  <li>Worked around a bug in the XBox 360 XDK which caused MakeTempPathName to fail when XFileEnableTransparentDecompression was used by the application. The bug has been reported to Microsoft.</li>
+  <li>Added &quot; = kPositionTypeBegin&quot; to GetPosition and SetPosition in EAStreamBuffer and EAStreamNull to match other stream class default arguments. </li>
+</ul>
+Changes
+<ul>
+  <li>Made it so DirectoryIterator::ReadRecursive supports a base directory that is relative.</li>
+  <li>Changed DirectoryIterator::EntryString from eastl::string16 to EAIO PathString. This is so it can use the EAIO allocator as opposed to the EASTL global allocator. This changed behaviour is controllable via the <span class="small">EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING</span> define. </li>
+  <li>StreamBuffer Free calls now specify a non-zero value for the ICoreAllocator::Free size argument. This may help a little with memory tracking for some users. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.08.02</span> (June 6, 2008)</p>
+<p>Additions </p>
+<ul>
+  <li>FnMatch() now supports Windows file path conventions but adds flags (kFNMUnixPath, kFNMDosPath) to override the file path type. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in CreateDirectory whereby it would return false if the directory previously existed, whereas it meant to return true. </li>
+  <li>Removed a little (harmless) junk code that got into EAFileNotification.cpp. </li>
+  <li>Fixed bug in FileChangeNotification on console platforms whereby the polling would become disabled if the root directory ever became completely empty</li>
+  <li>Fixed bug in Wii FileStreamWiiNand whereby Read and Write would mistakenly fail. Reported by Antonio Maiorano.</li>
+</ul>
+Changes
+<ul>
+  <li>Revised Directory::Exists on PS3 to work with access-limited directories.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.08.01</span> (May 19, 2008)</p>
+<p>Additions </p>
+<ul>
+  <li>Added SetAllocator to MemoryStream. Previously there wasn't a manual way to default-initialize or explicitly set a MemoryStream with a custom allocator. Suggested by Wayne Huang and Tom Van Dijck.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed missing implementation of the PathString::Append function. </li>
+  <li>Fixed FileNotification bug that was introduced in 2.06.00 whereby an incorrect change path would be reported. Submitted by Avery Lee.</li>
+  <li>Fixed bogus assert in EAStreamMemory related to setting the stream position beyond the stream end on a resizable stream. Reported by Tom Van Dijck.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+
+<p><span style="font-weight: bold;">Version 2.08.00 </span> (March 24, 2008)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This release primarily targets Wii functionality. In particular, new Wii file stream functionality has been added. This includes a nearly full implementation of the C FILE API to the host PC as well as the EAIO FileStream API to the host PC. Note that in order to use the Hio2 functionality you need to run the MCS server that Nintendo provides in the C:\NintendoWare\Revolution\McsServer directory of NintendoWare. You can get NintendoWare at <a href="https://www.warioworld.com/wii/downloads/default.asp#nintendoware">https://www.warioworld.com/wii/downloads/default.asp#nintendoware</a>.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added Wii FileStreamNand, which implements file IO to the Nand (flash) file system. See Wii/EAFileStreamWiiNand.h/cpp </li>
+  <li>Added Wii FileStreamHio2, which implements file IO with the host PC over the Wii USB cable. See Wii/EAFileStreamWiiHio2.h/cpp</li>
+  <li>Added an implementation of the C FILE API (e.g. fopen, fread, fwrite) with the host PC over the Wii USB cable (Hio2). In order to not collide with the C standard library, these are implemented as hfopen, hfread, etc. in the EA::IO namespace. See Wii/MCSFile.h/cpp</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed Wii EntryFindFirst/EntryFindNext bug which would cause failure or a crash. </li>
+  <li>Fixed Wii unit test crashes that were introduced in a previous release. The Wii unit tests now complete successfully. </li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.07.03 </span> (March 12, 2008)</p>
+<p>Additions </p>
+<ul>
+  <li>Added GameDataPS3.h/cpp, which allows for easy use the PS3 GameData file system. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed XBox 360/Windows FileStream::GetPosition, SetPosition, GetSize, SetSize for the case whereby <font size="-1">EAIO_64_BIT_SIZE_ENABLED</font> is enabled and file sizes greater than 4GB were involved. Reported by Kevin O'Brien.</li>
+  <li>Fixed StreamBuffer compile error for case of <font size="-1">EAIO_64_BIT_SIZE_ENABLED</font> that was introduced in v2.07.00. </li>
+  <li>Fixed bug in Wii FileStream::SetPosition. Reported by Antonio Maiorano.</li>
+</ul>
+Changes
+<ul>
+  <li>GetAllocator/SetAllocator moved to Allocator.h/cpp. </li>
+  <li>FileStream::SetSize now guarantees that the previous file position is preserved. Previously it was modified on some platforms.</li>
+  <li>GetState now consistently returns kStateNotOpen when the file is not open. </li>
+  <li>EAStreamAdapter WriteString now takes size_t instead of EA::IO::size_type. This is for consistency with the rest of EAIO and allows 64 bit file IO to work as expected.</li>
+  <li>Added additional unit testing of FileStream.</li>
+  <li>The IOResultCode system has been revised to have values that map directly to platform-specific error codes instead of trying to maintain an independent mapped set of values. User code shouldn't be aversely affected, but things are now better because the error code values are unified. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.07.02</span> (February 28, 2008)</p>
+<p>Release Notes</p>
+<ul>
+  <li>Users will need to call EA::IO::SetAllocator on startup in many cases, as EAIO is migrating away from using EA::Allocator::ICoreAllocator::GetDefaultAllocator on startup. If you get a NULL pCoreAllocator crash, this is probably the reason.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added FileStream::SetWindowSize to the Wii version of FileStream in order to allow efficient use of the Wii file reading APIs on large files, but also allow it to be small and efficient for small files. Suggested by Vincent Chu. </li>
+  <li>Added PS2 compatibility. Provided by Philip Dunstan.</li>
+  <li>Filled out a few more 8 bit functions that previously had only 16 bit support.</li>
+  <li>Added <span class="small">EAIO_VERSION</span> / <span class="small">EAIO_VERSION_N</span> to the definition set. This allows for determining the version at compile time.</li>
+  <li>Added <span class="small">EAIO_DEFAULT_ALLOCATOR_ENABLED</span> option in order to disable use of ICoreAllocator::GetDefaultAllocator. Prompted by Tom Van Dijck.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in UTF8 to UTF16 Strlcpy whereby a bogus failure detection was occurring if the last char in the string was a 2+ byte UTF8 sequence. This bug was also present in the EAStdC package and is fixed in EAStdC 1.03.03. </li>
+  <li>Fixed a memory overwrite bug in the char versions of GetCurrentWorkingDirectory and ResolveAlias. Reported by  Soleil Lapierre.</li>
+  <li>Fixed bug in File::PatternExists() on PS3 whereby it would mistakenly return false. </li>
+  <li>Fixed bug in File::Move() on PS3 whereby it wouldn't do the move. </li>
+  <li>Fixed warning on Wii in EAStreamBuffer.h. Reported by Jaap Suter. </li>
+</ul>
+Changes
+<ul>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+  <li>Updated file error handling code on PS3 to deal with SDK versions &gt;= 210. According to Sony, applications don't need to spin on file errors; Sony will do that itself internally. So file EAFileStream Open and Read opertions now return right away with an error by default. The previous user-installable error handling mechanism is still in place however. </li>
+  <li>FileChangeNotification now calls IO::GetAllocator in its Start function if it's allocator is NULL. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.07.01 </span> (December 5, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>MemoryStream now has an (inline) GetSharedPointer accessor function. </li>
+  <li>Removed most usage of temporary PathStrings from EAFileUtil and replaced with char buffers. This was done because very long paths can cause a path string memory allocation. </li>
+  <li>Made it so EAIO doesn't normally attempt to query for the default allocator before main() (i.e. in static startup code). </li>
+  <li>The PS3 sets the default temp directory to be off the home directory instead of the root directory. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.07.00 </span> (November 30, 2007)</p>
+<p>Release Notes</p>
+<ul>
+	<li>Note that Wii SDK 2.4-patch6-070518 removes the dvdeth library. Thus 
+	Nintendo has removed support for DVDOpen, DVDClose, etc. The Wii debugger 
+	provides an implementation of fopen, fclose, etc. which can be used place of 
+	dvdeth, but only works when a debugger is active and cannot work with a 
+	standalone debug build app. We are lobbying for Nintendo to retain support 
+	of dvdeth, but if that fails then this will likely be the last revision of 
+	EAIO which uses dvdeth on Wii for FileStream functionality.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added support for the SN PS3 compiler. </li>
+  <li>EAStreamBuffer now lets the user specify buffers manually (char*/size) and via an ICoreAllocator and defaults to the ICoreAllocator::GetDefaultAllocator(). </li>
+  <li>Added GetAllocator/SetAllocator to EAIO in order to provide default 
+	EAIO-wide allocator. EAIO doesn't normally allocate memory except in the 
+	case of long path strings that go beyond the fixed_string default length of 
+	PathString. Suggested by Rashin Arab.</li>
+    <li>Added a Directory version of GetTime/SetTime to complement the File version. The Directory version simply uses the File version for all current platforms. </li>
+    <li>Added additional Unix support to EAFileUtil. Most of the primary functions are now supported. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed PathString Compare(PathString16::const_iterator a, PathString16::const_iterator a_end, PathString16::const_iterator b, PathString16::const_iterator b_end) to allow a_end and b_end to be NULL (kEndAuto16). This is considered a bug fix because a rational user would expect such to be allowed if it is allowed for other functions.</li>
+	<li>Fixed bug in Wii FileStream::Open whereby mnLastError was not being set 
+  for all case of error. Reported by Albert Ho.</li>
+    <li>Fixed bug in Wii EntryFindFirst. Submitted by Albert Ho. </li>
+</ul>
+Changes
+<ul>
+  <li>Implemented the GetPosition and Write functions for StreamChild. Previously these were unsupported functionality, and now they are. </li>
+  <li>Enhanced the unit tests for StreamChild, StreamFixedMemory, and StreamBuffer.</li>
+  <li>The StreamBuffer mpAllocator-&gt;Alloc() has been switched to use the unaligned allocation version. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.06.00 </span> (September 5, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Added endian awareness to EAStreamAdapter::ReadString, WriteString. Submitted by Alec Miller. </li>
+  <li>Added support for 64 bit file IO via the <span class="small">EAIO_64_BIT_SIZE_ENABLED</span> configuration parameter.</li>
+  <li>Added DLL export functionality to EAStreamAdapter. Submitted by Max Burke. After this was integrated, additional components of EAIO were made DLL-capable. At this point, virtually all the public EAIO functionality is accessible in a DLL build. </li>
+  <li>Added ability for the user to override/control debug memory allocation names. See EAIO/internal/Config.h.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed potential crash in Xenon and PS3 version of FileNotification::PollInternal whereby the addition of a file might invalidate an iterator. Bug found and fix suggested by Henry Goffin. </li>
+  <li>Fixed bug in Win32 version of FileStream whereby mpPath16 could be unintialized.</li>
+</ul>
+Changes
+<ul>
+  <li>Made PathString more const-friendly.</li>
+  <li>Removed UTFFoundation as a dependency of the EAIO unit tests. The EAIO runtime was never dependent on it. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.05.02</span> (June 1, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed the Wii code/build to be based on the work of Tom Van Dijck.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.05.01</span> (May 16, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed compiler errors that could result if building with bulk-build functionality disabled.</li>
+  <li>Fixed some Win64 compiler warnings.  </li>
+</ul>
+Changes
+<ul>
+  <li>Revised .build file to enable -Wp64 under VC++/Win32.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.05.00 </span>(May 4, 2007)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This release completes the migration of IO functionality from UTFFoundation to EAIO. This change will allow for the simplification of package dependencies by making it so packages can remove dependencies on UTFFoundation, MemoryMan, and/or EACOM. This version of EAIO should be compatible with any version of UTFFoundation, though use UTFFoundation 2.11.00 or later will require this version or later of EAIO. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>EAIO now supports building as a DLL. </li>
+  <li>FileStreamWii.cpp added. The existing FileSystemGameCube.cpp still works on Wii though. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>EAStream.cpp error handling fixed to act more like a user would expect.</li>
+  <li>Fixed bug whereby <span class="small">EA_FILE_SYSTEM_CASE_SENSITIVE</span> was misdefined for some platforms.</li>
+  <li>Unit test failures fixed on PS3.</li>
+  <li>Opening a FileStream with kCDCreateNew (create only if new) flag now works correctly on PS3 and Linux.</li>
+  <li>Avoid leaking memory in EAStreamMemory::SetData() if the shared pointer can't be allocated and allow the use of a NULL pData value to indicate that the stream's memory buffer should be allocated at construction. Submitted by Jon Parise. </li>
+  <li>Fixed incorrect #elif declaration which resulted in third party preprocessors choking.</li>
+</ul>
+Changes
+<ul>
+  <li>StreamFixedMemory: Removing an <span class="small">EA_FAIL_MESSAGE</span> from a valid failure case. This allows the caller to test for the failure and determine its severity without the attempt resulting in an assertion failure. Submitted by Jon Parise.</li>
+  <li>MemoryStream::Close now returns a meaningful value.</li>
+  <li>EAIO now supports building on Linux and Cygwin (Unix emulation under Windows).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.04.00 </span>(Mar 19, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Added EAStreamCpp, which is an IStream interface that wraps C++ iostreams. </li>
+  <li>Added Framework2 support for the CodeWarrior/Wii compiler/platform. </li>
+  <li>Added the char16_t version of FnMatch.</li>
+  <li>Added unit tests for FnMatch, EAStreamCpp, and EAFileBase. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Updated the masterconfig.xml and EAIO.build files to be up to date with dependent packages. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.03.01 </span>(Feb 8, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Added a couple definitions that Foundation/FileUtils wants. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.03.00 </span>(Feb 7, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Moved EAStream.h from Foundation/EAStream.h while allowing backward compatibility.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Modified EAFileBase.h to allow it to mix with Foundation/EAFileBase.h</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.02.00 </span>(Nov 30, 2006) </p>
+<p>Additions </p>
+<ul>
+  <li>Added PathString8 and associated utility functions, a char version of PathString16.</li>
+  <li>Added VS2005 support and associated fixes for new warnings invented by this compiler. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 2.01.00 </span>(Oct. 23, 2006) <br>
+  <br>
+  Release Notes</p>
+<ul>
+  <li>This version represents the first formally published version of this package. </li>
+  <li>EAIO is currently a very small package, but it is intended to subsume all the stream functionality from the UTFFoundation package. This would include all files in UTFFoundation that begin with EAStream* and EAFile*. </li>
+</ul>
+<p>Additions </p>
+<ul>
+    <li>Added Framework 2 / EAConfig / NAnt build files to this package.</li>
+    <li>Added ability to switch between the lightweight EAAssert package and the heavier EATrace package.</li>
+    <li>Added this Changes.html document. </li>
+</ul>
+Bug Fixes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+Changes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;">Earlier versions</span><br>
+
+<br>
+
+Version 2.01.00 (above) is the first version of this package which contained this document. A list of previous changes is not available and is not likely worthwhile, as 2.01.00 is the version published as a formal package.<br>
+
+<br>
+
+<br>
+
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>

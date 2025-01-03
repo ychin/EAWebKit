@@ -537,8 +537,13 @@ SQLITE_PRIVATE   void sqlite3Coverage(int);
 ** a boolean expression that is usually true.  GCC is able to
 ** use these hints to generate better code, sometimes.
 */
+#if defined(__GNUC__) && 0
+# define likely(X)    __builtin_expect((X),1)
+# define unlikely(X)  __builtin_expect((X),0)
+#else
 # define likely(X)    !!(X)
 # define unlikely(X)  !!(X)
+#endif
 
 /************** Include sqlite3.h in the middle of sqliteInt.h ***************/
 /************** Begin file sqlite3.h *****************************************/
@@ -34707,7 +34712,7 @@ static int winGetLastError(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
 }
 
 
-
+#if !defined (EA_PLATFORM_XBSX)
 /*
 ** Initialize and deinitialize the operating system interface.
 */
@@ -34750,7 +34755,7 @@ SQLITE_API int sqlite3_os_init(void){
 SQLITE_API int sqlite3_os_end(void){ 
   return SQLITE_OK;
 }
-
+#endif
 #endif /* SQLITE_OS_WIN */
 
 /************** End of os_win.c **********************************************/

@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAAddressRep</title>    
+<link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Schlegel">
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAAddressRep</h1>
+<h2>Introduction</h2>
+<p>The AddressRep module defines a set of classes in EACallstack that facilitate 
+the retrieval of symbol information associated with an instruction address. (In EACallstack, addresses for the current instruction and the subroutines on a 
+thread's callstack can be acquired by using the functions defined in the
+<a href="EACallstack.html">Callstack</a> namespace.)</p>
+<p>Once an instruction address has been obtained, AddressRep can be used to look 
+up the following types of symbol information for the address:</p>
+<ul>
+	<li>The path to the source file on the host machine</li>
+	<li>The line number associated with the instruction in the source file</li>
+	<li>The name of the function containing the instruction address</li>
+	<li>The offset of the instruction within the function</li>
+	<li>The source code text</li>
+	<li>The instruction address as a formatted string</li>
+</ul>
+<p>AddressRep provides all of the above information while running on the target 
+platform.</p>
+<p>In order for symbol information to be retrieved, a symbol database is 
+required. On some platforms, this database is located within the executable 
+itself, and on others, the database can be located in a separate file. The table 
+below shows the currently supported symbol database formats on each platform 
+supported by EACallstack:</p>
+<blockquote>
+	<table border="1" width="600" id="table1" style="border-collapse: collapse">
+		<tr>
+			<td bgcolor="#A0A0D0">
+			<p align="center"></td>
+			<td bgcolor="#A0A0D0">
+			<p align="center"><b>PDB<br>
+			</b>(external to exe)</p>
+		  </td>
+			<td bgcolor="#A0A0D0">
+			<p align="center"><b>DWARF3<br>
+			</b>(embedded in exe)</p>
+		  </td>
+			<td bgcolor="#A0A0D0">
+			<p align="center"><b>Map<br>
+			</b>(external to exe)</p>
+		  </td>
+		</tr>
+		<tr>
+          <td bgcolor="#FFF0B0"><p align="center"><b>XBox 360 / VC++</b></td>
+          <td><p align="center">Supported</td>
+          <td><p align="center"></td>
+          <td><p align="center">Supported</td>
+	  </tr>
+		<tr>
+			<td bgcolor="#FFF0B0">
+			<p align="center"><b>PS3 / GCC </b></td>
+			<td>
+			<p align="center"></td>
+			<td>
+			<p align="center">Not supported</td>
+			<td>
+			<p align="center">Supported</td>
+		</tr>
+		<tr>
+          <td bgcolor="#FFF0B0"><p align="center"><b>Win32 / VC++ </b></td>
+          <td><p align="center">Supported</td>
+          <td><p align="center"> &nbsp;Supported*</td>
+          <td><p align="center">Supported</td>
+	  </tr>
+		<tr>
+		  <td bgcolor="#FFF0B0"><div align="center"><strong>Mac OS X / GCC </strong></div></td>
+		  <td>&nbsp;</td>
+		  <td><div align="center">Supported</div></td>
+		  <td><div align="center">Supported</div></td>
+	  </tr>
+		<tr>
+		  <td bgcolor="#FFF0B0"><div align="center"><strong>Linux / GCC </strong></div></td>
+		  <td>&nbsp;</td>
+		  <td><div align="center">Supported</div></td>
+		  <td><div align="center">Supported</div></td>
+	  </tr>
+		<tr>
+          <td bgcolor="#FFF0B0"><div align="center"><strong>Win32 / GCC </strong></div></td>
+          <td>&nbsp;</td>
+          <td><div align="center">Supported</div></td>
+          <td><div align="center">Supported</div></td>
+	  </tr>
+	</table>
+</blockquote>
+<p><font size="2">*Not a format used by the platform. Supported for allowing 
+external tools to read symbol information.</font></p>
+<p>Generally, the same symbol database file used by the native debugger 
+application for the platform is used by AddressRep for the symbol lookup. </p>
+<h2>Interface</h2>
+<p>The AddressRepType enumeration (from EAAddressRep.h) defines the&nbsp; 
+following information types that can be retrieved:</p>
+<pre class="code-example"><span class="code-example-comment">/// AddressRepType
+///
+/// These are intentionally incremental values of 0, 1, 2, etc. 
+///
+</span>enum AddressRepType
+{
+    kARTFileLine = 0,   /// Source code file path plus line number in the file, beginning with 1.
+    kARTFunctionOffset, /// Function name plus byte count of instructions into the address.
+    kARTSource,         /// Source code text.
+    kARTAddress,        /// The address as a hex number. 
+    kARTCount           /// Count of AddressRepTypes
+};</pre>
+<p>The AddressRepLookup class:</p>
+<pre class="code-example"><span class="code-example-comment">/// AddressRepLookup
+///
+/// Implements a direct lookup of address information from a symbol database file.
+/// Normally you will want to use the AddressRepCache class instead of this, as that class
+/// will cache lookup results and run much faster under most practical circumstances.
+///
+/// AddressRepLookupBase is a base class which holds platform-specific data.
+///
+</span>class AddressRepLookup : public AddressRepLookupBase
+{
+public:
+    AddressRepLookup();
+   ~AddressRepLookup();
+ 
+<span class="code-example-comment">    /// GetAddressRep
+    ///
+    /// Looks up one or more of the given AddressRepType values.
+    /// Returns flags indicating which of the AddressRepType values were successfully looked up.
+    /// We have a single function for all three types because it is much faster
+    /// to do lookups of multiple types at the same time.
+    /// The input pRepArray and pIntValueArray need to have a capacity for all AddressRepTypes
+    /// (i.e. kARTCount), as each result is written to its position in the array.
+    /// Unused results are set to empty strings.
+    /// The kARTAddress AddressRepType always succeeds, as it is merely a translation
+    /// of a pointer to a hex number.
+    ///
+    /// Example usage:
+    ///     FixedString pStringResults[kARTCount];
+    ///     int pIntResults[kARTCount];
+    ///     int inputFlags = (1 &lt;&lt; kARTFunctionOffset) | (1 &lt;&lt; kARTFileLine) | (1 &lt;&lt; kARTSource);
+    ///     int outputFlags;
+    ///
+    ///     outputFlags = addressRepLookup.GetAddressRep(inputFlags, pSomeAddress, pStringResults, pIntResults);
+    ///
+    ///     if(outputFlags &amp; (1 &lt;&lt; kARTFileLine))
+    ///         printf(&quot;File: %s, line: %d&quot;, pStringResults[kARTFileLine].c_str(), pIntResults[kARTFileLine]);
+    ///
+</span>    int GetAddressRep(int addressRepTypeFlags, const void* pAddress, FixedString* pRepArray, int* pIntValueArray);
+
+<span class="code-example-comment">    /// AddDatabaseFile
+    ///
+    /// Adds a symbol database for use when looking up symbols for a program address.
+    /// A variety of symbol database formats are supported, including PDB, DWARF3 (contained
+    /// in ELF/SELF executables), and Map files. Currently the type of database is
+    /// determined by the file extension in the path provided.
+    ///
+</span>    bool AddDatabaseFile(const char16_t* pDatabaseFilePath)
+        { return mAddressRepLookup.AddDatabaseFile(pDatabaseFilePath); } 
+
+<span class="code-example-comment">    /// AddSourceDirectory
+    ///
+    /// Adds a file system directory to the set we use to find file source code.
+    /// If a given directory is the root of a tree of source directories, you need only
+    /// supply the root directory. Since most symbol databases store full paths
+    /// to source files, often only the home directory or root drive location of
+    /// the source code is required when loading source text from the host PC.
+    ///
+</span>    void AddSourceDirectory(const char16_t* pSourceDirectory)
+};</pre>
+<p>The AddressRepCache class has an interface identical to that of 
+AddressRepLookup described above.</p>
+<p>There are also global accessor and mutator functions for defining a default 
+AddressRepCache :</p>
+<pre class="code-example"><span class="code-example-comment">/// GetAddressRepCache
+/// Retrieves the default global AddressRepCache object.
+</span>AddressRepCache* GetAddressRepCache();
+
+<span class="code-example-comment">/// SetAddressRepCache
+/// Sets the default global AddressRepCache object.
+/// Returns the old AddressRepCache object.
+/// The old AddressRepCache is not deleted, as this function is 
+/// merely an accessor modifier.
+</span>AddressRepCache* SetAddressRepCache(AddressRepCache* pAddressRepCache);</pre>
+<h2>Example Usage</h2>
+<p>The functionality of AddressRep is made available to the user via two 
+classes:</p>
+<ul>
+	<li>AddressRepLookup</li>
+	<li>AddressRepCache</li>
+</ul>
+<p>Both classes provide the same interface; however, AddressRepCache should be 
+used if the same instruction address will be looked up multiple times. 
+AddressRepCache, as its name implies, caches the result of the lookup, since 
+reading a symbol database is an expensive operation.</p>
+<p>The following sample code demonstrates the initialization of an 
+AddressRepLookup object:</p>
+<pre class="code-example"><span class="code-example-comment">// Get the path to the current executable.
+// (Note that GetCurrentProcessPath does not work on all platforms at the time of this writing.)
+</span>char16_t dbPath[EA::IO::kMaxPathLength];
+EA::Process::GetCurrentProcessPath(dbPath);
+ 
+<span class="code-example-comment">// Initialize an AddressRepLookup object.
+</span><font color="#0033CC">AddressRepLookupSet addressRepLookup;</font>
+
+<span class="code-example-comment">// Add the executable path as a possible symbol database.
+// Platforms using DWARF3 have debugging symbols embedded in the executable.
+</span><font color="#0033CC">addressRepLookup.AddDatabaseFile</font>(dbPath);
+
+<span class="code-example-comment">// Set the database file extension to .pdb, and add it as a potential database.
+</span>Strcpy16(EA::IO::GetFileExtension(dbPath), L&quot;.pdb&quot;);
+<font color="#0033CC">addressRepLookup.AddDatabaseFile</font>(dbPath);
+
+<span class="code-example-comment">// Set the database file extension to .map, and add it as a potential database.
+</span>Strcpy16(EA::IO::GetFileExtension(dbPath), L&quot;.map&quot;);
+<font color="#0033CC">addressRepLookup.AddDatabaseFile</font>(dbPath);
+
+<span class="code-example-comment">// Add source file directories for source code lookups.
+<font color="#0033CC"></font></span><font color="#0033CC">addressRepLookup.AddSourceDirectory</font>(L&quot;<a href="file:///C://">C:\\</a>&quot;);       // Most common case for Win32
+<font color="#0033CC">addressRepLookup.AddSourceDirectory</font>(L&quot;/app_home/&quot;); // Most common case for PS3</pre>
+<p>The following sample code demonstrates the usage of AddressRepLookup to look up 
+the symbol information for a program address using the object initialized above:</p>
+<pre class="code-example">void*  pCallstack[32];
+size_t nCallstackDepth = <font color="#0033CC">EA::Callstack::GetCallstack(pCallstack, 32, NULL);</font>
+
+for(size_t i = 0; i &lt; nCallstackDepth; ++i)
+{
+    EA::Callstack::FixedString strResults[kARTCount];
+    int         pIntResults[kARTCount];
+
+    const int   nInputFlags = (1 &lt;&lt; kARTFunctionOffset) | (1 &lt;&lt; kARTFileLine) | (1 &lt;&lt; kARTSource) | (1 &lt;&lt; kARTAddress);
+    const int   nOutputFlags = addressRepLookup.<font color="#0033CC">GetAddressRep(nInputFlags, pCallstack[i], strResults, pIntResults)</font>;
+
+    printf(&quot;    Address:  %s\n&quot;, strResults[kARTAddress].c_str());
+
+    if(nOutputFlags &amp; (1 &lt;&lt; kARTFunctionOffset))
+    {
+        printf(&quot;    Function: %s\n&quot;, strResults[kARTFunctionOffset].c_str());
+        printf(&quot;    Offset:   %d\n&quot;, pIntResults[kARTFunctionOffset]);
+    }
+
+    if(nOutputFlags &amp; (1 &lt;&lt; kARTFileLine))
+    {
+        printf(&quot;    File:     %s\n&quot;, strResults[kARTFileLine].c_str());
+        printf(&quot;    Line:     %d\n&quot;, pIntResults[kARTFileLine]);
+    }
+
+    if(nOutputFlags &amp; (1 &lt;&lt; kARTSource))
+    {
+        printf(&quot;    Source:\n&quot;);
+        printf(strResults[kARTSource].c_str());
+    }
+
+    printf(&quot;\n&quot;);
+}</pre>
+<p>Usage of AddressRepCache is identical to AddressRepLookup.</p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

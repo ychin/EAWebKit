@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+  <package name="coreallocator"/>
+  <runtime>
+    <Utility name="coreallocator"/>
+  </runtime>
+
+  <include file="test/test.xml" ignoremissing="true" />
+</project>

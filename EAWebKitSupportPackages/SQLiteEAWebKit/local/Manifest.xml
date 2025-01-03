@@ -1,0 +1,8 @@
+<package>
+	<summary>Runtime SQL implementation.</summary>
+    <description>
+		See http://www.sqlite.org/ for information.
+	</description>
+    <frameworkVersion>2</frameworkVersion>
+	<buildable>true</buildable>
+</package>

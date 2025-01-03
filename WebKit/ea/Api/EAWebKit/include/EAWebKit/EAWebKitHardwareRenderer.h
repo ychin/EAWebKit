@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef EAWEBKIT_HARDWARE_RENDERER_H
 #define EAWEBKIT_HARDWARE_RENDERER_H
 
-#include <EAWebKit/EAWebkitSystem.h>
+#include <EAWebKit/EAWebKitSystem.h>
 
 namespace EA { namespace WebKit 
 {

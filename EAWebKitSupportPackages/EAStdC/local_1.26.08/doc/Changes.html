@@ -1,0 +1,1249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAStdC Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  
+  <meta name="description" content="Describes changes between package versions.">
+  <style type="text/css">
+	.code {
+		font-family: "Courier New", Courier, mono;
+		font-size: 9pt;
+	}
+	.small {
+		font-size: smaller;
+    }
+  	.ToDo {
+		color: #FF0000
+	}
+    .noParaSpace {
+	    margin-bottom: -8px;
+    }
+  .codeSmall {font-family: "Courier New", Courier, mono; font-size: 8pt; }
+  .lightened {color: #999999}
+  </style>
+</head>
+
+<body>
+
+<h1>EAStdC Changes</h1>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.07</span></p>
+<p>Changes:</p>
+<ul>
+	<li>EAStdC: fixing winsock.h include for timeval struct used in tests</li>
+	<li>Gemini to Xbsx</li>
+	<li>Fixing codegen bug on pc64-vc-dev-opt which was mixing up the register parameters to a string function which caused test code to strcpy a string onto stack memory.  In an effort to change the code pattern I added a memclear in hopes it would bypass the compiler bug being triggered here.  This appears to have worked at the time of writing of this.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.07</span></p>
+<p>Changes:</p>
+<ul>
+	<li>Updated to support PS5 0.9 SDK.</li>
+	<li>Updated test module to compile with bulkbuild files.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.06</span> (Oct 10, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Added GetTimeMilliseconds as a convenient helper for GetTime() / 1000000.</li>
+	<li>Added docs, scripts and build files to VS project.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.05</span> (Oct 01, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>NX unit test memory fixes.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.04</span> (Sep 20, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Fixing user reported regression for bit-shifting our EAFixedPoint type.</li>
+	<li>Merging lots of repeated code in the Sprintf implementation.</li>
+	<li>char8_t C++20 fixes.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.03</span> (Jul 10, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Backwards compatible changes preparing for char8_t keyword promotion for UTF-8 strings.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.02</span> (May 30, 2019)</p>
+<p>Changes</p>
+<ul>
+  <li>Added support for EA_WINAPI_FAMILY_GAMES.</li>
+  <li>Removed the EA_WINAPI_FAMILY, EA_WINAPI_PARTITION and EA_WINAPI_FAMILY_PARTITION backward compatible defines from Config.h.</li>
+  <li>Removing EAArrayCount implementation as its available via EABase.</li>
+  <li>Forwarding implementation of EAOffsetOf to EABase implementation.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.01</span> (March 13, 2019)</p>
+<p>Changes</p>
+<ul>
+  <li>Updated code to use EA_PLATFORM_SONY where possible.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.00</span> (Sep 07, 2018)</p>
+<p>Changes</p>
+<ul>
+  <li>Adding UTF8ReplaceInvalidChar which allows users to replace invalidate UTF8 characters with a specific character.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.25.01</span> (Feb 20, 2019)</p>
+<p>Changes</p>
+<ul>
+  <li>Converting PS4/Kettle platform macros to use the new Sony platform macro.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.25.00</span> (Sep 07, 2018)</p>
+<p>Changes</p>
+<ul>
+  <li>Renaming 'PoissonTransform' to 'RandomInt32Poisson' to align with the existing EAStdC API.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.24.00</span> (August 14th, 2018)</p>
+<p>Changes</p>
+<ul>
+  <li>Add Code Coverage to EAStdC Package.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.23.00</span> (April 30th, 2018)</p>
+<p>Changes</p>
+<ul>
+  <li>Added a new overload to Strlcpy that returns the number of consumed source code units and the number of writen code points. This allows applications to process large input in batches.</li>
+  <li>Modified the string format in the printf family of routines to handle input strings larger than EASPRINTF_FIELD_MAX setting.</li>
+  <li>Fixed an issue where random number generators could return a value outside the valid range.  Made it additionally robust due to reducing the range to ensure double to float conversion doesn't generate a value outside the valid range.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.00</span> (January 12th, 2018)</p>
+<p>Changes</p>
+<ul>
+	<li>Retroactively incrementing the minor version number as the hash generated in CRC24 will now fill the upper 8 bits with zeros, whereas implementations prior to 1.21.01 would fill the upper bits with ones.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.05</span> (Oct 17, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Removed Xenon and PS3 code paths.</li>
+	<li>Moving GetNanoseconds and GetMilliseconds implementations into EADateTime.cpp to ensure warning suppressions are applied.</li>
+	<li>Extended the Stopwatch POSIX implementation code path to take into account customized error codes on the NX platform.</li>
+	<li>Fixed issue with not getting proper time zone name on the NX platform.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.04</span> (September 15th, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Fixing bugs in Scanf and Printf with the support of 'j' (maxint), 't' (ptrdiff), and 'z' (size) modifiers on integer and count fields.</li>
+	<li>Removed custom atomics and mutex implementation and forwarded the EAStdC API to use the EAThread API.</li>
+	<li>Added GetMilliseconds & SetMilliseconds to EA::StdC::DateTime.</li>
+	<li>Disabled EASTDC_MEMCHR16_ENABLED by default so we can remove the deprecated function in a future release.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.03</span> (August 10th, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Resolving macro re-definition error reported by a user trying to enable the valgrind aware strlen functions.</li>
+	<li>Resolving Clang UBSan (undefined behavior sanitizer) warnings related to signed integer overflow, shifts by negative numbers, and integral promotion.</li>
+	<li>EAStopwatch::GetStopwatchCycle on PS4 update to call sceKernelGetProcessTimeCounter instead of using rdtsc.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.02</span> (December 7th, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Stopwatch::GetCPUCycle() PS4 implementation changed to use 'sceKernelGetProcessTimeCounter' to account for PLM events. Note 'sceKernelGetProcessTimeCounter' incurs addition overhead that our measurements calculate at ~6 cycles.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.01</span> (October 21st, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Made the OSGlobal implementation on Kettle, search for a free memory location starting from the top of virtual memory, since it is faster to do.</li>
+	<li>Updated Build and Initialize scripts to remove warnings generated by Framework 3.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.00</span> (August 10th, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Removed EATrace support as it was not being tested and the mechanism to switch between the two has rotted.</li>
+	<li>Implemented EA::StdC::Memfill8 which reroutes to EA::StdC::MemSet8 for convienience.</li>
+	<li>EA::StdC::Strlen calls __builtin_strlen when the Clang builtin is available.</li> 
+	<li>Added config macro to disable EAStdC GlobalPtr via EASTDC_GLOBALPTR_SUPPORT_ENABLED.</li>
+	<li>Added support for EASTDC_STATIC_ANALYSIS_ENABLED to determine if static analysis should flag certain code paths or not.  
+	This is important because specific string optimizations are disabled which are correctly flagged as errors but in practice do not cause any harm.</li>
+	<li>Removed the internal definitions of IsNaN and IsInf, which are duplicates of IsNAN and IsInfinite, and switched to use the latter in Sprintf code.  This was initiated because std::isnan doesn't seem to work on Android.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.05</span> (May 19, 2016) </p>
+<p>Changes</p>
+<ul>
+	<li>Resolving ps4 sdk 3.5 warning.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.04</span> (Apr 08, 2016) </p>
+<p>Changes</p>
+<ul>
+	<li>Resolved an issue with 'long double' causing an incorrect output in Sprintf.</li>
+	<li>Performace improvements for endian swapping by use of bswap instruction. (integration request)</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.03</span> (January 22, 2016) </p>
+<p>Changes</p>
+<ul>
+	<li>Resolved an issue in <span class="code">RandomLinearCongruential::RandomDoubleUniform()</span>.  This method would sometimes reseed the PRNG with a non-deterministic value derived from the CPU clock.  The method has been updated to no longer update the seed in a non-determinstic way.  (Note: the issue could lead to network desyncs.)</li>
+	<li>Minor fix for asymmetric warning push without a pop in a cpp.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.02</span> (October 23, 2015) </p>
+<p>Changes</p>
+<ul>
+	<li>Fix to the location and search space of the Global memory initialization technique used by kettle. Call to InitOSGlobalSystem.</li>
+	<li>Reduce the 300ms EAStopwatch startup setup time to 5ms as it is contributing to a slow startup for all applications. This of course decreases the accuracy of value which is experimentally computed however this change is only implemented on platforms that consider __rdtsc to be inaccurate.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.01</span> (September 23, 2015) </p>
+<p>Changes</p>
+<ul>
+	<li>Converted initialize.xml to structured-XML which fixes warnings generated by Framework.</li>
+</ul>
+
+<h1>EAStdC Changes</h1>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.00</span> (July 13, 2015) </p>
+<p>Bug Fixes</p>
+<ul>
+	<li>Fixed a bug in seting nanoseconds field in DateTime::Set() method.</li>
+</ul>
+<p>Changes</p>
+<ul>
+	<li>CallbackManager: add ThreadParameters argument to Init() so that the thread may be started with non-default arguments (such as priority).</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.04</span> (Apr 23, 2015) </p>
+
+<p>Changes</p>
+<ul>
+	<li>Resolved issue when switching to AndroidSDK-21-2 with Sprintf generating incorrect results for Infinite/Nan float values.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.03</span> (March 12th, 2015) </p>
+
+<p>Changes</p>
+<ul>
+    <li>Required changes for VS2015 support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.02</span> (February 9th, 2014) </p>
+
+<p>Changes</p>
+<ul>
+    <li>We now use builtin offsetof() in combination with -Wno-invalid-offsetof to suppress warnings when offsetof is applied to non-POD types instead of custom implementstion. 
+    offsetof() returns costexpr and can be used in static_assert</li>
+    <li>Reverted a change to <span class="code">EAAlloca</span> that was causing issues for users.  Users should still consider using <span class="code">EAMalloca/EAFreea</span>
+    as an alternative to <span class="code">EAAlloca</span>.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.01</span> (Oct 13th, 2014) </p>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a warning that surfaced in the unit tests after a recent change to EASTL.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added support for compiling with VS2015.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.00</span> (Sept 5th, 2014) </p>
+<p>Changes</p>
+<ul>
+  <li>Added a public version.h header.</li>
+  <li>Users may now call <span class="code">SetCurrentProcessPath</span> to manually set a path on PS4 if they want to use <span class="code">GetCurrentProcessPath/GetCurrentProcessDirectory</span> on test kits.</li>
+  <li><span class="code">SetCurrentProcessPath</span> now takes a <span class="code">const char8_t*</span> instead of a non-const pointer.  This change makes it possible to pass string literals without generating warnings.</li>
+  <li>Resolved compilation warnings on PS3SDK 460.001.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.18.00</span> (June 12th, 2014) </p>
+<p>Changes</p>
+<ul>
+  <li>Revised RandomUint32Uniform(limit) to provide unbiased output, at the cost of being about 3x slower for non-power-of-2 values. The RandomLimitFastBiased function provides the previous behavior of being fast but with some bias (tiny bias for small limits, higher bias for large limits). </li>
+  <li>Implemented a faster version of <span class="code">Itoa32/Utoa32/Itoa64/UtoA64</span> for base 10 conversions. The new version averages 3x faster than before. </li>
+  <li>Implemented a faster Strcmp implementation that works by reading machine word-sized values instead of bytes. On 64 bit platforms this results in a five-fold improvement in speed.</li>
+  <li>Added ZeroPresent8 and ZeroPresent16 to EABitTricks, which provide a fast means to identify if the supplied word has any zero byte. These were added primarily to support the fast portable Strcmp implementation. <br>
+      <br>
+      <span class="code">/// ZeroPresent8<br>
+  /// Returns true if a 0 byte is present in x.<br>
+  /// ZeroPresent8(0xffffffff) -&gt; false<br>
+  /// ZeroPresent8(0x00000000) -&gt; true<br>
+      </span>
+      <p><span class="code"> /// ZeroPresent16<br>
+    /// Returns true if an aligned uint16_t of 0 is present in x.<br>
+    /// ZeroPresent16(0xffffffff) -&gt; false<br>
+    /// ZeroPresent16(0xff0000ff) -&gt; false (There are 16 contiguous 0 bits, but they are not uint16_t aligned)<br>
+    /// ZeroPresent16(0x0000ffff) -&gt; true</span></p>
+  </li>
+  <li>Added timing-safe variations of some functions, as commonly needed for security purposes: <br>
+    <br>
+    <span class="code">/// Similar to Memcmp but returns simply true or false. Performs slightly faster<br>
+/// than TimingSafeMemcmp. Executes slower than regular Memcmp due to being timing-safe.<br>
+/// Executes in a constant time for any given n value. The primary use case for this is <br>
+/// for security in the presence of possible timing attacks.<br>
+EASTDC_API bool TimingSafeMemEqual(const void* p1, const void* p2, size_t n);<br>
+    </span>
+    <p class="code"> /// Behaves the same as Memcmp, but executes slower than regular Memcmp due to being timing-safe.<br>
+      /// Executes in a constant time for any given n value. The primary use case for this is <br>
+      /// for security in the presence of possible timing attacks.<br>
+      EASTDC_API int TimingSafeMemcmp(const void* p1, const void* p2, size_t n);</p>
+    <p><span class="code"> /// Returns true if the given n bytes of memory are all zero in value, as would be the case<br>
+      /// if the memory was cleared with Memclear.<br>
+      /// Executes in a constant time for any given n value and regardless of whether the return <br>
+      /// value is true or valse. The primary use case for this is for security in the presence of <br>
+      /// possible timing attacks.<br>
+      EASTDC_API bool TimingSafeMemIsClear(const void* p, size_t n);</span></p>
+  </li>
+  <li>Added EAOffsetOfBase to EABitTricks <br>
+    <br>
+    <span class="code">/// Returns the offset of the class Base within the subclass Class.<br>
+    /// Fails to compile for cases where Base is multiply inherited by Class.<br>
+    /// Example usage:<br>
+    /// &nbsp;&nbsp;&nbsp;&nbsp;struct A{ int a; };<br>
+    /// &nbsp;&nbsp;&nbsp;&nbsp;struct B{ int b; };<br>
+    /// &nbsp;&nbsp;&nbsp;&nbsp;struct C : public A, public B{ int c; };<br>
+    /// &nbsp;&nbsp;&nbsp;&nbsp;EAOffsetOfBase&lt;C, B&gt;() =&gt; 4<br>
+    /// <br>
+    /// EAOffsetOfBase is not guaranteed to be a compile-time constant expression, <br>
+    /// due to the use of reinterpret_cast of a pointer. <br>
+    template &lt;typename Class, typename Base&gt;<br>
+  size_t EAOffsetOfBase();</span></li>
+  <li>Fixed a compilation error on PS3 that could occur if limits.h wasn't included prior to including EABitTricks.h.</li>
+  </ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.17.00</span> (May, 2014) </p>
+<p>Changes</p>
+<ul>
+  <li> Fixed a compile error for platforms where wchar_t is 16 bit but unique from char16_t.</li>
+  <li>Added <span class="code">char_t*  Strnchr(const char_t* pString, char_t c, size_t n)</span>, which is the same as strchr except it checks no more than n chars from the string. </li>
+  <li>Avoided internally allocating memory using global new when printing to the log on Android.</li>
+  <li>Fixed a bug in EcvtBuf and FcvtBuf whereby they used the wrong buffer size constant. Switched them to using the right constant from EAString.h. The result was that EcvtBuf, FcvtBuf, and the printf family of functions could crash with large floating point values (e.g. DBL_MAX).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.00</span> (April 15th, 2014) </p>
+<p>Changes</p>
+<ul>
+  <li>Added the Dprintf family of functions, which print to debug output for the given platform.
+    <ul>
+      <li>Added <span class="code">Dprintf </span>and <span class="code">Vdprintf</span>, with currently only char8_t implementations (and no wchar_t implementations, for example).</li>
+      <li>Made it so that Vprintf, Vfprintf(stdout/stderr), Printf, and Fprintf(stdout/stderr) redirect to Dprintf on platforms which no-op these otherwise. </li>
+      <li>Updated the printf-related WriteFunction documentation to clarify behavior. </li>
+    </ul>
+  </li>
+  <li> Added Memchr16, Memchr32, and MemchrW. </li>
+  <li>Fixed a bug in <span class="code">StrtoU32(const char32_t* pValue, char32_t** ppEnd, int nBase)</span> and related functions for the case of char32_t and an nBase of 16. </li>
+  <li>Implemented <span class="code">EA_CACHE_PREFETCH_128</span> for all x64 platforms.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.15.01</span> (March 10, 2014) </p>
+<p>Changes</p>
+<ul>
+  <li>Made the following two functions 0-terminate even in the case of returning -1 (error).<br>
+    <span class="code"> &nbsp;&nbsp;&nbsp;&nbsp;int Strlcpy(char32_t* pDest, const char8_t* pSource, size_t nDestCapacity, size_t nSourceLength);</span><br>
+    <span class="code">&nbsp;&nbsp;&nbsp;&nbsp;int Strlcpy(char32_t* pDest, const char8_t* pSource, size_t nDestCapacity, size_t nSourceLength);</span></li>
+  <li>Made the VC++ version of TruncateToInt32 on x86 use a C cast for recent compiler versions, as that results in faster code. </li>
+  <li>Removed Registry keyword  
+  <li>Fixed linking of debug sony kettle libs.</li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Worked around a Coverity warning in scanf about a negatively indexed pointer, though that pointer was actually never dereferenced when negatively indexed.</p>
+  </li>
+  <li>
+      <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Made the Oprintf (ordered printf) family of functions safely handle input overflows of various types.</p>
+  </li>
+  <li>Implemented EAMalloca in a way that's portable to all relevant platforms. Previously it was VC++-specific due to being mapped to the VC++ malloca function.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.15.00</span> (February 14, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed GetCurrentProcessPath on Apple Platforms so that when executable is in a bundle it will return the path to the bundle. Changes also fix similiar issue in GetCurrentProcessDirectory.</li>
+  <li>Added wchar_t versions of functions in EATextUtil.h.</li>
+  <li>Added Strend and Striend:
+    <ul class="code">
+      <li>bool Strend(const char_t* pString, const char_t* pSuffix, size_t stringLength = kSizeTypeUnset)</li>
+      <li>bool Striend(const char_t* pString, const char_t* pSuffix, size_t stringLength = kSizeTypeUnset)</li>
+    </ul>
+  </li>
+  <li>Improved the flexibility of Strlcpy. </li>
+  <li>Fixed a problem with EAGlobal.cpp causing crashes on PS4 which were probably due to initialization order of that module. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.00</span> (December 5th, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Added Capilano and Kettle support.</li>
+  <li>Improved the definition of CountBits. Reported by Jeff Duncan</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed minor build file issue in EACallstack and removed some unnecessary attributes in both EACallstack and EAStdC.</p>
+  </li>
+</ul>
+<p></p>
+<hr>
+<p><span style="font-weight: bold;">Version 1.13.00</span> (November 15, 2013) </p>
+<p>Release notes:</p>
+<ul>
+  <li>Added clang-specific support for EAAlignOf. This fixes a couple cases of EAAlignOf not working with some types.</li>
+  <li>A change to the  behavior for <span class="small">EASTDC_USE_STANDARD_NEW </span>was made which has the effect of making so that by default EAStdC users need to link with <span class="code">void* operator new[]   (size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)</span>. This is the same operator new that EASTL uses, and so we don't expect many users to notice any change. However, if you get a linker error regarding a missing operator new then it's because your app needs to supply this version. Example minimal implementation of this operator new:<br>
+    <p class="code"> <span class="codeSmall">&nbsp;&nbsp;&nbsp;&nbsp;void* operator new[](size_t size, const char* <span class="lightened">/*name*/</span>, int <span class="lightened">/*flags*/</span>, unsigned <span class="lightened">/*debugFlags*/</span>, const char* <span class="lightened">/*file*/</span>, int <span class="lightened">/*line*/</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return ::operator new[](size); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;} </span></p>
+  </li>
+</ul>
+<p>Changes:</p>
+<ul>
+  <li>Added a 64 bit version of ReverseBits. It's not optimal but is rather a working placeholder for a future optimized version. </li>
+  <li>Made it so <span class="small">EASTDC_USE_STANDARD_NEW</span> isn't unilaterally defined to 1 in the build file. Reported by Patrick Laflamme. </li>
+  <li>Fixed <span class="code">int128_t::GetPartUint8</span> for 64 bit platforms. Reported by 
+
+
+Jason Beardsley.</li>
+  <li>Added the ability for <span class="code">StrToInt128</span> to read numbers specified in binary (e.g. 0b00100110101).</li>
+  <li>Fixed a bug in <span class="code">StrToInt128</span> with respect to auto-detecting base 16 where it would fail to detect 0x... sequences as base 16. </li>
+  <li>Made <span class="code">int128_t::StrToInt128</span> be a static function instead of a const member function. </li>
+  <li>Added <span class="code">Strstrip</span>, in EAString.h:
+    <blockquote>
+      <p class="codeSmall">/// Removes leading and trailing space, defined by the Isspace function.<br>
+        /// The trailing space is removed by potentially modifying the end position <br>
+        /// of the string via writing '\0'. The leading space isn't removed, but rather<br>
+        /// the first non-whitespace char in pString is returned. Thus beware that <br>
+        /// this function may return a pointer &gt;= pString, and you cannot free that <br>
+        /// that pointer instead of pString.<br>
+      /// This is similar to the sometimes seen strstrip C function.</p>
+    </blockquote>
+  </li>
+  <li>Added <span class="code">Strstart</span> and <span class="code">Stristrart</span>, in EAString.h:    
+    <blockquote>
+      <p class="codeSmall">/// Strstart<br>
+/// Returns true if pString begins with pPrefix.</p>
+      <p class="codeSmall">/// Stristart<br>
+  /// Returns true if pString begins with pPrefix, compared case-insensitively.<br>
+  /// Supports ASCII case comparisons only.</p>
+    </blockquote>
+  </li>
+  <li>Added the <span class="code">ConvertEpochSeconds</span>, in EADateTime.h
+    <blockquote>
+      <p class="codeSmall">/// ConvertEpochSeconds<br>
+        /// Converts seconds in an epoch to seconds in another epoch. You don't need to convert<br>
+        /// the nanoseconds portion of a DateTime (e.g. dateTime.GetNanoseconds()), as that value<br>
+        /// is a fractional second which is unchanged regardless of epoch. Recall that an epoch is<br>
+        /// a starting timepoint, such as how the Unix Epoch (time_t == 0) starts at Jan 1, 1970.<br>
+        /// This function extends and generalizes the functionality in DateTimeSecondsToTimeTSeconds and<br>
+        /// TimeTSecondsSecondsToDateTime.<br>
+        /// Returns seconds in the destination Epoch. Returns 0 if srcEpoch or destEpoch are invalid.<br>
+        /// Example usage:<br>
+        /// &nbsp; &nbsp;&nbsp;// Convert myDateTime to Unix time.<br>
+        /// &nbsp;&nbsp;&nbsp;&nbsp;int64_t unixSeconds = ConvertEpochSeconds(kEpochDateTime, myDateTime.GetSeconds(), kEpoch1970);</p>
+    </blockquote>
+  </li>
+</ul>
+<hr>
+<p><span style="font-weight: bold;">Version 1.12.00</span> (July 22, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Added the Memmem function, in &lt;EAStdC/EAMemory.h&gt;. This is equivalent to the memmem function found in GCC's <a href="http://linux.die.net/man/3/memmem">glibc</a> on Unix systems.</li>
+  <li>Implemented an improved workaround for Scanf handling of -0.0 under VC++ with /fp:fast specified on the compiler command line. </li>
+  <li>Fixed a bug in UTF8CharSize for the case that the leading char is 0xc2. This matches a similar fix for the UTF8Increment function in v1.04.03. Reported by Arnie Misfeldt.</li>
+  <li>Removed support in EAStopatch for the IA-64 (Itanium) platform. </li>
+</ul>
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<hr>
+<p><span style="font-weight: bold;">Version 1.11.01</span> (May 6th, 2013) </p>
+<p>Changes:</p>
+<ul>
+  <li>Removed redundant 'if' statement from UTF8CharSize(). Reported by Luc Isaak. </li>
+  <li>Made EAGlobal.cpp compatible with Windows phone TRCs. There was a function usage that Microsoft doesn't allow. </li>
+  <li>Fixed Valgrind complaint</li>
+  <li>Minor updates to EABitTricks.h and EAString.h documentation</li>
+</ul>
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.00</span> (April 3rd, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Extended all BitTricks functionality to 64 bit where 64 bit wasn't previously supported.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Added UTF8TrimPartialChar() to EATextUtil, where the other UTF8 functions are.</p>
+  </li>
+  <li>Added support for additional Microsoft platforms to EAProcess.h/cpp.</li>
+  <li>Fixed a mistaken assertion failure in Strlcat for the case that the destination buffer capacity was specified as zero. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.10.02</span> (March 4th, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Updated GetCurrentProcessDirectory for PS3 to return app_home if the GameData API fails to tell where the home directory is. This in some sense reverts the behaviour to be like previous EAStdC versions (which used to unilaterally return app_home) for the case of the GameData API failing.</li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.10.01</span> (February 4th, 2013)</p>
+<p>Changes</p>
+<ul>
+
+	<li>Added Samsung TV support</li>
+
+</ul>
+<p>Bug Fixes </p>
+<ul>
+	<li>WiiU Fixes</li>
+	<li>Windows Phone 8 restart invalid semaphone fix</li>
+	<li>Added template<> StaticMemory, which allows for generically declaring static memory.</li>
+	<li>Made GetProcessDirectory and GetProcessPath work on PS3.</li>
+	<li>Fixed some issues related to getting the current process's path/directory</li>
+	<li>Fixed PS3 library stub linker bug</li>
+	<li>Improved GetCurrentProcessPath for OS X and made it work for iOS.</li>
+	<li>Fixing VC++ compiler warnings</li>
+	<li>Made GetCurrentProcessPath work on new Microsoft platforms.</li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.10.00</span> (December 10th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added a pathCapacity argument to GetCurrentProcessPath and GetCurrentProcessDirectory. This allows for safer use of these functions in the case of arbitrary path buffer sizes.</li>
+  <li>Added support for defining <span class="small">EASTDC_VSNPRINTF8_ENABLED</span> globally as a nant build property. Requested by Arpit Baldeva for EAWebKit.</li>
+  <li>Added memcpy16 usage to EAMemory under PS3 compilers where appropriate. Updated some code documentation in EAMemory related to this. </li>
+  <li>Added WiiU support.</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed Stopwatch::SetUnits for the case of kUnitsCPUCycles. Previously it was trying to do some smart thing related to custom frequency calculations, but it resulted in kUnitsCPUCycles always being of lower resolution by default. The new code is simple and doesn't support the custom frequency feature, which was never used anyway.</p>
+  </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.09.00</span> (November 5, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added <span class="small">EA_FAIL</span> statements to StrtoU32, etc. upon overflow or underflow. For compatibility with C99, this functionality is disabled by default. However, it can be controlled at runtime via GetAssertionsEnabled / SetAssertionsEnabled. Suggested by Corey Taylor.</li>
+  <li>Stopwatch instances can now be declared as global objects which construct and possibly used before main(). Previously there were compiler/linker global init order issues that affected some platforms. Suggested by Brian Hixon. </li>
+  <li>Added EAPrintf support for the ' format specifier, which causes numbers to display with a thousands separator. This is a non-standard but common extension to the C Standard Library printf function. See <span class="small">http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/printf.3.html</span>. For example, a call to <span class="code">Printf(%'d&quot;, -123456789)</span> would result in <span class="code">-123,456,789</span> being printed. Currently it's not possible to substitute the ',' char for one that's more correct for a given locale, as is the case for the '.' decimal separator. This feature can be added if requested, but the EALocale package has locale-correct number formatting of its own for a variety of locales, though it doesn't have the full printf formatting functionality of the EAStdC Printf family. </li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed a bug in the Printf family for %g format output precision for char8_t printf (but not char16_t or char32_t). The bug was that when printing in exponent mode, %g was printing one more significant digit than the C99 and C11 Standards specify regarding the user-specified precision. For example <span class="code">printf(&quot;%.3g&quot;, 65432.1)</span> printed <span class="code">6.543e+04</span> instead of the correct <span class="code">6.54e+04</span>. The user-specified field width was obeyed according to the Standard, however, and continues to be obeyed after this fix.</li>
+  <li>Fixed the resolution of Stopwatch::kUnitsCycles for Microsoft x86 targets to be the full CPU tick resolution as opposed to the QueryPerformanceCounter resolution. The former was what is intended by the code and results in the user getting CPU ticks when asked for. Note that CPU tick frequency on x86 targets can change over runtime, but that was the case before this fix. All this fix does is not divide the CPU tick counts returned by rtdsc by some constant. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.06</span> (October 2nd, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Upated Microsoft platform SDK support for various platforms.</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed EAGlobal's handling of pointers on 64 bit platforms. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.05</span> (October 1st, 2012)</p>
+<p>Changes</p>
+  <ul>
+    <li>Changed LimitStopwatch to use uint64_t limits instead of just uint32_t limits.</li>
+    <li> Improved EADateTime Microsoft portability, as some Microsoft platforms don't support the GetLocalTime function.</li>
+  </ul>
+  <p>Bug Fixes</p>
+<ul>
+  <li>The mask used when writing the lower 28bits of the global pointer was inverted accidentally. Thanks to Kevin Moore for spotting and fixing this one.</li>
+  <li>Fixed issue with EAFixedPoint.h atan pointed out by Andre Pham.</li>
+  <li>Disabled volatile access ordering warning globally.</li>
+  <li>Revised Thread.h to avoid colliding with the EAThread package under GCC builds. </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed EAGlobal 64 bit non-desktop platform support. Previously it stored pointers incorrectly.</p>
+  </li>
+</ul>
+
+<p>Added Features</p>
+<ul>
+<li>Limit copying DLLs manually to fw2 builds.</li>
+<li>Added additional support for building for Windows Phone</li>
+<li>Added support for EAAssert on WinPRT ARM</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.04</span> (August 7 , 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixes warnings for constant expressions in TestCallback on Android</li>
+  <li>Made some function arguments in EADateTime.cpp consistent.</li>
+  <li>Cleaned up EAStopwatch.h to make its platform-specific #include usage consistent.</li>
+  <li>Added copylocal prop so DLL build can be tested.</li>
+  <li>Simplifying the preprocessor conditional block that decides whether or not to use type traits to determine if a type has a trivial destructor.</li>
+  <li>Modified HasTrivialDestructor to work properly with SSE intrinsic types under the Clang compiler.</li>
+  <li>Reduce iterations (time spent) on a data-time test.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.03</span> (July 3, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Updated the definition of EAAlloca to be more portable to different compilers. </li>
+  <li>Added DateTimeSecondsToTimeTSeconds(), TimeTSecondsSecondsToDateTime(), and IsDSTDateTime().</li>
+  <li>Added kTimeZoneNameCapacity, in order to create a constant describing the space required to hold time zone names.</li>
+  <li>Added BSD Unix support for GetTimeZoneBias().</li>
+  <li>Added char16_t to char32_t and char32_t to char16_t conversion orverloads for Strlcat.</li>
+  <li>Improved EAGlobal for 64 bit Microsoft platforms that aren't Windows.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.02</span> (June 4, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added  Log2Uint32 / Log2Int32 / Log2Uint64 / Log2Int64, which provide compile-time evaluations of base 2 log for constants.</li>
+  <li>Fixed a bug in DateTime under Microsoft OSs for the case of initializing to the current time, where the resulting calculated month could be wrong. </li>
+  <li>Added  <span class="small">EA_INIT_PRIORITY(1000)</span> to gAutoStopwatchSetup to cause it to init earlier on some platforms. </li>
+  <li>Added support for WinRT.</li>
+  <li>Added support for FreeBSD.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.01</span> (May 7, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Updated CountLeading0Bits and CountTrailing0Bits to use compiler intrinsics under VC++ and GCC. They have been measured as performing better. </li>
+  <li>Fixed a theoretical (though virtually impossible) <span class="small">HMUTEX</span> leak in EAGlobal InitOSGlobalSystem. Found by Coverity. </li>
+  <li>Fixed a mistake in Scanf string reader (which supports user-defined string sources) for when kReadActionUnread is executed. This didn't (and couldn't) result in unspecified behavior, but the break should be there for correctness. Found by Coverity. </li>
+  <li>Fixed int128_t::SetPartUint32(int nIndex, uint32_t value), which was missing break statements and generating wrong results. Found by Coverity.</li>
+  <li>Added nanosecond support to the DateTime class. Time can now be measured in nanoseconds since the date 1/1/0000. </li>
+  <li>Added int128_t constructors for type long and unsigned long. This allows for more seamless use of built-in int types with int128_t. </li>
+  <li>Made int128_t::Int128ToStr allow you specify whether leading zeroes are printed, a prefix (e.g 0x) is printed, or use the default.</li>
+  <li>Significantly improved the performance of the StrtoXXX family of functions for 32 bit platforms, due to removing the usage of a 64 bit divide and modulus for most cases. </li>
+  <li>Changed int128_t's <span class="small">INT128_MIN</span> (etc.) to <span class="small">EASTDC_INT128_MIN</span> (etc.). This was needed due to potential collisions with Standard libraries and their compilers, which may #define these values to something else. This is a potentially breaking change, though the fix is trivial.</li>
+  <li>Fixed DateTime to now obey the timeFrame argument to the Set function and default constructor. Previously it always used only local time. </li>
+  <li>Fixed bug in the return value of the Windows version of GetEnvironmentVar for some cases. </li>
+  <li>Revised EAProcess.cpp to add support for OS X and to fix subtle uncommon string capacity/length bugs in the existing code.</li>
+  <li>GetCurrentProcessPath and GetCurrentProcessDirectory now properly support OS X, Android, Palm, and other non-desktop Linux variants. </li>
+  <li>Fixed a couple warnings in EABitTricks for using the Round template functions with unsigned types. Reported by Anish Dave. </li>
+  <li>Fixed the return value of EABitTricks' RoundUpToEx to return T instead of int32_t.</li>
+  <li>Added required overloads for platforms where wchar_t and char16_t are not the same type.</li>
+  <li>Added support for the clang compiler in unix64 configurations.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.08.00</span> (February 28, 2012)</p>
+<p>Additions</p>
+<ul>
+  <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+  <li>Added EAMalloc/EAFreea to provide a safer alternative to EAAlloca. Updated the documentation to EAAlloca to make its (lack of) safety more obvious. </li>
+  <li>Added ARM support for <span class="small">EA_CACHE_PREFETCH_128</span>, etc. in EAMemory.h. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed some additional bugs in Strftime/Strptime beyond the bug fixed in EAStdC v1.07.00. These functions now pass the unit tests. </li>
+  <li>Fixed a bug in Scanf where any of [\]^_` would be mistakenly matched as hex digits for reading %x fields. Reported by Avery Lee. </li>
+  <li>Fixed a 64 bit warning in EATextUtil in the templated SplitTokenDelimited and SplitTokenSeparated functions. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>LimitStopwatch::IsTimeUp, GetTimeRemaining, and GetTimeRemainingFloat were changed to be const.</li>
+  <li>Added some code to EAAlignment.h to allow working around a bug in PS3 GCC for PowerPC with respect to vector types. In particular the <span class="small">EASTDC_DECLARE_TRIVIAL_DESTRUCTOR</span> macro was added.</li>
+  <li>Added documentation on RandomTaus and on how to generate or shuffule random ranges. </li>
+  <li>Changed the optimized Strlen to use a union of pointers instead of having a bunch of hard-to-read casts.</li>
+  <li> Changed Memset16 to use a union of pointers in order to avoid casting between pointer types and uintptr_t.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.07.00</span> (December 21, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>Added EA::StdC::Init and Shutdown functions, which should be called on app startup and shutdown. The purpose of these is to init data structures that are impossible to auto-initialize within EAStdC. As it currently stands, not calling these merely results in a rare potential Android Printf log race condition, and so most users don't need to drop what they are doing and change their code to call these. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a bug in GetTimeZoneBias for non-Microsoft platforms which caused it to take up to a second to execute. Reported by Herbert Parkes.</li>
+  <li>Fixed a bug in Strptime's handling of %Y. Reported by Changning Zhou.</li>
+  <li>Made it so that <span class="small">EASPRINTF_FIELD_MAX</span> doesn't apply to string fields that aren't having their format converted. This is less of a bug fix than a limitation relaxation, but some users might think of it as a bug fix. </li>
+  <li>Fixed a compiler warning in EAFixedPoint.h regarding a cast from int. Reported by Alex Lindsay.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added code to Stopwatch to handle the case that the stopwatch was started before the global stopwatch init.</li>
+  <li>Bumped up <span class="small">EASPRINTF_FIELD_MAX</span> to 4096 for desktop platforms (e.g. Windows, Linux, OS X). </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.06.01</span> (October 19, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>Added string class versions of Strlcpy and Strlcat. So now you can Strlcpy and Strlcat between strings. Previously you could do that with the ConvertString function, but that function has been deprecated and replaced with these more generic and complete functions. </li>
+  <li>Added support for the clang compiler, which is new for the iPhone iOS5 SDK. This amounted simply to avoiding a couple compiler warnings. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a bug in GetTimeOfDay on PS3 where the result could be off by a few microseconds. </li>
+  <li>Fixed the DJB2 hash string function under x86 to pay attention to the nLength parameter instead of looking for a 0-terminated string. This was accomplished by simply deleting the asm version of this function. Reported by Andy Younger. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>The GetTime function has been revised to have a clarified set of specifications and a revised implementation for those specifications. Thanks to Michel Donais for his contributions on this. </li>
+  <li>Improved the endian swapping code efficiency for some ARM targets, and added some clarifying documentation. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.06.00</span> (September 26, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>Added StringVcprintf and StringPrintf, which allow doing printf directly into a string object. The advantage over eastl::string::printf is that it doesn't need to call printf twice.
+    <blockquote>
+      <p class="code">template &lt;typename String&gt;<br>
+  int StringVcprintf(String&amp; s, const String::value_type* pFormat, va_list arguments);<br>
+  <br>
+  template &lt;typename String&gt; <br>
+  int StringPrintf(String&amp; s, const String::value_type* pFormat, ...);</p>
+    </blockquote>
+  </li>
+  <li>Added char32_t functionality to match char8_t and char16_t. The primary use is for platforms that necessarily have a 32 bit wchar_t. A result of this is that wchar_t is also supported, regardless of whether it matches char8_t, char16_t, or char32_t. Another outcome of this is that sized character field specifiers are now supported: %I8s %I16s %I32s %I8c %I16c %I32c. For highest code portability across platforms that have varying versions of wchar_t, use wchar_t consistently or use these sized types for wide strings. Currently char16_t and char32_t functionality is non-optional, though it mostly or entirely gets linked away when not used. </li>
+  <li>Added GetTimePrecision, which returns the precision of the GetTime function. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Revised <span class="small">EASTDC_MEMORY_INLINE_ENABLED</span> to be more portable to users' builds. It was being tripped up by things like users mixing debug and release builds of code. </li>
+  <li>Improved the precision of the GetTime function on PS3 from second-level precision to (theoretically) nanosecond-level precision.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.05.05</span> (August 18, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>EACallback has been completed and is unit tested. EACallback allows you to have a callback called at some time in the future, based on system time or based on ticks or user events. One-shot and repeat callbacks are supported.</li>
+  <li>Added RandomTaus to the Random number generator set. RandomTaus optimizes randomness and to some degree size at the cost of speed and thus can be a useful alternative to the other two present generators.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed cases of va_start calls not being followed up by va_end calls. While in theory this omission was a bug, in practice it should not have been affecting users, as va_end is a no-op on all the platforms we use. Repored by Luc Isaak. </li>
+  <li>The printf family of functions for Android to the Android log is now fixed with respect to newlines. Previously a single sprintf output could be spread across multiple log lines, whereas now it works as it should. A downside to this is that if you do a printf that doesn't have a newline in it and your app exits in some way before another printf is done with a newline then that last printf will never get flushed to the outout device.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added the concept of a WriteFunctionState to user-supplied write WriteFunction of the Printf function family. This doesn't affect most users, but makes the implementation of a user-defined custom printf back-end more flexible. </li>
+  <li>Made FPrintf to stdout and stderr on Android act the same as Printf and use Android log output.</li>
+  <li>EAGlobal now supports Linux and OS X. It might be able to support other Unix and Unix-like platforms, but this isn't yet tested. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.05.04</span> (May 5, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>Added Playbook platform support.</li>
+  <li>Added a code stripper script, useful for removing platform-specific code as needed. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a unit test bug which would result in DateTime testing to mistakenly report an error.</li>
+  <li>Changed the static storage method of EAGlobal to use a raw buffer. On some platforms the previous aligned buffer wouldn't work due to an order-of-initialization problem.  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.05.03</span> (March 14, 2011) </p>
+<p>Additions</p>
+<ul>
+  <li>Added CTR support.;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Build script files were not exporting the location of the EAStdC SPU library.</li>
+  <li>Fixed EASprintf's AndroidLogWriter to return the written count instead of returning 1. </li>
+  <li>Fixed Airplay (mobile platform) compile error related to QueryPerformanceFrequency usage. </li>
+  <li>Fixed bug in 
+
+
+SetElapsedTime and 
+
+
+SetElapsedTimeFloat for the case that the stopwatch is already running. Reported by Andrei Stanescu.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Disabled bulk builds for the EAStdC SPU library to cut down on executable code size.</li>
+  <li>Added assertions to Memcpy functions to verify the memory doesn't overlap. Suggested by Gareth Lewin's team. </li>
+  <li>Added 'q' modifier (acts the same as 'll') support to EASprintf as extension functionality. This addition was necessary because iOS (e.g. iPhone) exposes it in its C99 headers (e.g. through the defintion of C99's PRId64). </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.05.02</span></span> (January 3, 2010) </p>
+<p>Additions</p>
+<ul>
+  <li>Added <span class="small">EASTDC_STOPWATCH_DISABLE_CPU_CALIBRATION</span>, which allows you to bypass the startup wait on Windows for Stopwatch calibration. Suggested by Avery Lee. </li>
+  <li>Added SPU build support, which is enabled by default. It can be disabled via the <span class="small">EASTDC_PS3_SPU_ENABLED</span> define or the nant <span class="small">EAStdC.EASTDC_PS3_SPU_ENABLED</span> property. </li>
+  <li>Added signed integer versions of all of the EAEndian functions (previously EAEndian only supported unsigned integer types).</li>
+  <li>Added the following for compatibility with the Endian package and existing EA code:
+      <ul>
+        <li>uint32_t ReadFromBigEndian(const void* pSource, int32_t nSourceBytes);</li>
+        <li>void WriteToBigEndian(const void* pDest, uint32_t data, int32_t nSourceBytes);</li>
+      </ul>
+  </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Revised Memcpy on PS3 SPU to work around a broken compiler-provided version of memcpy. Previously the SPU memcpy would fail to work properly when the source or destination were not 16 byte aligned. Provided by Joe Pribele.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.05.01</span></span> (November 5, 2010) </p>
+<p>Additions</p>
+<ul>
+  <li>Added string class-based versions of EATextUtil's GetTextLine, SplitTokenDelimited, and SplitTokenSeparated.</li>
+  <li>Added an SPU memcpy to the examples directory, with the intention of making it part of the library in the future.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in MemfillAny which would not fill all the memory. Reported by James Ding.</li>
+  <li>Fixed a compiler warning stemming from a bug in the VC++ headers. Reported by Patrick McMorris. </li>
+  <li>Changed a memcpy to memmove in EcvtBuf. Reported by James Fairweather. </li>
+  <li>Fixed a bug in the length of the XBox 360 game directory in EAProcess.cpp. </li>
+  <li>Fixed a Strlcpy bug for the case of an empty source string. Submitted by Yee Cheng Chin.</li>
+  <li>Fixed a bug in AddTime where it was limited to 32 bits of time difference instead of 64. Reported by Alexei Koulikov</li>
+  <li>Fixed a bug on Xenon due to a difference between float rounding for int32_t vs. uint32_t</li>
+  <li>Fixed bug in GetCurrentProcessDirectory where it would return the wrong length. Submitted by Justin Russell.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Updated the EADateTime function to enable more precise time information on PS3, though the use of librtc. This can be enabled via the <span class="small">EASTDC_PS3_LIBRTC_ENABLED</span> config parameter. This parameter exists and is disabled by default because librtc requires the user to enable librtc on startup via cellSysmoduleLoadModule(<span class="small">CELL_SYSMODULE_RTC</span>) and linking librtc_stub.a into the application.</li>
+  <li>Added a print EXIT(n) at the end of the unit tests on wii to support EARunner_Wii; it will indicate to the runner that the test is completed. </li>
+  <li>Changes some of the tests to have better float tolerance, specifically for wii</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.05.00</span></span> (June 9, 2010) </p>
+<p>Release notes </p>
+<ul>
+  <li>This version has been updated to be compatible with PS3 SN 330, CodeWarrior 1.3, and Android platform.</li>
+</ul>
+<p>Additions</p>
+<ul> 
+  <li>Added generic EASTL string 8 &lt;--&gt; 16 bit conversion functions: <br><span class="code">
+    &nbsp;&nbsp;&nbsp;&nbsp;template &lt;typename Source, typename Dest&gt;<br>
+    &nbsp;&nbsp;&nbsp; bool ConvertString(const Source&amp; s, Dest&amp; d);<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;template &lt;typename Source, typename Dest&gt;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Dest ConvertString(const Source&amp; s);<br></span></li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Compiler compatibility work.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.05</span></span> (April 5, 2010)</p>
+<p>Additions</p>
+<ul>
+  <li>Added Mobile support: iPhone, Palm Pre, and Android. More mobile platforms to follow. </li>
+  <li>Added encoding versions of strlcat, provided by Andrew Willmott:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;size_t Strlcat(char16_t* pDestination, const char8_t* pSource, size_t nDestCapacity);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;size_t Strlcat(char8_t* pDestination, const char16_t* pSource, size_t nDestCapacity);</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Worked around  some GCC 4.4 Linux warnings related to strict aliasing. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added PS3 SN compiler v320 and later compatibility. The new compiler was generating some new warnings. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.04</span></span> (March 1, 2010)</p>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Worked around new Xenon XDK version compiler error in the unit tests.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.03</span></span> (November 18, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in UTF8Increment. Reported by Nick Beatty.</li>
+  <li>Fixed bug in Scanf for the case of Sscanf(&quot;0.1797734499&quot;, &quot;%f&quot;, &amp;someFloat). What was special about this case was that it represented an exponent of the power -10 (wouldn't happen with -9 or -11), and the code was mistakenly doing a test for &gt;10 where it needed to do &gt;=10. Submitted by Amelia Von Haden.</li>
+  <li>Fixed bug in Scanf for the case of Sscanf(&quot;.750&quot;, &quot;%f&quot;, &amp;someFloat).  Submitted by Amelia Von Haden.</li>
+  <li>Fixed bug in Strlcpy(char16_t* pDestination, const char8_t*  pSource, size_t nDestCapacity, size_t nSourceLength) which could cause it to mistakenly fail if the user passed the source strlen instead of -1. Reported by Arpit Baldeva.</li>
+  <li>Fixed a potential EAOSGlobal leak of the OSGlobalManager singleton. A small problem arising out of this fix is that the application cannot Call InitOSGlobalSystem more than once and then pair it with ShutdownOSGlobalSystem more than once without causing the refcount to go negative. In practice the negative refcount should be harmless unless the application wants to subsequently re-use the OSGlobalSystem after it has been shut down. The solution is to call ShutdownOSGlobalSystem only once after its usage. </li>
+  <li>Fixed a bug in Scanf reading an &quot;INFINITY&quot; string beyond its bounds. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Implemented a workaround for a VS2005 SP1 bug related to Microsoft's &lt;intrin.h&gt;.</li>
+  <li>Made OSGlobal clear the OS global environment variable in ShutdownOSGlobalSystem. This allows the OSGlobal system to be reused in a DLL that is multiply loaded and unloaded in a process. Requested by Cameron Dunn, for use in a Photoshop plugin. </li>
+  <li>Updated char16_t support to use <span class="small">EA_CHAR16</span>(&quot;&quot;) instead of L&quot;&quot;. This allows for C++0x compatibility. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.02</span></span> (October 5, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>EAStdC: Added support for EAStopwatch on Linux64.</li>
+  <li>Added AtoF32, which is identical to Atof but returns float instead of double. Also added StrtoF32. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed some Linux64 / GCC 4.3 compiler warnings.</li>
+  <li>Fixed Wii printf support for the * format specifier (e.g. printf(&quot;%*s&quot;, &quot;abc&quot;)), which previously was broken on Wii. </li>
+  <li>EAStdC: Fixed DateTime conversion function for non-Windows platforms during daylight savings.</li>
+  <li>Made FtoaEnglish respect the user-provided nPrecision argument, whereas previously it used a hard-coded value of 8. Reported by Jan Lotz. </li>
+  <li>Fixed a use of <span class="small">EA_ASSERT_F</span> to use <span class="small">EA_ASSERT_FORMATTED</span> instead, as the former is supported by EATrace but not EAAssert. Reported by Darryl Gates. </li>
+  <li>Fixed some compiler warnings newly generated by the latest Wii and SN PS3 compilers. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Removed the <span class="small">EASTDC_MAX_FCVT_PRECISION</span> config define, as it is no longer needed. </li>
+  <li>Ftoa/FtoaEnglish output precision is slightly altered from how it was previously such that it is consistent with the API specification. Previously, when exponential output was requested it would interpret the precision argument to refer to all characters whereas the specification called for it to refer to the digits after the decimal point.</li>
+  <li>Modified <span class="small">EA_XBDM_ENABLED</span> slightly. Now it keys off of being equal to 0 or 1 instead of being undefined or defined. A result of this is that you may need to globally define <font size="-1">EA_XBDM_ENABLED</font> to 1 in a release build if you want it to work there. For Framework2/Nant users, the EAStdC.build file supports using <span class="small">EA_XBDM_ENABLED</span>=[0|1] in the masterconfig.xml file. Suggested by Kevin Perry. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.01</span></span> (August 5, 2009)</p>
+<ul>
+  <li>Fixed  Wii compiler warnings that result with latest  compiler.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.04.00</span></span> (June 24, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>Added UTF8 utility functions to EATextUtil.h/cpp. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in Scanf for the case of %I64 whereby it would read the value as zero. Reported by Olivier Nallet. </li>
+  <li>Fixed bug in Scanf for the case of %i whereby it was  reading hex values (e.g. 0x1234) as zero. Reported by Scott Penso. </li>
+  <li>Fixed a PS3 SN compiler warning in SprintfOrdered.</li>
+  <li>Fixed a Wii compiler warning generated by the latest Wii compiler. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Implemented workaround for SN PS3 compiler optimized code misgeneration of RandomLinearCongruential::RandonUint32Uniform(uint32_t nLimit).</li>
+  <li>Implemented an optimized Strlen  which executes 1.5x faster for smallish strings to 5x faster for longish (length &gt;= 1024) strings.</li>
+  <li>Added code to avoid using HUGE_VAL on VC++/Windows. This value is linked in from the C runtime library, and removing its usage allows the scanf code to be independent of the C runtime library.</li>
+  <li>A seed of zero for RandomLinearCongruential no longer results in an auto-seed like with 0xffffffff. This makes it consistent with the documentation and consistent with RandomMersenneTwister and make the behaviour cleaner: there is exactly one way to auto-seed it, with 0xffffffff.</li>
+  <li>Changed the .build file property <span class="small">EASTDC_USE_STANDARD_NEW = true|false</span> to <span class="small">EAStdC.EASTDC_USE_STANDARD_NEW = 1|0</span>. Any existing uses of this option will need to change, though it's anticipated that there aren't any existing uses since this feature was added only in the  previously published version. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.10</span></span> (March 9, 2009)</p>
+<p>Release Notes </p>
+<ul>
+  <li>This version reverts the Memcpy/Memset/Memclear function changes made in v1.03.09. The problem is that the 1.03.09 functions were not compatible with uncached memory, and while they were documented as such, users felt that it shouldn't be this way. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added C (cached) versions of Memcpy, Memset, Memclear as MemcpyC, MemsetC, MemclearC. These implement fast versions of memory functions but which don't work with uncached memory, such as XBox 360 <span class="small">PAGE_NOCACHE</span> or <span class="small">PAGE_WRITECOMBINE</span> memory. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a memory corruption bug in on PS3 with the tiny EAStdC Mutex class that EAGlobal uses. </li>
+  <li>Fixed a bug in int128_t for the case of shifting by 0 or 32 whereby you could get the wrong result. </li>
+  <li>Fixed #include problem for the timeval struct in DateTime.cpp which could result in a compile error if the user defines <font size="-1">WIN32_LEAN_AND_MEAN</font> globally. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Converted a couple uses of EASTDC_NEW to new from the previous custom version of new being used. These are cases that should rarely, if ever, be called in practice. This change is due to the VC++ linker looking for EASTDC_NEW even when it wasn't used and thus causing link errors for users who should need to supply this function. An upcoming version of EAStdC is set to use ICoreAllocator for this instead. Added <font size="-1">EASTDC_USE_STANDARD_NEW</font> build property to control this. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.09 </span></span>(January 19, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>The scanf family of functions is now ready for use. This includes the following functions in 8 and 16 bit versions:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Cscanf(ReadFunction pReadFunction, void* pContext, const char_t* pFormat, ...);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Fscanf(FILE* pFile, const char_t* pFormat, ...);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Scanf(const char_t* pFormat, ...);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Sscanf(const char_t* pTextBuffer, const char_t* pFormat, ...);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Vcscanf(ReadFunction pReadFunction, void* pContext, const char_t* pFormat, va_list arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Vfscanf(FILE* pFile, const char_t* pFormat, va_list arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Vscanf(const char_t* pFormat, va_list arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Vsscanf(const char_t* pTextBuffer, const char_t* pFormat, va_list arguments); <br>
+    These functions implement C99-standard scanf in a portable, efficient and consistent way across platforms. Performance should be both better than the built-in scanf and better-conforming than the compiler-supplied versions. Additionally, extensions such as %b (binary) and %I32/%I64 (int32_t/int64_t) are provided as well. Currently decimal points are hard-coded to '.', whereas decimal points are ',' for some locales. If you need locale-specific support, please notify the maintainers and this can be done. <br>
+    <p></p>
+  </li>
+  <li>Added Strftime and Strptime, which are time string printing and scaning functions, respectively. These are similar to Posix strftime and strptime. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in FtoaEnglish whereby an input of 0.0 with exponent == true resulted in a bad output. Submitted by Alex Bilyk. </li>
+  <li>Fixed bug in DateTime whereby setting the year (with kParameterYear) would cause it to set it to year-1 in some cases. Reported by Bill Schnurr. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Memcpy, Sprintf family function signatures changed to include <font size="-1">EA_RESTRICT</font> for theoretically improved performance. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.08 </span></span>(December 2, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added Memcheck, Memset8_128, Memcpy128, Memclear. </li>
+  <li>Moved EAStopwatch from UTFFoundation to here.</li>
+  <li>Added Osprintf, etc. which implements ordered sprintf. This is whereby the format arguments specify their argument order and thus the format string can be rearranged. This is useful for localization of format strings. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in Memset16 and Memset32 whereby it could mis-fill if the destination was not aligned. </li>
+  <li>Worked around Wii standard C library time bug in EADateTime. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Implemented faster versions of Memcpy functions for some platforms. Note that some platform memcpy implementations are nearly optimal as-is and don't benefit from custom implementations; at least not for general memory copying. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.07</span></span> (October 28, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added Vscprintf, which mimics Microsoft's <a href="http://msdn.microsoft.com/en-us/library/w05tbk72(VS.71).aspx">_vscprintf </a>.</li>
+  <li>Added GetTimeOfDay, which is a portable version of the well-known Posix/Unix gettimeofday function. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Corrected a problem in StringWriter8 which resulted in an overflow if it encountered a UTF8 cluster than extended beyond the end of the destination buffer. Submitted by Jon Parise.</li>
+  <li>Fixed Strtok documentation error which could lead the user to writing an infinite loop if the user believed the documentation sample code instead of the documentation function specification. Reported by Daniel Brown. </li>
+  <li>Fixed Sscanf and Vsscanf, which didn't work for many cases. Sscanf and Vsscanf now call the C standard library built-in vsscanf. This is an intermediate fix while the final custom implementation of these functions is implemented. This version will be a little slower and have some portability differences between compilers, but will work OK for most cases.</li>
+  <li>Fixed crash bug in RandomMersenneTwister. Reported by Andrea Schiel. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Fscanf and Scanf now are implemented, though they work by calling the std C implementation and not yet by calling our custom implementation. </li>
+  <li>Added kInt32MinCapacity, etc. identifiers to EAString.h for use with the itoa family of functions. Suggested by Luc Isaak. </li>
+  <li>Revised the GetSeed/SetSeed code so that using SetSeed on the results of GetSeed results in the same state as before GetSeed. Previously that was not guaranteed behavour, though  most users would likely want it to be so. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.06</span></span> (August 18, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added VS2008 compatibility, which amounted to quelling a new compiler warning or two. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Changed char16_t usage to char8_t usage in EAGlobal.cpp to be compatible with non-nant builds. </li>
+  <li>Fixed pc64-vc-dll-dev-opt warning C2143 (syntax error : missing ';' before ''template...).</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.05</span></span> (May 13, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added StrlenUTF8Decoded, which returns the character length of a UTF8 string, and StrlenUTF8Encoded, which returns the Strlen of a UTF8-encoded equivalent of a UTF16 string. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Deprecated Memcpy(char16_t*) and Memmove(char16_t*). These functions were never intended to exist and can only cause silent problems.</li>
+  <li>Fixed potential negative bounds read in EACType.h. Reported by Frank Barchard. </li>
+  <li>Fixed decimal calculation bug in the the Fcvt and Ecvt functions for a particular numerical case. This also affects the Printf family of functions for %f, %e, %g. In particular, the bug resulted in Printf(&quot;%.1f&quot;, 0.952) printing &quot;0.1&quot; instead of &quot;1.0&quot;.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.04</span></span> (April 3, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Changed strcmp family of functions for char8_t to compare based on unsigned char values instead of signed char values. This is  in line with  the C89 and C99 standards.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version <span style="font-weight: bold;">1.03.03</span></span> (March 20, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added PS2 compatibility. Provided by Philip Dunstan.</li>
+  <li>Added <font size="-1">EASTDC_VERSION / EASTDC_VERSION_N</font> to the definition set. This allows for determining the version at compile time.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in UTF8 to UTF16 Strlcpy whereby a bogus failure detection was occurring if the last char in the string was a 2+ byte UTF8 sequence. This bug was also present in the EAIO package and is fixed in EAIO 2.07.02. </li>
+  <li>Fixed bug in Ftoa(double dValue, char8_t* pResult, int nInputLength, int nPrecision, bool bExponentEnabled) for certain kinds of numbers with fractions.</li>
+  <li>Fixed bug in Strtod(const char16_t*pString, char16_t** ppStringEnd) whereby ppStringEnd wasn't assigned.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Revised AlignUp and AlignDown for pointers such that they align based on byte alignments instead of object alignments. This is closer to what people want and is aligned with rwstdc. </li>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+  <li>Changed a couple EADateTime functions to return uint32_t instead of uint8_t and uint16_t. The latter was tripping SNC code generation bugs and is less efficient anyway. </li>
+  <li>Deprecated the following functions, as they are redundant with existing functions: AlignAddressUp, AlignObjectUp, AlignAddressDown, AlignObjectDown, IsAddressAligned, IsObjectAligned. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.03.02</span> (January 7, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed VS2003 DLL export bug in int128_t.cpp. Submitted by Scott Penso.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.03.01 </span> (December 17, 2007)</p>
+<p>Additions</p>
+<ul>
+  <li>Added uint64_t version of GetHighestBitPowerOf2. Provided by Chris Hecker. </li>
+  <li>Added support for the SN PS3 compiler. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.03.00 </span> (November 5, 2007)</p>
+<p>Additions</p>
+<ul>
+  <li>HashCRC now supports reversed bit CRC via CRC32Reverse. Note that reverse 
+	CRC does not refer to reversing the algorithm; it refers to reversed bit 
+	order. It turns out that a number of existing standardized protocols use 
+	reverse CRC instead of normal CRC. Proposed by Andrew Willmott. </li>
+	<li>Alphanumeric string compare implemented: StrcmpAlnum / StricmpAlnum. Proposed by Frank Barchard.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>&nbsp;&lt;none&gt;</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.02.00 </span> (September 10, 2007)</p>
+<p>Additions</p>
+<ul>
+  <li>Added FNV1 Calculator.html to the examples directory. It is a javascript page which calculates FNV1 string hashes. Created by Henry Goffin. </li>
+  <li>Added clarifying documentation to EARandom.h.</li>
+  <li>Started work on an EAScanf implementation. The intention  is to have a full scanf implementation in EAScanf.cpp, whereas the current scanf implementation within EASprintf.cpp has weaknesses and limitations. </li>
+  <li>Added a bunch of HTML documentation files to the /doc directory. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed potential symbol collision with the UTFFoundation package int128_t class. Note that the EAStdC int128_t comes directly from UTFFoundation and is the new home for that code. </li>
+  <li>Fixed bug in Cprintf family of functions. These are the printf functions whereby the user specifies a write function callback instead of a FILE (fprintf) or char buffer (sprintf). </li>
+  <li>Fixed unit test bug related to EADateTime. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>All the public functionality of EAStdC is now exported in the DLL build. </li>
+  <li>The scanf function declarations have been moved from EASprintf.h to EAScanf.h. EASprintf.h now #includes EAScanf.h for backwards compatibility. The intention here is to have a full scanf implementation in EAScanf.cpp, whereas the current scanf implementation within EASprintf.cpp has weaknesses and limitations. </li>
+  <li>Revised GetTimeZoneBias under Microsoft OSs to provide more reliable information based on the system's settings.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.01.00 </span> (July 20, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Added EAGlobal, which implements a global variable wrapper. In particular, this wrapper allows for cross-dll global variables that would otherwise be impossible with conventional built-in objects or pointers. EAGlobal has the same functionality as the previous UTFFoundation/EAGlobal and EAOSGlobal files and classes as well as some private functionality found in other EA packages that have needed this kind of functionality. </li>
+</ul>
+<p>Bug Fixes
+</p>
+<ul>
+  <li>Fixed bug in char16_t version of FtoaEnglish.</li>
+</ul>
+<p>Changes
+</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.00.00 </span> (June 29, 2007)</p>
+<p>This is the first version of EAStdC as a standalone package, but most of it derives from UTFFoundation 2.11.00 and rwstdc 1.03.00.</p>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>

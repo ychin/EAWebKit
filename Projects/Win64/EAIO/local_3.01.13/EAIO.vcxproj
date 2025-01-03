@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc64-vc-debug</Configuration>
+    <Platform>x64</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc64-vc-debug|x64">
+      <Configuration>pc64-vc-debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc64-vc-opt|x64">
+      <Configuration>pc64-vc-opt</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}</ProjectGuid>
+    <Keyword>x64Proj</Keyword>
+    <ProjectName>EAIO</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>6011; 4365; 4548; 4619; 4530; 4217; 4917; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EAIO_FILEPATH_ENABLED=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc64-vc-debug\lib\EAIO.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc64-vc-debug\lib/EAIO.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc64-vc-debug\lib" mkdir "pc64-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\EAIO" mkdir "pc64-vc-debug\build\EAIO" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
+    <OutDir>pc64-vc-debug\lib\</OutDir>
+    <IntDir>pc64-vc-debug\build\EAIO\v\</IntDir>
+    <TLogLocation>pc64-vc-debug\build\EAIO\v.tlog\</TLogLocation>
+    <TargetName>EAIO</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>6011; 4365; 4548; 4619; 4530; 4217; 4917; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EAIO_FILEPATH_ENABLED=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc64-vc-opt\lib\EAIO.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc64-vc-opt\lib/EAIO.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc64-vc-opt\lib" mkdir "pc64-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\EAIO" mkdir "pc64-vc-opt\build\EAIO" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
+    <OutDir>pc64-vc-opt\lib\</OutDir>
+    <IntDir>pc64-vc-opt\build\EAIO\v\</IntDir>
+    <TLogLocation>pc64-vc-opt\build\EAIO\v.tlog\</TLogLocation>
+    <TargetName>EAIO</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\EAIO.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFile.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileAsync.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileBase.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileDirectory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileNotification.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileStream.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileUtil.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStream.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamAdapter.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamBuffer.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamChild.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamMemory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Allocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncExecutor.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncTypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileBase.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileDirectory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileNotification.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAIniFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamAdapter.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamBuffer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamChild.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamCpp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamFixedMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamNull.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\FnEncode.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\FnMatch.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\PathString.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Android\EAFileStreamAndroid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\compat\EAFilePath.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAAsyncExecutorImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOEARefCount.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOEASTLCoreAllocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOFileStreamImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOStreamImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOZoneObject.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\NX\EAFileStreamNX.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Sony\EAAsyncExecutorSony.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Sony\EAFileStreamSony.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\StdC\EAAsyncExecutorStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\StdC\EAFileStreamStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Unix\EAAsyncExecutorUnix.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Unix\EAFileStreamUnix.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Win32\EAAsyncExecutorWin32.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Win32\EAFileStreamWin32.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\scripts\EAIO_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\Allocator.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAAsyncExecutor.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAAsyncStream.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileDirectory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileNotification.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileStream.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileUtil.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAIniFile.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStream.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamAdapter.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamChild.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamCpp.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamFixedMemory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamMemory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamNull.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\FnEncode.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\FnMatch.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\PathString.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\compat\EAFilePath.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAAsyncExecutorImpl.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOCoreAllocator.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOUtil.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOZoneObject.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

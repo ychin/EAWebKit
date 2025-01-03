@@ -1,0 +1,179 @@
+<project>
+    <!-- Define the dirtysock platform names used for source locations -->
+    <!-- remove when EATech Gen4 packages are released -->
+    <property name="dirtyplat" value="${config-system}"/>
+    <property name="dirtyplat" value="xboxone" if="${config-system} == 'capilano'"/>
+    <property name="dirtyplat" value="gdk" if="${gdk.enabled??false}"/>
+    <property name="dirtyplat" value="pc" if="${config-system} == 'pc64'"/>
+    <property name="dirtyplat" value="unix" if="${config-system} == 'unix' or ${config-system} == 'unix64'"/>
+    <property name="dirtyplat" value="ps4" if="${config-system} == 'kettle'"/>
+
+    <!-- set config-vs-version on platforms we use VS with, currently the only one that it doesn't get
+         set for by default is PS4. different customers might always set this
+         so we should do the same so we can validate the same changes  -->
+    <set-config-vs-version if="${config-system} == 'kettle'"/>
+
+    <!-- shared warnings that we use for the c-style builds (c, objc) -->
+    <property name="dirtysock.cc.options" local="true" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+        -Wextra
+        -Wformat=2
+        -Winit-self
+        -Wmissing-declarations
+        -Wmissing-field-initializers
+        -Wold-style-definition
+        -Wpointer-arith
+        -Wsign-compare
+        -Wshadow
+        -Wstrict-aliasing
+        -Wstrict-prototypes
+        -Wuninitialized
+        -Wunreachable-code
+        -Wwrite-strings
+        -fno-omit-frame-pointer
+        -std=c11
+    </property>
+
+    <BuildType name="dirtysock.clibrary" from="${dirtysdk-buildtype}">
+        <option name="buildset.cc.options">
+            ${option.value}
+            ${dirtysock.cc.options??}
+        </option>
+
+        <option name="buildset.cc.options" if="${config-system} == 'osx' or ${config-system} == 'iphone'">
+            ${option.value}
+            -Wpartial-availability <!-- fail to build when the deployment versions doesn't have the APIs we are referencing -->
+        </option>
+
+        <!-- some platforms use this optionset to determine the c standard, so set it as well -->
+        <option name="cc_clanguage.std" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'" value="c11"/>
+
+        <!-- Setting the option here, since we are using optionsets to trigger the C++ options this flag doesn't come in with the WinRTCppLibrary -->
+        <option name="buildset.lib.options" if="${config-system} == 'capilano'">
+            ${option.value}
+            -IGNORE:4264
+        </option>
+    </BuildType>
+
+    <!-- Defines custom build types for DirtySDK modules.
+         This is the correct way to set custom compiler, linker, and librarian flags in Framework3.
+         The buildtype is based upon if we are building DLL or not (see Initialize.xml)
+    -->
+    <PartialModule name="DSLibrary" buildtype="dirtysock.clibrary">
+        <config>
+            <defines if="${Dll??false}">
+                DIRTYCODE_API=__declspec(dllexport)
+            </defines>
+
+            <warningsuppression>
+                <do if="${config-compiler} == 'vc'">
+                    -wd4242 <!-- 'identifier' : conversion from 'type1' to 'type2', possible loss of data -->
+                    -wd4244 <!-- 'conversion' conversion from 'type1' to 'type2', possible loss of data -->
+                </do>
+
+                <!-- These warnings are already suppressed on most of the capilano configurations, they are just missing for WinRTRuntimeComponent -->
+                <do if="${config-system} == 'capilano'">
+                    -wd4946 <!-- reinterpret_cast used between related classes: 'class 1' and 'class 2' -->
+                </do>
+
+                <do if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                    -Wno-multichar
+                </do>
+            </warningsuppression>
+        </config>
+    </PartialModule>
+
+    <PartialModule name="DSProgram" buildtype="Program">
+        <copylocal>true</copylocal>
+
+        <config>
+            <warningsuppression>
+                <do if="${config-compiler} == 'vc'">
+                    -wd4242 <!-- 'identifier' : conversion from 'type1' to 'type2', possible loss of data -->
+                    -wd4244 <!-- 'conversion' conversion from 'type1' to 'type2', possible loss of data -->
+                </do>
+
+                <do if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                    -Wno-multichar
+                </do>
+            </warningsuppression>
+
+            <buildoptions>
+                <option name="buildset.cc.options" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                    ${option.value}
+                    -Wsign-compare
+                </option>
+
+                <option name="buildset.cc.options" if="${config-system} == 'iphone' or ${config-system} == 'iphonesim' or ${config-system} == 'osx'">
+                    ${option.value}
+                    -Wformat
+                    -Wimplicit-int
+                    -Wshadow
+                </option>
+            </buildoptions>
+        </config>
+
+        <libraries>
+            <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceAudioOut_stub_weak.a" asis="true" if="${config-system} == 'kettle'"/>
+            <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceErrorDialog_stub_weak.a" asis="true" if="${config-system} == 'kettle'"/>
+            <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceAppContent_stub_weak.a" asis="true" if="${config-system} == 'kettle'"/>
+        </libraries>
+
+        <!-- add the unixclang shared libraries -->
+        <dlls if="${config-system} == 'unix64' and ${config-compiler} == 'clang'">
+            <includes name="${package.UnixClang.bindir}/../lib/libc++.so.1"
+                if="@{FileExists('${package.UnixClang.bindir}/../lib/libc++.so.1')}"/>
+            <includes name="${package.UnixClang.bindir}/../lib/libc++abi.so.1"
+                if="@{FileExists('${package.UnixClang.bindir}/../lib/libc++abi.so.1')}"/>
+        </dlls>
+    </PartialModule>
+
+    <PartialModule name="WinDSProgram" buildtype="WindowsProgram">
+        <config>
+            <warningsuppression>
+                -wd4242 <!-- 'identifier' : conversion from 'type1' to 'type2', possible loss of data -->
+                -wd4244 <!-- 'conversion' conversion from 'type1' to 'type2', possible loss of data -->
+                -wd4201 <!-- nonstandard extension used : nameless struct/union (caused by richedit.h) -->
+            </warningsuppression>
+        </config>
+
+        <libraries>
+            <includes name="ws2_32.lib" asis="true"/>
+        </libraries>
+    </PartialModule>
+
+    <!-- optimized build type for certain files -->
+    <BuildType name="dirtysock.optimizedclibrary" from="${dirtysdk-buildtype}">
+        <option name="optimization"                     value="on"/>
+        <option name="iteratorboundschecking"           value="off"/>
+        <option name="runtimeerrorchecking"             value="off"/>
+        <option name="disable_reference_optimization"   value="off"/>
+
+        <option name="buildset.cc.options">
+            ${option.value}
+            ${dirtysock.cc.options??}
+        </option>
+
+        <!-- some platforms use this optionset to determine the c standard, so set it as well -->
+        <option name="cc_clanguage.std" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'" value="c11"/>
+    </BuildType>
+
+    <!-- objective-c build type that shares our warnings -->
+    <BuildType name="dirtysock.objectiveclibrary" from="ObjectiveCLibrary" if="${config-system} == 'iphone'">
+        <option name="buildset.cc.options">
+            ${option.value}
+            ${dirtysock.cc.options??}
+        </option>
+
+        <!-- some platforms use this optionset to determine the c standard, so set it as well -->
+        <option name="cc_clanguage.std" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'" value="c11"/>
+    </BuildType>
+
+    <!-- used for our samples, used for building our C sources -->
+    <BuildType name="CProgramExtra" from="CProgram">
+        <option name="buildset.cc.options" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+            ${option.value}
+            -Wstrict-prototypes
+            -Wmissing-prototypes
+        </option>
+    </BuildType>
+</project>

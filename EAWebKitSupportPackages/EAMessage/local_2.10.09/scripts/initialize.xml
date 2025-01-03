@@ -1,0 +1,35 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<!-- The build script is using custom buildtypes that extend these default build types,
+		but for determining the binary locations in the public data we can use the default build types -->
+	<property name="EAMessageBuildType" local="true" value="Library" />
+	<property name="EAMessageBuildType" local="true" value="DynamicLibrary" if="${Dll??false} and ${package.EAMessage.force-static-lib??false} == false" />
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EAMessage.libs">
+			<includes name="${package.EAMessage.builddir}/${config}/lib/${lib-prefix}EAMessage${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<property name="package.EAMessage.includedirs">
+		${package.EAMessage.dir}/include
+		${package.EAMessage.dir}/extras
+	</property>
+
+	<publicdata packagename="EAMessage" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="EAMessage" buildtype="${EAMessageBuildType}">
+				<publicdependencies>
+					coreallocator
+				</publicdependencies>
+				<includedirs>
+					${package.EAMessage.includedirs??}
+				</includedirs>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EAMessageTest"/>
+		</tests>
+	</publicdata>
+</project>

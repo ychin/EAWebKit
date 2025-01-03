@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\framework_tmp\GDK-220600\GdkBuild.Gaming.Xbox.XboxOne.x64.v142.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>xb1gdk-vc-debug</Configuration>
+    <Platform>Gaming.Xbox.XboxOne.x64</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64">
+      <Configuration>xb1gdk-vc-debug</Configuration>
+      <Platform>Gaming.Xbox.XboxOne.x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64">
+      <Configuration>xb1gdk-vc-opt</Configuration>
+      <Platform>Gaming.Xbox.XboxOne.x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}</ProjectGuid>
+    <Keyword>Gaming.Xbox.XboxOne.x64Proj</Keyword>
+    <ProjectName>EAThread</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <XdkEditionTarget>220600</XdkEditionTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64 /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4985; 4339; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_GAMING_XBOX;_GAMING_XBOX_XBOXONE;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_GDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_GDK;EA_SLN_BUILD=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xb1gdk-vc-debug\lib\EAThread.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xb1gdk-vc-debug\lib/EAThread.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xb1gdk-vc-debug\lib" mkdir "xb1gdk-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xb1gdk-vc-debug\build\EAThread" mkdir "xb1gdk-vc-debug\build\EAThread" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">
+    <OutDir>xb1gdk-vc-debug\lib\</OutDir>
+    <IntDir>xb1gdk-vc-debug\build\EAThread\v\</IntDir>
+    <TLogLocation>xb1gdk-vc-debug\build\EAThread\v.tlog\</TLogLocation>
+    <TargetName>EAThread</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(XboxOneExtensionSDKLatest)\gameKit\Include;$(XboxOneExtensionSDKLatest)\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(XboxOneExtensionSDKLatest)\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\XboxOne</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4985; 4339; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_GAMING_XBOX;_GAMING_XBOX_XBOXONE;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_GDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_GDK;EA_SLN_BUILD=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xb1gdk-vc-opt\lib\EAThread.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xb1gdk-vc-opt\lib/EAThread.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xb1gdk-vc-opt\lib" mkdir "xb1gdk-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xb1gdk-vc-opt\build\EAThread" mkdir "xb1gdk-vc-opt\build\EAThread" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">
+    <OutDir>xb1gdk-vc-opt\lib\</OutDir>
+    <IntDir>xb1gdk-vc-opt\build\EAThread\v\</IntDir>
+    <TLogLocation>xb1gdk-vc-opt\build\EAThread\v.tlog\</TLogLocation>
+    <TargetName>EAThread</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(XboxOneExtensionSDKLatest)\gameKit\Include;$(XboxOneExtensionSDKLatest)\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(XboxOneExtensionSDKLatest)\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\XboxOne</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\EAThread.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\AdditionalReading.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Callstack.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\ClassDocumentation.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\DesignConsiderations.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\FAQ.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\PlatformThreadBehavior.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Readme.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\UserGuide.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_atomic.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_barrier.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack_context.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_condition.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_futex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_list.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_mutex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_pool.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex_ip.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwsemalock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlockw.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_semaphore.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_spinlock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_storage.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_sync.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_thread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_array_mt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_ptr_mt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\android\eathread_atomic_android_c11.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_callstack_apple.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_sync_apple.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\arm\eathread_sync_arm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\cpp11\eathread_atomic_cpp11.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\dllinfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_gcc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_msvc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_global.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\timings.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_atomic_x86.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_sync_x86.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_atomic_x86-64.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_sync_x86-64.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\EAThread_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\make_public.bat">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_barrier.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_callstack.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_condition.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_futex.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_mutex.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_pool.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex_ip.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_semaphore.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_storage.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_thread.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\version.cpp" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_android.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_semaphore_android.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_callstack_apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_semaphore_apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\arm\eathread_callstack_arm.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_mutex_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_semaphore_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_thread_cpp11.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\libunwind\eathread_callstack_libunwind.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\null\eathread_callstack_null.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win32.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win64.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_mutex_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_semaphore_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_thread_pc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_barrier_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_callstack_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_condition_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_mutex_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_pthread_stack_info.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_semaphore_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_thread_sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_barrier_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_callstack_glibc.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_condition_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_mutex_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_pthread_stack_info.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_semaphore_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_stadia.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_thread_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\x86\eathread_callstack_x86.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-debug|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'xb1gdk-vc-opt|Gaming.Xbox.XboxOne.x64' ">TRUE</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

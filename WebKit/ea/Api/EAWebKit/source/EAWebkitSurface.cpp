@@ -30,7 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // By David Siems
 ///////////////////////////////////////////////////////////////////////////////
  
-#include <EAWebkit/EAWebKitSurface.h>
+#include <EAWebKit/EAWebKitSurface.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <string.h>
 

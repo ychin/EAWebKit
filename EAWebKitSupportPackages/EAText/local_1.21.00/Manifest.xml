@@ -1,0 +1,50 @@
+<package>
+	<manifestVersion>2</manifestVersion>
+	<frameworkVersion>2</frameworkVersion>
+	<buildable>true</buildable>
+	<isSupported>true</isSupported>
+	<owningTeam>Frostbite UI</owningTeam>
+	<tags>Frostbite, UI</tags>
+	<status>Official</status>
+	<contactName>Frostbite UI</contactName>
+	<contactEmail>Frostbite.Support.UI@ea.com</contactEmail>
+	<componentName>EAText</componentName>
+	<summary>EAText</summary>
+	<description>
+		EAText is a professional-level text characterization and layout engine
+		suitable for use in text display and editing GUIs for multiple locales,
+		including locales of complex script and bidirectional text. EAText includes
+		an associated Font engine that supports TrueType, bitmapped, and
+		polygonal (3D) fonts. EAText follows the CSS 3 and Unicode standards and
+		when combined with packages such as XHTML can display styled text as per
+		the XHTML, CSS3, and Unicode standards.
+	</description>
+	<changes>
+		See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/EAText-1.21.00/EAText/1.21.00/doc/Changes.html">changelog</a>.
+	</changes>
+	<licenseDetails>
+		<license>EA Proprietary (Internal Use Only)</license>
+	</licenseDetails>
+	<sourceLocation>//packages/EAText/1.21.00/</sourceLocation>
+	<versionName>1.21.00</versionName>
+	<driftVersion>1.21.00</driftVersion>
+	<relationship>
+		<builds>
+			<build name="solution" supported="true" />
+			<build name="nant" supported="true" targets="build test-build example-build" />
+			<build defines="nant.build-package-modules-in-parallel=false" name="test" supported="true" targets="test-run-fast" />
+			<build name="xcode" supported="true" />
+		</builds>
+		<platforms>
+			<platform build="Supported" configs="pc-vc-dev pc-vc-dll-dev" defines="eaconfig-run-response-timeout=1200" name="pc" test="Supported" />
+			<platform build="Supported" configs="pc64-vc-dev pc64-vc-dll-dev" defines="eaconfig-run-response-timeout=1200" name="pc64" test="Supported" />
+			<platform build="Supported" name="unix" test="Supported" />
+			<platform build="Supported" name="unix64" test="Supported" />
+			<platform build="Supported" name="osx" test="Supported" />
+			<platform build="Supported" name="iphone" test="Supported" />
+			<platform build="Supported" name="android" test="Supported" />
+			<platform build="Supported" name="capilano" test="Supported" />
+			<platform build="Supported" name="kettle" test="Supported" />
+		</platforms>
+	</relationship>
+</package>

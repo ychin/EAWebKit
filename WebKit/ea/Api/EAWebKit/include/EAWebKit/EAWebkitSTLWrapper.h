@@ -107,7 +107,7 @@ namespace WebKit
 
 // Having a STRINGWRAPPER_AVOID_HEAP_ALLOCATION define instead of platform defines makes it easy to enable/disable code on
 // new platforms or test existing platform.
-#if defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX)
+#if defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX) || defined(EA_PLATFORM_STADIA)
 #define STRINGWRAPPER_AVOID_HEAP_ALLOCATION 0
 #define USE_INDIRECT_VIRTUALCALL 1
 #else

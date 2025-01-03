@@ -1,4 +1,0 @@
-core/source/dirtysock/pc/dirtylibwin.c
-core/source/dirtysock/pc/dirtynetwin.c
-
-

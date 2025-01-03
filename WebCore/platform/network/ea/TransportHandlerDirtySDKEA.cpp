@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAAssert/eaassert.h>
 #include <EAIO/FnEncode.h>          // For Strlcpy and friends.
 #include <stdio.h>
-#include "protossl.h"
+#include <DirtySDK/proto/protossl.h>
 
 #if !BUILDING_EAWEBKIT_DLL
 #include "netconn.h"
@@ -56,30 +56,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined(EA_PLATFORM_MICROSOFT)
 #include "winsock2.h"
 #endif
-#include "dirtyplatform.h"
-#include "dirtynet.h"
+#include <DirtySDK/platform.h>
+#include <DirtySDK/dirtysock/dirtynet.h>
 #endif
 
 #include "HTTPHeaderNames.h"
 #include <wtf/text/StringView.h>
 #include "StreamDecompressorEA.h"
-
-#if (BUILDING_EAWEBKIT_DLL) // If building dll currently.
-//Note by Arpit Baldeva: Forward declare some functions from the DirtySDK here instead of including the
-//header file. This is because DirtySDK has a header named "platform.h" which conflicts with soo many
-//"platform.h" found in the WebKit and confuses the compiler.
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-// create new instance of socket interface module
-int32_t SocketCreate(int32_t iThreadPrio);
-// release resources and destroy module.
-int32_t SocketDestroy(uint32_t uFlags);
-#ifdef __cplusplus
-}
-#endif
-#endif //BUILDING_EAWEBKIT_DLL
 
 #define MULTICHAR_CONST(a,b,c,d) (a << 24 | b << 16 | c << 8 | d) 
 
@@ -521,8 +504,13 @@ namespace WebKit
 		if(EA::TransportHelper::Stricmp(pScheme, EA_CHAR16("http")) == 0 || EA::TransportHelper::Stricmp(pScheme, EA_CHAR16("https")) == 0)
 		{
 		#if (BUILDING_EAWEBKIT_DLL)
-			SocketCreate(0);
-		#else
+#if defined(EA_PLATFORM_SONY)
+            SocketCreate(SCE_KERNEL_PRIO_FIFO_DEFAULT, 0, SCE_KERNEL_CPUMASK_USER_ALL);//PS
+#elif defined(EA_PLATFORM_MICROSOFT)
+            SocketCreate(IDLE_PRIORITY_CLASS, 0, 1);//PC&Xone.
+#endif
+
+         #else
 			bool isStarted = (NetConnStatus(DIRTY_OPEN, 0, NULL, 0) != 0);	
 			if ( !isStarted )
 			{
@@ -809,7 +797,7 @@ namespace WebKit
 	#else
 	void
 	#endif
-	TransportHandlerDirtySDK::DirtySDKSendHeaderCallbackStatic(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderCapacity, const char* pBody, uint32_t uBodyLen, void* pUserRef)
+	TransportHandlerDirtySDK::DirtySDKSendHeaderCallbackStatic(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderCapacity, const char* pBody, int64_t uBodyLen, void* pUserRef)
 	{
 		EA::WebKit::TransportInfo* pTInfo = static_cast<EA::WebKit::TransportInfo*>(pUserRef);
 	#if DIRTYVERS > 0x07050300 

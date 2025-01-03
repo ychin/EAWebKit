@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <manifestVersion>2</manifestVersion>
+  <summary>libpngEAWebKit</summary>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Core</owningTeam>
+  <licenseDetails />
+  <relationship>
+    <builds>
+      <build name="solution" supported="true" />
+      <build name="nant" supported="true" targets="build" />
+    </builds>
+  </relationship>
+</package>

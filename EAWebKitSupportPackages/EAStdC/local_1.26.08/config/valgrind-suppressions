@@ -1,0 +1,33 @@
+{
+    GOS-27125 EAString strlen optimization suppression
+    Memcheck:Cond
+    fun:_ZN2EA4StdC6StrlenEPKc
+    fun:_ZN2EA4StdC12SprintfLocal12WriteDouble8ERKNS1_10FormatDataEdPc
+    fun:_ZN2EA4StdC12SprintfLocal11VprintfCoreEPFiPKcmPvNS0_18WriteFunctionStateEES4_S3_P13__va_list_tag
+    fun:_ZN2EA4StdC9VsnprintfEPcmPKcP13__va_list_tag
+    fun:_ZN5eastl12basic_stringIcN2EA9Allocator20CoreAllocatorAdapterINS2_14ICoreAllocatorEEEE22append_sprintf_va_listEPKcP13__va_list_tag
+    fun:_ZN5eastl12basic_stringIcN2EA9Allocator20CoreAllocatorAdapterINS2_14ICoreAllocatorEEEE14append_sprintfEPKcz
+    ...
+}
+
+{
+    SuppressionName1
+    Memcheck:Cond
+    fun:_ZN2EA4StdC6StrlenEPKDs
+    ...
+}
+
+{
+    SuppressionName2
+    Memcheck:Addr8
+    fun:_ZN2EA4StdC6StrlenEPKc
+    ...
+}
+
+{
+    SuppressionName3
+    Memcheck:Addr8
+    fun:_ZN2EA4StdC6StrlenEPKDs
+    ...
+}
+

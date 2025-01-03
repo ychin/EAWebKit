@@ -1,0 +1,395 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\framework_tmp\GDK-220600\GdkBuild.Gaming.Xbox.Scarlett.x64.v142.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>xbsx-vc-debug</Configuration>
+    <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="xbsx-vc-debug|Gaming.Xbox.Scarlett.x64">
+      <Configuration>xbsx-vc-debug</Configuration>
+      <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="xbsx-vc-opt|Gaming.Xbox.Scarlett.x64">
+      <Configuration>xbsx-vc-opt</Configuration>
+      <Platform>Gaming.Xbox.Scarlett.x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3785ECC6-FAD1-0282-174E-4BA55594CD7A}</ProjectGuid>
+    <Keyword>Gaming.Xbox.Scarlett.x64Proj</Keyword>
+    <ProjectName>dirtysock</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+    <XdkEditionTarget>220600</XdkEditionTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\gdk";"..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include";"$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include";"..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include\gdk";"$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Game.Chat.2.Cpp.API\DesignTime\CommonConfiguration\neutral\Include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64 /Zf -d2vzeroupper -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_GAMING_XBOX;_GAMING_XBOX_SCARLETT;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_GDK;EA_PLATFORM_XBOX_GDK;EA_PLATFORM_XBSX;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xbsx-vc-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xbsx-vc-debug\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xbsx-vc-debug\lib" mkdir "xbsx-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xbsx-vc-debug\build\dirtysock" mkdir "xbsx-vc-debug\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">
+    <OutDir>xbsx-vc-debug\lib\</OutDir>
+    <IntDir>xbsx-vc-debug\build\dirtysock\v\</IntDir>
+    <TLogLocation>xbsx-vc-debug\build\dirtysock\v.tlog\</TLogLocation>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\Scarlett</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc";"..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\gdk";"..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include";"$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include";"..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include\gdk";"$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Game.Chat.2.Cpp.API\DesignTime\CommonConfiguration\neutral\Include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -d2vzeroupper -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\220600\GXDK\gamekit\lib\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_GAMING_XBOX;_GAMING_XBOX_SCARLETT;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_GDK;EA_PLATFORM_XBOX_GDK;EA_PLATFORM_XBSX;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>xbsx-vc-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>xbsx-vc-opt\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "xbsx-vc-opt\lib" mkdir "xbsx-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "xbsx-vc-opt\build\dirtysock" mkdir "xbsx-vc-opt\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' ">
+    <OutDir>xbsx-vc-opt\lib\</OutDir>
+    <IntDir>xbsx-vc-opt\build\dirtysock\v\</IntDir>
+    <TLogLocation>xbsx-vc-opt\build\dirtysock\v.tlog\</TLogLocation>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\220600\GXDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\gameKit\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.Services.API.C\DesignTime\CommonConfiguration\Neutral\Include;$(DurangoXDK)\220600\GRDK\ExtensionLibraries\Xbox.XCurl.API\DesignTime\CommonConfiguration\neutral\Include;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(WindowsSdkDir)\Include\10.0.19041.0\cppwinrt;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\crt\src;$(DurangoXDK)\220600\GXDK\gameKit\Include\Scarlett</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="..\..\coreallocator\local_1.04.05\coreallocator.vcxproj">
+      <Project>{84809069-50FF-302B-BA7A-19700854AE26}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtydefs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtylang.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtyvers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\platform.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\comm\commall.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\comm\commsrp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\comm\commudp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\comm\commudputil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptaes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptarc4.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptbn.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptchacha.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptcurve.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptdef.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptgcm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\crypthash.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\crypthmac.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptmd5.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptmont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptnist.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptrand.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptrsa.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptsha1.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\crypt\cryptsha2.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtyaddr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtycert.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtyerr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtylib.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtymem.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtynames.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtynet.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtysessionmanager.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtythread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\dirtyuser.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\netconn.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\dirtysock\netconndefs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\connapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgamedist.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgamedistserv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgameerr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgamelink.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgamepkt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\game\netgameutil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\graph\dirtygif.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\graph\dirtygraph.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\graph\dirtyjpg.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\graph\dirtypng.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\privilegeapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\qosclient.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\qoscommon.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\userapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\userlistapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\misc\weblog.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protoadvt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protohttp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protohttp2.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protohttpmanager.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protohttpserv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protohttputil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protomangle.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protoname.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protossl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protostream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\prototunnel.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protoupnp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\proto\protowebsocket.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\aws.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\base64.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\binary7.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\hpack.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\jsonformat.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\jsonparse.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\murmurhash3.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\protobufcommon.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\protobufread.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\protobufwrite.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\util\utf8.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voip.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voipblocklist.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voipcodec.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voipdef.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voipgroup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voipnarrate.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voiptranscribe.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\voip\voiptunnel.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\xml\xmlformat.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\include\DirtySDK\xml\xmlparse.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\comm\commsrp.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\comm\commudp.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\comm\commudputil.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptaes.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptarc4.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptbn.c">
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -d2vzeroupper -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">Default</BasicRuntimeChecks>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_GAMING_XBOX;_GAMING_XBOX_SCARLETT;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_GDK;EA_PLATFORM_XBOX_GDK;EA_PLATFORM_XBSX;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;HC_DATAMODEL=HC_DATAMODEL_LLP64;HC_PLATFORM_GDK=4;HC_PLATFORM_IS_MICROSOFT=1;HC_PLATFORM=HC_PLATFORM_GDK;HC_WINHTTP_WEBSOCKETS;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_GAMES;XSAPI_NO_PPL=1</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptchacha.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptcurve.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptgcm.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\crypthash.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\crypthmac.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptmd5.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptmont.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptnist.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptrand.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptrandcommon.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptrandcommon.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptrandpriv.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptrsa.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptsha1.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\crypt\cryptsha2.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtyaddr.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtycert.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtyerr.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtylib.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtylib.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-debug|Gaming.Xbox.Scarlett.x64' ">xbsx-vc-debug\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'xbsx-vc-opt|Gaming.Xbox.Scarlett.x64' ">xbsx-vc-opt\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtymem.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtynames.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtynet.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtynetpriv.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtythread.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\dirtyuser.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\netconn.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\netconncommon.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\netconncommon.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\netconnlocaluser.cpp" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\netconnlocaluser.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\gdk\dirtyerrgdk.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\gdk\netconngdk.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\pc\dirtylibwin.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\pc\dirtynetwin.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\dirtysock\xboxone\dirtyauthxboxone.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\game\connapi.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\game\netgamedist.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\game\netgamedistserv.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\game\netgamelink.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\game\netgameutil.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\graph\dirtygif.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\graph\dirtygraph.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\graph\dirtyjpg.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\graph\dirtypng.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\qosclient.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\qoscommon.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\userapipriv.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\weblog.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\gdk\privilegeapigdk.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\gdk\userapigdk.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\misc\gdk\userlistapigdk.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\platform\plat-str.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\platform\plat-time.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protoadvt.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protohttp2.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protohttpmanager.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protohttpserv.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protohttputil.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protomangle.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protoname.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protossl.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protostream.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\prototunnel.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protoupnp.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\protowebsocket.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\proto\gdk\protohttpgdk.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\aws.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\base64.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\binary7.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\hpack.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\jsonformat.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\jsonparse.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\murmurhash3.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\protobufcommon.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\protobufread.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\protobufwrite.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\util\utf8.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voip.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipblocklist.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipcodec.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipcommon.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipcommon.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipconduit.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipconduit.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipconnection.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipconnection.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipdvi.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipgroup.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipheadset.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipmixer.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voipmixer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voippacket.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voippcm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voippriv.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voiptranscribe.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\voiptunnel.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\gdk\voipnarrategdk.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\xboxone\voipheadsetxboxone.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\voip\xboxone\voipxboxone.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\xml\xmlformat.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDK\local_15.1.6.0.5\source\xml\xmlparse.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

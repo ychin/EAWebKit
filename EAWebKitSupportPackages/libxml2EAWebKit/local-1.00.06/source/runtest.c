@@ -3936,7 +3936,7 @@ thread_specific_data(void *private_data)
     return ((void *) Okay);
 }
 
-#if defined(linux) || defined(CS_UNDEFINED_STRING) || defined(__APPLE_CC__)
+#if defined(linux) || defined(__sun) || defined(__APPLE_CC__)
 
 #include <pthread.h>
 

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EAUser" default="build">
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-run" value="include" />
+	</optionset>
+
+	<package name="EAUser" initializeself="true"/>
+
+	<!-- ********************* -->
+	
+	<runtime>
+		<Library name="IEAUser" buildtype="${EAUserBuildType}">
+			<config>		
+				<defines>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EAUSER_API=__declspec(dllexport)
+					</do>
+				</defines>
+			</config>
+			<dependencies>
+				<auto>
+					coreallocator
+					EAAssert
+					EABase
+					EAController/IEAController
+					EASTL
+					EAThread
+					EAStdC
+				</auto>
+			</dependencies>
+			<headerfiles>
+				<includes name="${package.dir}/include/IEAUser/**.h" />
+			</headerfiles>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/source/IEAUser/*.cpp" />
+			</sourcefiles>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+
+		<Library name="EAUser" buildtype="${EAUserBuildType}">
+			<config>		
+				<warningsuppression>
+					<do if="${config-system} == 'capilano' || ${config-system} == 'winrt'">
+						-wd4471
+						-wd4472
+						-wd4626 <!-- vccorlib.h: (used by WinRT EventHandles) assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted -->
+						-wd4628 <!-- vccorlib.h: digraphs not supported with -Ze. -->
+						-wd5027 <!-- vccorlib.h: (used by WinRT EventHandles) move operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted -->
+					</do>
+				</warningsuppression>
+				<defines>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EAUSER_API=__declspec(dllexport)
+					</do>
+				</defines>
+			</config>
+			<dependencies>
+				<auto>
+					EAUser/IEAUser
+					coreallocator
+					EAAssert
+					EABase
+					EAController
+					EASTL
+					EAThread
+					EAStdC
+					<do if="${gdk.enabled??false}">
+						GDK/GDK.extension.Xbox.Services.API.C
+					</do>
+					<do if="${package.EAUser.use-origin??false}">
+						OriginSDK
+					</do>
+				</auto>
+			</dependencies>
+			<headerfiles>
+				<includes name="${package.dir}/include/EAUser/*.h" />
+				<includes name="${package.dir}/include/${config-folder-name}/EAUser/*.h" />
+				<includes name="${package.dir}/include/null/EAUser/*.h" if="${config-system} == iphone"/>
+				<includes name="${package.dir}/include/kettle/EAUser/*.h" if="${config-system} == kettle"/>
+			</headerfiles>
+			<includedirs>
+				${package.dir}/include/internal/
+				${package.EAUser.includedirs}
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+				<includes name="${package.dir}/source/internal/*.cpp" />
+				<includes name="${package.dir}/source/${config-folder-name}/*.cpp" />
+				<includes name="${package.dir}/source/null/*.cpp" if="${config-system} == iphone" />
+				<excludes name="${package.dir}/source/IEAUser/*.cpp"/>
+			</sourcefiles>
+			<sdkreferences if="${config-system} == 'capilano' and !(${gdk.enabled??false})">
+				Xbox Services API, Version=8.0
+			</sdkreferences>
+			<libraries>
+				<do if="${config-system} == 'kettle'">
+					<includes name="${package.kettlesdk.libdir}\libSceUserService_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceNpCommon_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceNpManager_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceNpToolkit2_stub_weak.a"/>
+				</do>
+				<do if="${config-system} == 'ps5'">
+					<includes name="${package.ps5sdk.libdir}\libSceSysmodule_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceJson2_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceNpCppWebApi_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceNpManager_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceNet_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceSsl_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceHttp2_stub_weak.a"/>
+					<includes name="${package.ps5sdk.libdir}\libSceNpWebApi2_stub_weak.a"/>
+				</do>
+				<do if="${gdk.enabled??false}">
+					<includes name="crypt32.lib" asis="true"/>
+				</do>
+			</libraries>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>	
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+	
+	<tests>
+		<Program name="EAUserTest">
+			<copylocal value="true" />
+			<config>
+				<defines>
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+				</defines>
+				<warningsuppression>
+				</warningsuppression>
+			</config>
+			<dependencies>
+				<use>
+					EABase
+				</use>
+				<build>
+					coreallocator
+					EAAssert
+					EABase
+					EAMain
+					EATest
+					EAStdC
+					EASTL
+					EAThread
+					MemoryMan
+					PPMalloc
+				</build>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/test/*.cpp" />
+			</sourcefiles>
+		</Program>
+	</tests>
+
+</project>

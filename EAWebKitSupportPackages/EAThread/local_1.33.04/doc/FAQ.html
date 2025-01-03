@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+	<title>FAQ</title>
+	<link href="UTFDoc.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+		.SmallBody {font-size: 10pt}
+    .ColoredComment {color: #339933}
+    </style>
+</head>
+
+<body>
+<h1>EAThread FAQ</h1>
+<h3>Summary</h3>
+<table style="width: 843px; height: 668px;" border="0" cellpadding="0" cellspacing="0" >
+  <tbody> 
+  <tr> 
+    <td style="width: 28px;"><span style="font-family: arial,helvetica,sans-serif;"></span>1<br>
+    </td>
+    <td style="vertical-align: top; text-align: left;"><a href="#1">Why is there 
+      no function to suspend a thread?</a></td>
+  </tr>
+  <tr> 
+    <td>2</td>
+    <td><a href="#2">How do you tell a thread to quit? There is no function in 
+      the Thread class to tell a thread to quit.</a></td>
+  </tr>
+  <tr> 
+    <td>3</td>
+    <td><a href="#3">Why are timeouts specified in absolute time and not relative 
+      time?</a></td>
+  </tr>
+  <tr> 
+    <td>4</td>
+    <td><a href="#4">Why is there no Event or Signal class like Windows has with 
+      CreateEvent / SetEvent?</a></td>
+  </tr>
+  <tr> 
+    <td>5</td>
+    <td><a href="#5">Why is there no EAThread equivalent to Windows WaitForMultipleObjects 
+      functionality?</a></td>
+  </tr>
+  <tr> 
+    <td>6</td>
+    <td><a href="#6">Why is there no ThreadSafeClass or ThreadSafeObject class 
+      in EAThread?</a></td>
+  </tr>
+  <tr> 
+    <td>7</td>
+    <td><a href="#7">What does the C/C++ volatile keyword do?</a></td>
+  </tr>
+  <tr> 
+    <td>8</td>
+    <td><a href="#8">What is the proper syntax for the volatile keyword?</a></td>
+  </tr>
+  <tr> 
+    <td>9</td>
+    <td><a href="#9">What does the GCC compiler assembler __volatile keyword mean?</a></td>
+  </tr>
+  <tr> 
+    <td>10</td>
+    <td><a href="#10">Why have memory barriers? Doesn't the C++ volatile keyword 
+      result in the same thing?</a></td>
+  </tr>
+  <tr> 
+    <td>11</td>
+    <td><a href="#11">I don't see support for thread cancellation.</a></td>
+  </tr>
+  <tr> 
+    <td>12</td>
+    <td><a href="#12">What is "Priority inheritance?"</a></td>
+  </tr>
+  <tr> 
+    <td>13</td>
+    <td><a href="#13">On PS2, threads other than the main thread aren't getting 
+      any time. Why?</a></td>
+  </tr>
+  <tr> 
+    <td>14</td>
+    <td><a href="#14">I'm getting a '_beginthreadex not found' error when compiling 
+      for XBox, XBox2, or PC.</a></td>
+  </tr>
+  <tr> 
+    <td>15</td>
+    <td><a href="#15">I call Mutex::Lock (or Semaphore::Lock, etc.) and it fails 
+      with an assert.</a></td>
+  </tr>
+  <tr> 
+    <td>16</td>
+    <td><a href="#16">How do I do profiling of multithreading?</a></td>
+  </tr>
+  <tr> 
+    <td>17</td>
+    <td><a href="#17">Why doesn't setting the thread name cause the debugger to 
+      see that name when it lists threads?</a></td>
+  </tr>
+  <tr> 
+    <td>18</td>
+    <td><a href="#18">Is there a function in EAThread that is equivalent to GetThreadTimes 
+      in Win32?</a></td>
+  </tr>
+  <tr> 
+    <td>19</td>
+    <td><a href="#19">Do C++ or EAThread have a 'synchronized' statement like 
+      Java does?</a></td>
+  </tr>
+  <tr> 
+    <td style="vertical-align: top;">20</td>
+    <td><a href="#20">Why does EAThread defines priorities as values offset from 
+      kThreadPriorityDefault instead of defining priorities as scaled values between 
+      min and max values?</a></td>
+  </tr>
+  <tr> 
+    <td>21</td>
+    <td><a href="#21">I would like a function called RandomSleep which sleeps 
+      randomly so that I can help test my code's thread safety.</a></td>
+  </tr>
+  <tr> 
+    <td>22</td>
+    <td><a href="#22">Why are EAThread time periods (timeouts in particular) specified 
+      in milliseconds instead of something finer?</a></td>
+  </tr>
+  <tr> 
+    <td>23</td>
+    <td><a href="#23">How do I detect the creation and and destruction of threads 
+      from within my application?</a></td>
+  </tr>
+  <tr> 
+    <td>24</td>
+    <td><a href="#24">How do I best implement thread-safe reference counting?</a></td>
+  </tr>
+  <tr> 
+    <td>25</td>
+    <td><a href="#25">How do I enumerate the set of currently running threads?</a></td>
+  </tr>
+  <tr> 
+    <td>26</td>
+    <td><a href="#26">My Wii threads are not yielding to each other.</a></td>
+  </tr>
+  <tr> 
+    <td>27</td>
+    <td><a href="#27">Why does the Thread class let you create more than one thread?</a></td>
+  </tr>
+  <tr>
+    <td>28</td>
+    <td><a href="#28">My thread fails to start.</a></td>
+  </tr>
+  <tr>
+    <td>29</td>
+    <td><a href="#29">How can I tell which thread is on which core/hardware thread in the debugger?</a></td>
+  </tr>
+  <tr>
+    <td>30</td>
+    <td><a href="#30">We get the following PS3 linker warning: SomeFile.obj(.debug_info+0x5e9a): R_PPC64_DTPREL32 used with TLS symbol x.</a></td>
+  </tr>
+  <tr>
+    <td>31</td>
+    <td><a href="#31">What are the limitations of EA_THREAD_LOCAL (a.k.a 
+	__declspec(thread) and __thread)?</a></td>
+  </tr>
+  <tr>
+    <td>32</td>
+    <td><a href="#32">How could a timeout actually trigger before the specified timeout time? </a></td>
+  </tr>
+  </tbody> 
+</table>
+<h3>Detail</h3>
+<p class="faq-question"><a name="1"></a>1 Why is there no function to suspend a thread?</p>
+<p class="faq-answer">Suspending threads is considered unsafe. In most cases, the thread that wants to suspend another thread cannot know what the execution point is of the other thread and thus suspending that thread may be unsafe. Threads should suspend themselves, usually via a lock on a synchronization primitive such as a semaphore. It is sometimes argued that there are cases where a thread can in fact know that it is safe to suspend another thread. This may be so for some cases, but it usually turns out that when this is the case then an alternative mechanism whereby the thread suspends itself is feasible.</p>
+<p class="faq-question"><a name="2"></a>2 How do you tell a thread to quit? There is no function in the Thread class to tell a thread to quit.</p>
+<p class="faq-answer">The Thread class doesn't have this functionality for two primary reasons. First of all, the threaded code may not be aware of the existence of the Thread class or perhaps should not be aware of it in order to reduce dependencies. Secondly, different uses of threads often require different mechanisms for deciding how to quit; very often a single prescribed mechanism built into the Thread class doesn't suffice and becomes a waste of space.</p>
+<p class="faq-question"><a name="3"></a>3 Why are timeouts specified in absolute time and not relative time?</p>
+<p class="faq-answer">If you are familiar with Windows threading, you will know that synchronization primitives that have timeout options specify time-outs as relative time units instead of absolute time units. Thus, if you want a mutex lock to time-out after 500 milliseconds, you would pass 500 as the timeout time. EAThread, however, requires you to pass in the absolute timeout time, which for the above would be GetThreadTime() + 500. The good thing about Windows' relative time-outs is that they are a little bit easier to use due to simply passing a constant value. The bad thing is everything else, which includes difficulty writing threading libraries and the introduction of race conditions in real-time or near-real-time systems. It turns out that the Posix threading standard uses absolutely timeouts and EAThread chose to ride the wisdom of Posix and implement timeouts the Posix way. You can read about the Posix design decision to use absolute timeouts instead of relative ones at (see the bottom of the page): <a href="http://www.opengroup.org/onlinepubs/007904975/functions/pthread_cond_wait.html">http://www.opengroup.org/onlinepubs/007904975/functions/pthread_cond_wait.html</a></p>
+<p class="faq-question"><a name="4"></a>4  Why is there no Event or Signal class like Windows has with CreateEvent / SetEvent?</p>
+<p class="faq-answer">EAThread doesn't have such a class because it is not useful for most practical situations. You usually instead want to use a Semaphore or Condition (condition variable). An Event as defined by Windows is not the same thing as a Condition and cannot be safely used in its place. Events cannot be used to do what a Condition does primarily due to race conditions. There may nevertheless be some use for events, though they won't be implemented in EAThread until and unless deemed useful. Given that Posix threading has undergone numerous scrutinized revisions without adding an event system, it is probably arguable that events are not necessary. A publicly available discussion on the topic of implementing events under Posix threads which could be applied to EAThread is here: <a href="http://developers.sun.com/solaris/articles/waitfor_api.html">http://developers.sun.com/solaris/articles/waitfor_api.html</a>. Check the EAThread package's scrap directory for a possible implementation of events in EAThread.</p>
+<p class="faq-question"><a name="5"></a>5 Why is there no EAThread equivalent to Windows WaitForMultipleObjects functionality?</p>
+<p class="faq-answer">WaitForMultipleObjects is attractive because it allows a thread to efficiently wait for any one or all of a set of events. It is perhaps a primary reason for wanting Windows-like event or signal support. See the question about events and signals for more about this.</p>
+<p class="faq-question"><a name="6"></a>6 Why is there no ThreadSafeClass or ThreadSafeObject class in EAThread?</p>
+<p class="faq-answer">Sometimes you will see threading libraries have a class called something like "ThreadSafeObject" which is a mix-in class that a regular class would inherit and gain the ability to be used in a thread-safe way. In the simplest case, such a class could be written simply like this: </p>
+<blockquote>
+  <pre class="faq-answer">class ThreadSafeObject{
+public:
+ &nbsp;&nbsp; Mutex mMutex;
+ &nbsp;&nbsp; void Lock()   { mMutex.Lock();   }
+ &nbsp;&nbsp; void Unlock() { mMutex.Unlock(); }
+}; </pre>
+</blockquote>
+<p class="faq-answer">This class may seem convenient but in practice is doesn't buy much and is perhaps even unsafe due to multiple versions of this class colliding in a given class hierarchy. </p>
+<p class="faq-question">7<a name="7"></a> What does the C/C++ <span style="font-family: monospace;">volatile </span>keyword do?</p>
+<p class="faq-answer">A variable should be declared volatile if its value could change unexpectedly. For the most part the kinds of data that can change unexpectedly are: </p>
+<ul>
+  <li class="faq-answer">Data modified by an interrupt service routine.</li>
+  <li class="faq-answer">Data modified by other threads.</li>
+  <li class="faq-answer">Data modified by asynchronous writes such as DMA transfers.</li>
+</ul>
+<p class="faq-answer">The volatile keyword tells the compiler to not cache the variable in a register but instead to read it from main memory each time it is used. Take the following code, for example:</p>
+<blockquote>
+  <pre class="faq-answer">volatile bool shouldExit;
+                     
+void ThreadFunction()
+{
+    while(!shouldExit)
+        DoSomething();
+}           </pre>
+</blockquote>
+<p class="faq-answer">The shouldExit variable must be declared as volatile because otherwise ThreadFunction is free to store shouldExit's initial value in a register and never see the write from another thread. Note that no kind of mutex or similar thread synchronization primitive resolves this problem, as this is a different kind of issue. Note that since volatile is largely in place to deal with compiler optimizations, you don't necessarily have to declare all variables when are written by one thread and read by another as volatile. You only need to use volatile if the compiler has the option to optimize the memory reads away as with the example above. <br>
+  <br>
+  An alternative to volatile is a compiler memory barrier. See eathread_sync.h for EACompilerMemoryBarrier.<br>
+  <br>
+  Additionally, you can make an access to a variable volatile instead of declaring the variable as always being volatile. This is done by simply casting the variable to volatile while using it. A possibly useful helper template for doing such a thing is this:</p>
+<blockquote>
+  <pre class="faq-answer">template &lt;typename T&gt;
+T volatile& Volatile(T& t)
+{ return const_cast&lt;T volatile&amp;&gt;(t); } </pre>
+</blockquote>
+<p class="faq-answer">Example usage:</p>
+<blockquote>
+  <pre class="faq-answer">int x;
+++Volatile(x);</pre>
+</blockquote>
+<p class="faq-answer">Variables that are accessed within mutex locks generally won't need to be declared as volatile. This is because the mutex lock/unlock will generate a memory barrier and because the compiler will not optimize away the read of a variable when it sees that external functions such as Mutex::Lock are called before using the variable.<br>
+  <br>
+  In fact, in many circumstances declaring a variable volatile is not enough to make code properly thread-safe, and instead a memory barrier or higher level synchronization primitive must be used. In the above example, shouldExit is written by one thread and read by another and no other memory reading and writing is involved. If instead the reading thread were to additionally read or write other memory that the writing thread reads or writes, the memory operations can become unsynchronized and one thread sees memory changed before or after it expected to. This is a tricky topic; if you have questions then feel free to contact Paul Pedriana (ppedriana@ea.com) about this.</p>
+<p class="faq-question">8<a name="8"></a> What is the proper syntax for the <span style="font-family: monospace;">volatile </span>keyword?</p>
+<p><span class="faq-answer">A volatile variable is one that can change unpredictably. To declare a volatile variable, you can do either of these:</span></p>
+<blockquote>
+  <pre class="faq-answer">volatile int foo;
+int volatile foo;</pre>
+</blockquote>
+<p class="faq-answer">A pointer to a volatile variable is a pointer which points to a variable which can change unpredictably. To declare a volatile pointer to a variable, you can do either of these:</p>
+<blockquote>
+  <pre class="faq-answer">volatile int* foo;
+int volatile* foo;</pre>
+</blockquote>
+<p class="faq-answer">A volatile pointer to a non-volatile variable is a pointer which may itself change unpredictably, while the pointed at variable does not. To declare a volatile pointer to a non-volatile variable, you do this:</p>
+<blockquote>
+  <pre class="faq-answer">int* volatile foo; </pre>
+</blockquote>
+<p class="faq-answer">A volatile pointer to a volatile variable is a pointer whereby both the pointer itself and the data it points to may change unpredictably. To declare a volatile pointer to a volatile variable, you do this::</p>
+<blockquote>
+  <pre class="faq-answer">int volatile* volatile foo;</pre>
+</blockquote>
+<p class="faq-answer">All of the above applies to C++ class member variables the same as for non-member variables. This is true whether the variable is declared as the member of a class or of a struct. Thus you can do this:</p>
+<blockquote>
+  <pre class="faq-answer">class Car{
+    volatile float mVelocity;
+};</pre>
+</blockquote>
+<p class="faq-answer">All of the above can apply to classes and structs themselves in addition to variables and member variables of classes and structs. Thus, to declare an entire Point3D class instance as volatile, you do this:</p>
+<blockquote>
+  <pre class="faq-answer">volatile Point3D pt;</pre>
+</blockquote>
+<p>&nbsp; </p>
+<p class="faq-question">9<a name="9"></a> What does the GCC compiler assembler __volatile keyword mean?</p>
+<p class="faq-answer">In multithreaded code under GCC, you will sometimes see statements such as this:</p>
+<blockquote>
+  <pre class="faq-answer">__asm __volatile("xchg4 %0=%1,%2" : "=r"(ret), "=m"(*lock) : "r"(1), "1"(*lock) : "memory"</pre>
+</blockquote>
+<p class="faq-answer">__volatile here means that the assember statement should not be reordered or optimized away. The Microsoft/Intel compiler asm specification doesn't have advanced asm functionality such as GCC and so __volatile doesn't apply. Note that it is sometimes also seen as __volatile__ and __asm is sometimes seen as __asm__.</p>
+<p class="faq-question"><a name="10"></a>10 Why have memory barriers? Doesn't the C++ <span style="font-family: monospace;">volatile </span>keyword result in the same thing?</p>
+<p class="faq-answer">Use of volatile variables is not the same thing as use of memory barriers. While the C standard for what volatile means is somewhat unspecific, in practice the result is that volatile variables are read from memory upon all uses of them and these variables are neither cached in registers, re-ordered with respect to reads or writes, nor compiled away. A memory barrier is a mechanism whereby multiple processors which share memory can be synchronized with respect to memory accesses. A discussion of what this synchronization specifically means can be found elsewhere in this documentation.</p>
+<p class="faq-question">11<a name="11"></a> I don't see support for thread cancellation. </p>
+<p class="faq-answer">Thread cancellation is a feature of Posix threading which allows you to request that a thread terminate as soon as possible. For most uses, thread cancellation support probably isn't required to be present in EAThread, as the user can manually implement most of what it provides. However, for very complex situations there are cases where formal thread cancellation support is useful. An example would be where you would want a thread to immediately quit from a complex operation and be able to back out of any locks it has in a formal way. With EAThread we will be playing a waiting game to see how important this issue becomes.</p>
+<p class="faq-question">  12<a name="12"></a> What is "priority inheritance?"</p>
+<p class="faq-answer">Priority inheritance is a mechanism that helps threads resolve potential deadlocks. Consider the following situation:</p>
+<ol>
+  <li class="faq-answer">Thread&nbsp;L has a low priority level.</li>
+  <li class="faq-answer">Thread&nbsp;M has a medium priority level.</li>
+  <li class="faq-answer">Thread&nbsp;H has a high priority level.</li>
+  <li class="faq-answer">Thread L has a mutex locked.</li>
+  <li class="faq-answer">Thread H is is waiting on the mutex.</li>
+  <li class="faq-answer">Thread M is running a long piece of logic. </li>
+</ol>
+<div>
+  <p class="faq-answer">The problem here is that thread M steals all the processor time away from thread L, and as a result the mutex stays locked and thread H blocks, even though it is a higher priority than thread M. Priority inheritance is a feature that causes thread L to get temporarily bumped up to high priority as soon as thread H starts waiting on the mutex. One of those failed Mars missions of a couple years ago occurred because a programmer forgot to enable priority inheritance, and something just like the situation above occurred.</p>
+  <p class="faq-answer">Given that EAThread scheduling is simply the same as the OS scheduling, EAThread doesn't to enforce any specific behavior. Thus, if the given platform's thread scheduler implements priority inheritance, then EAThread does. It's best if you attempt to avoid the possibility of these situations, though it's not always easy. </p>
+  <p class="faq-answer">Windows 98, Windows CE have implement priority inheritance, but Windows NT/2000/XP, etc. solve the problem in a slightly different way: the scheduler randomly boosts the priority of the ready threads, which in this case may be low priority lock-holders. XBox and XBox 360 don't have it as of this writing. Priority inheritance is an option with PS3 threading, though as of this writing is not implemented. Posix defines an option for priority inheritance, but some implementations don't provide it. </p>
+  <p class="faq-answer">For more on this issue in Windows, see <a href="http://windowssdk.msdn.microsoft.com/library/en-us/dllproc/base/priority_inversion.asp">http://windowssdk.msdn.microsoft.com/library/en-us/dllproc/base/priority_inversion.asp</a>.</p>
+</div>
+<p class="faq-question">13<a name="13"></a> On PS2, threads other than the main thread aren't getting any time. Why?</p>
+<p class="faq-answer">The PS2 documentation isn't clear about what the thread priority of the main thread is, whereas other platforms are very precise in their documentation and implementation of what the default thread priority is. When creating threads, the EAThread Thread class sets newly created threads to the EA::Thread::kThreadPriorityDefault. But the main thread is created on startup and is of arbitrary priority. So you'll want to call this line of code from the main thread before creating any other threads:</p>
+<blockquote>
+  <pre class="faq-answer">EA::Thread::SetThreadPriority(kThreadPriorityDefault);</pre>
+</blockquote>
+<p class="faq-answer">This results in all threads using a consistent sense of thread priorities.</p>
+<p class="faq-question"> 14<a name="14"></a> I'm getting a '_beginthreadex not found' error when compiling for XBox, XBox2, or PC.</p>
+<p class="faq-answer">This error occurs when your VC++ project is not set to be multithreaded. As a result, _MT is not globally defined and you get compilation and link errors. You can fix this by adjusting your project settings or make file appropriately.</p>
+<p class="faq-question">15<a name="15"></a> I call Mutex::Lock (or Semaphore::Lock, etc.) and it fails with an assert.</p>
+<p class="faq-answer">The most common cause of this is that the Mutex is not initialized or even constructed. The Mutex class separates the concepts of construction and initialization; this is done to allow users to delay initialization for cases where that's important. However, for convenience and simplicity the Mutex constructor gives you the option of initializing during construction if you pass in a MutexParameters* argument. If you don't initialize the Mutex via the Mutex constructor, you can manually initialize with the Mutex::Init function. Unless the Mutex is initialized, the Lock function will fail (or worse). </p>
+<p class="faq-question">16<a name="16"></a> How do I do profiling of multithreading?</p>
+<p class="faq-answer">Users sometimes want to be able to measure their multithreading operations. This includes measuring time lost due to lock contention, measuring concurrent thread counts, etc. EAThread doesn't currently have such functionality built in, though it is being considered for a future version. In the meantime, some third-party tools exist for doing platform-level metrics, and you may be able to take advantage of these. An example of such a tool is the Intel Thread Profiler (http://www.devx.com/Intel/Article/20681) for the Windows platform. It should be noted here that EAThread uses various performance-enhancing tricks on various platforms which allow it to bypass platform API calls. These tricks can be disabled via compilation settings, but you should be aware that they exist as third party tools might not see what EAThread is doing when they are enabled.</p>
+<p class="faq-question">17<a name="17"></a> Why doesn't setting the thread name cause the debugger to see that name when it lists threads?</p>
+<p>The only currently used platform which allows the user to assign a name to a thread which the debugger can see is Windows. You should be able to see the thread name in the Windows debugger if you call Thread::SetName or if you set the name in the ThreadParameters for the Thread::Begin function.</p>
+<p class="faq-question">18<a name="18"></a> Is there a function in EAThread that is equivalent to GetThreadTimes in Win32? I&#8217;d like to be able to know how long a thread ran so I can do some thread aware profiling.</p>
+<p>GetThreadTimes is a Win32 function that exists on Windows desktop and CE systems. Its primary use is to tell you how many CPU cycles have been used by a given thread. GetThreadTimes is a Windows-specific function and has no similar analog on any other platform, including Microsoft's own XBox and Xenon platforms. It is also something that is not possible to implement on other platforms without having internal access to the kernel thread scheduler. An EAThread version of GetThreadTimes would either be very complicated (due to kernel hacking, etc.) or would exist only on Windows and do little more than just wrap the Windows GetThreadTimes function. Since GetThreadTimes would only work on Windows, it is suggested that users just use the Win32 GetThreadTimes function with EAThread objects like so:</p>
+<blockquote>
+  <pre>Thread thread;
+...
+GetThreadTimes(((EAThreadData*)thread.GetPlatformData()).mpData-&gt;mhThread, ...);</pre>
+</blockquote>
+<p>Also, the user can use the Intel Thread Profiler (http://www.devx.com/Intel/Article/20681) to do thread measurement on Windows via an interactive GUI.</p>
+<p class="faq-question">19<a name="19"></a> Do C++ or EAThread have a 'synchronized' statement like Java does?</p>
+<p>In Java, you can make statements that would be like this in C++:</p>
+<blockquote>
+  <pre>void SomeClass::DoSomething()
+{<span style="font-family: Courier New,Courier,monospace;"></span><span style="font-family: Courier New,Courier,monospace;"></span>
+ &nbsp;&nbsp; synchronized(mMutex)
+ &nbsp;&nbsp; {
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mValue = 1;
+ &nbsp;&nbsp; }<span style="font-family: Courier New,Courier,monospace;"></span>
+}</pre>
+</blockquote>
+<p>where 'synchronized' is a built-in language keyword. The above is similar to this conventional C++:</p>
+<blockquote>
+  <pre>void SomeClass::DoSomething()
+{<span style="font-family: Courier New,Courier,monospace;"></span><span style="font-family: Courier New,Courier,monospace;"></span>
+ &nbsp;  {
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AutoMutex autoMutex(<small><span style="font-family: Courier New,Courier,monospace;">mMutex);</span></small>
+       mValue = 1;
+ &nbsp;&nbsp; }<span style="font-family: Courier New,Courier,monospace;"></span>
+}</pre>
+</blockquote>
+<p>You can use a macro to enable the use of the former syntax. EAThread does not provide such a macro because it would provide no benefit over the natural AutoMutex solution above and would merely serve to obfuscate behind marcos what is actually happening. Nevertheless, we provide an (unsupported) example of such a macro here:</p>
+<blockquote>
+  <pre>struct ScopedAutoLock
+{
+ &nbsp;&nbsp;&nbsp; ScopedAutoLock(Mutex* pMutex) : mpMutex(p) { <small><span style="font-family: Courier New,Courier,monospace;">pMutex</span></small>-&gt;Lock(); }
+ &nbsp;&nbsp; ~ScopedAutoLock() { mpMutex-&gt;Unlock(); }
+ &nbsp;&nbsp;&nbsp; operator bool() const { return false; }
+ &nbsp;&nbsp;&nbsp; Mutex* const mpMutex;
+};
+         
+#define synchronized(mutex) if(ScopedAutoLock lock_ = (mutex)){} else<span style="font-family: Courier New,Courier,monospace;"></span><span style="font-family: Courier New,Courier,monospace;"></span>
+                 </pre>
+</blockquote>
+<p class="faq-question">20<a name="20"></a> Why does EAThread defines priorities as values offset from kThreadPriorityDefault instead of defining priorities as scaled values between min and max values? </p>
+<p class="faq-answer">Microsoft defines thread priorities as being in a range from THREAD_PRIORITY_IDLE to THREAD_PRIORITY_TIME_CRITICAL. So why not define EAThread priorities as having some range and scale that range to the platform-specific range such as Microsoft's IDLE to TIME_CRITICAL?</p>
+<p><span class="faq-answer">The primary reason for this is that doing so wouldn't accomplish much and would introduce the possibility of precision loss between platforms. Also, it turns out that with Windows the above identifiers aren't the actual bounds to thread priorities but are convenient defines for practical user usage. <br>
+  <br>
+  The issue at hand is that priorities have different meanings on different platforms. It is rather difficult to define a API in which "high" priority has any equivalency between platforms. What EAThread does (documented in EAThread.h, line ~210, thread priority constants) is make it simple: <br>
+&nbsp;&nbsp;&nbsp; 127 means normal priority on any system and it is named 'kThreadPriorityDefault'.<br>
+&nbsp;&nbsp;&nbsp; +1 (i.e. 128) means priority + 1 on any system.<br>
+&nbsp;&nbsp;&nbsp; - 1 (i.e. 127) means priority - 1 on any system.<br>
+&nbsp;<br>
+This way, you can specify in a consistent way that you want the thread priority bumped up by one, regardless of the platform and how it represents priority values. Looked at another way, all EAThread does is take whatever the given platform defines as normal and moves that value to be 127 (EA::Thread::kThreadPriorityNormal). Deltas are exactly the same as the given platform. Note that on PC/XBox/Xenon that integral higher priority values mean higher thread priorities, but that on PS2 a lower integral value means a higher thread priority. EAThread adjusts for this in a consistent way: +1 to the user gets translated as -1 on the PS2, and the relative values behave exactly as natively on the PS2.</span></p>
+<p class="faq-question">21<a name="21"></a> I would like a function called RandomSleep which sleeps randomly so that I can help test my code's thread safety. </p>
+<p class="faq-answer">Such functionality is not present within EAThread because there is no single implementation that would be ideal for all users and because such functionality could be made independently of EAThread. Here is an example of such a function:</p>
+<blockquote>
+  <pre><span class="faq-answer ColoredComment">// RandomSleep
+// Sleeps for a random period of time in milliseconds between the min and max specified times. 
+// If the max time is &lt;= the min time, then the sleep is done for the min time.</span><span class="faq-answer">void RandomSleep(int minSleepMS, int maxSleepMS = -1)
+<span style="font-family: Courier New,Courier,monospace;">{</span>
+    int sleepTime;
+           
+ &nbsp;&nbsp; if(maxSleepMS &gt; minSleepMS)
+ &nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;sleepTime = minSleepMS + (rand() % (maxSleepMS - minSleepMS));
+ &nbsp;  else
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sleepTime = minSleepMS;
+           
+ &nbsp;&nbsp; for(ThreadTime currentTime = GetThreadTime(), endTime = currentTime + sleepTime; 
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   currentTime &lt; endTime; currentTime = GetThreadTime())
+ &nbsp;&nbsp; {
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ThreadSleep(endTime - currentTime);
+ &nbsp;&nbsp; }
+}</span></pre>
+</blockquote>
+<p class="faq-answer">Times are in milliseconds instead of something finer because currently EAThread times are integer milliseconds and because current platform threading kernels don't work at any time level finer than milliseconds, regardless of their API definitions. A future version of EAThread may change thread times to be floating point milliseconds instead of integer milliseconds in order to enable microsecond and smaller timings.</p>
+<p class="faq-question">22<a name="22"></a> Why are EAThread time periods (timeouts in particular) specified in milliseconds instead of something finer? </p>
+<p class="faq-answer">It might be useful to point out that neither Windows, XBox, nor Xenon system Sleep (or other threading API) functions understand any kind of resolution finer than millisecond resolution (Unix systems do so at the API level, though not usually at the implementation level). The Sony Playstation 3 has a threading API with a microsecond time period, so periods finer than milliseconds may indeed be significant on the PS3. Thus, having an API that is savvy to finer resolutions than milliseconds would be nice. One way to do this would be to have parameters be float instead if int. That way, one unit is still milliseconds, but .001 units is a microsecond. <br>
+  <br>
+  It should be noted that while milliseconds may seem like a coarse resolution to the world of 16 ms frames, but thread synchronization isn't supposed to be done in a way that makes such things matter. The only places that time appears in threading APIs is in timeouts (and the Sleep function, if you consider its argument to not be a timeout). Timeouts are not meant to be used in the microsecond level or really even the millisecond level. Some argue successfully that timeouts have no place in proper thread synchronization at all.<br>
+  <br>
+In practice, it might be a good idea to allow EAThread time periods to be finer than millisecond precision, but in practice it shouldn't usually make much difference with properly constructed thread usage. Nevertheless, a future version of EAThread may support finer resolutions.</p>
+<p class="faq-question">23<a name="23"></a> How do I detect the creation and and destruction of threads from within my application? </p>
+<p class="faq-answer">See <span style="font-family: monospace;">EA::Thread::Thread::SetGlobalRunnableFunctionUserWrapper</span> in eathread_thread.h</p>
+<p class="faq-question"> 24<a name="24"></a> How do I best implement thread-safe reference counting?</p>
+<p class="faq-answer">Here is an example implementation. It's important to realize that the return values from the AddRef, Release, and GetRefCount functions represent the value at the time of the call and that another thread could change the actual reference count at any time.</p>
+<blockquote>
+  <pre class="faq-answer">class ReferenceCounted
+{
+public:
+    ReferenceCounted() : mRefCount(0) { }
+    ReferenceCounted(const ReferenceCounted&amp;) : mRefCount(0) { }  <span class="ColoredComment">// Don't copy the refcount.</span>
+    const ReferenceCounted&amp; operator=(const ReferenceCounted&amp;) { return this; }
+
+    virtual ~ReferenceCounted() { } <span class="ColoredComment">// Virtual dtor is needed if this class is used as a base class.</span>
+
+<span class="ColoredComment">    // Increment the reference count; return new count.</span>
+ &nbsp;&nbsp; int32_t AddRef()
+    {
+        return (int32_t)((mRefCount++) + 1);
+    }<br>
+<span class="ColoredComment">    // Decrement the reference count; return new count.</span>
+ &nbsp;&nbsp; int32_t Release()
+ &nbsp;&nbsp; {
+<span class="ColoredComment">        // Use post-decrement for AtomicInt32. This is because we act on the resulting value, 
+        // and if two threads simultaneously call Release with a starting refcount of 2, 
+        // they could both see the new value as 0, whereas we want only the last one to see it as 0.
+</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  int32_t rc = ((mRefCount--) - 1); 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(rc)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   return rc;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  mRefCount.SetValue(1); <span class="ColoredComment">// Prevent double destroy if AddRef/Release </span>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  delete this;&nbsp;&nbsp;         <span class="ColoredComment">// is called while in destructor. This can happen</span>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  return 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     <span class="ColoredComment">// if the destructor does things like debug traces.</span>
+ &nbsp;&nbsp; }
+
+&nbsp;&nbsp;  int32_t GetRefCount()
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  { return mRefCount.GetValue(); }
+
+protected:
+ &nbsp;&nbsp;&nbsp; EA::Thread::AtomicInt32 mRefCount;
+};<br>
+</pre>
+</blockquote>
+<p class="faq-question">25<a name="25"></a> How do I enumerate the set of currently running threads?</p>
+<p class="faq-answer">You can install a thread creation/destruction hook with <span style="font-family: monospace;">EA::Thread::Thread::SetGlobalRunnableFunctionUserWrapper</span>. <br>
+  <br>
+Also, EAThread currently keeps a private data structure which is a list of all existing threads. This list could be exposed via an API function (taking care to provide a way for it to be thread-safe) in a future version of EAThread if users are sufficiently interested.</p>
+<p class="faq-question">26<a name="26"></a> My Wii threads are not yielding to each other.</p>
+<p class="faq-answer">While the Wii implements pre-emptive threading, it does not implement time-slicing. Thus, the creation or unblocking of a higher priority thread will result in pre-emption of a lower priority thread, but two threads of equal priority will not alternate execution. Instead, one of the threads will take up all the CPU time until it manually yields. A workaround to this is to create a high priority thread that spends most of its time sleeping. Each time it goes to sleep, the OS will give time to one of the lower priority threads, much as if it was doing time-slicing. </p>
+<p class="code-example"> volatile bool gShouldContinue = true;<br>
+  <br>
+ void HighPriorityThread() <br>
+  { <br>
+  &nbsp;&nbsp; while(gShouldContinue)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSSleepMilliseconds(1); <br>
+}</p>
+<p class="faq-answer">The downside to this solution is that the code above uses some CPU time briefly when it wakes.</p>
+<p class="faq-question">27<a name="27"></a> Why does the Thread class let you create more than one thread?</p>
+<p class="faq-answer">The reason is that there hasn't been deemed a major reason not to. Some users may want to force a 1:1 relationship between a Thread object and the running thread, but that's merely one usage pattern. If it turns out that users are making a lot of mistakes because they are accidentally creating more than one thread but really wanted a 1:1 relationship then we can revisit this. In the meantime we opt for flexibility and efficiency.</p>
+<p class="faq-question">28<a name="28"></a> My thread fails to start.</p>
+<p class="faq-answer">On XBox 360, if you are using the SetName feature of EAThread, then you might be the victim of a kernel bug. If you call SetName immediately after creating a thread, a bug in the SDK causes the thread to not be created. The only current solution is to not call the SetName function immediately.</p>
+<p class="faq-answer">If you try to create a thread within a DLL startup procedure (XBox 360 or Windows), it might not start. You will need to create it later.</p>
+<p class="faq-answer">Make sure that the thread isn't simply being pushed aside by higher priority threads, and make sure the thread wasn't created as suspended or didn't manually suspend itself during its startup. </p>
+<p class="faq-question">29<a name="29" id="29"></a> How can I tell which thread is on which core/hardware thread/virtual processor in the debugger?</p>
+<p class="faq-answer">The answer depends on what platform and debugger you are working with. We provide answers here for the primary EA development platforms in 2006. </p>
+<p class="faq-answer">Note that the term &quot;core&quot; and &quot;hardware thread&quot; are used synonymously here to indicate a virtual CPU. Classic CPUs (e.g. Intel 80486, Motorola 68000) have one processing unit per physical CPU chip and threads are implemented by sharing that processing unit between multiple threads. More recently, the concept of hyperthreading has been developed and refers to a technique whereby a single CPU chip has two instruction pipelines within it, but in other ways is like a classic CPU in that it has a single cache, single clock, etc. Still more recently the concept of multiple cores has been developed and refers to a technique whereby a single CPU chip has two somewhat independent CPUs within it (each with a private clock and instruction pipeline), though the two CPUs still share the same L1 and L2 memory caches. In both the case of hyperthreaded cores and multiple cores the operating systems treats them like independent processors.</p>
+<p class="faq-answer"><b>Windows / x86 / x64</b></p>
+<p class="faq-answer">Windows runs on a variety of hardware, some of which includes multiple independent CPUs, multiple hyperthreaded cores per CPU, and multiple cores per CPU. In any case, the system presents these as if there were multiple independent CPUs. </p>
+<p class="faq-answer">The Visual Studio .NET 2003 and 2005 don't provide a way to tell what virtual processor a given thread is running on. Neither does the Windows kernel debugger. Windows is different from console machines in that threads bounce around between virtual processors frequently and so such information isn't very useful. As soon as you continue a stopped thread from the debugger, it will likely be rescheduled to some other processor. With Windows Server 2003 and Windows Vista, individual threads can call the GetCurrentProcessorNumber() function to tell what processor they are running on.</p>
+<p class="faq-answer"><b>XBox 360 (a.k.a. Xenon)</b></p>
+<p class="faq-answer">The XBox 360 has three processors, each with two hyperthreaded cores.</p>
+<p class="faq-answer">You can type @hwthread in the VC++ watch window when you are on a breakpoint. You get a value from 0 to 5, which indicates which core/hardware thread the stopped thread is on.</p>
+<blockquote>
+  <p class="faq-answer">0: Processor 0, HWThread 0<br>
+    1: Processor 0, HWThread 1<br>
+    2: Processor 1, HWThread 0<br>
+    3: Processor 1, HWThread 1<br>
+    4: Processor 2, HWThread 0<br>
+    5: Processor 2, HWThread 1</p>
+</blockquote>
+<p class="faq-answer"><b>PS3</b></p>
+<p class="faq-answer">The PS3 has one primary CPU and multiple SPUs. We'll discuss the CPU and SPUs separately.</p>
+<p class="faq-answer">The primary CPU has two hyperthreaded cores and is rather like one of the XBox 360 CPUs. As of this writing (June 2006), the PS3 nor the SN or gdb debuggers for the PS3 provide a means for telling which of the two hyperthreaded cores a given thread is running on. However, Sony has indicated that such functionality is on their wish list of future features.</p>
+<p class="faq-answer">Individual SPUs have just one core per SPU. However, the SPUs together form a system of multiple SPU processors whereby the user may be interested in knowing which SPU a given SPU task is running on. The SN debugger displays which of these SPUs you are working with.</p>
+<p class="faq-answer"><b>Wii (a.k.a. Revolution)</b></p>
+<p class="faq-answer">The Wii CPU is much like the GameCube CPU and is a single core PowerPC. There is no need to tell which core a given thread is running on because there is only one core.</p>
+<p class="faq-question">30<a name="30" id="30"></a> We get the following PS3 linker warning: SomeFile.obj(.debug_info+0x5e9a): R_PPC64_DTPREL32 used with TLS symbol x.</p>
+<p class="faq-answer">This warning is harmless. If the .debug_info were instead something else (e.g. .toc) it might be significant.</p>
+<p class="faq-question">31<a name="31" id="31"></a> What are the limitations of EA_THREAD_LOCAL (a.k.a __declspec(thread) and __thread) ?</p>
+<p class="faq-answer">EAThread provides two means of thread-local storage, ThreadLocalStorage and EA_THREAD_LOCAL. These mirror the equivalent functionality provided by the standard library and compiler, such as Microsoft's TlsGetValue and __declspec(thread). The way EA_THREAD_LOCAL typically works is that a fixed-size heap is created for every thread at the base of its stack area when the thread is created, and the compiler makes this heap be the size of all the thread-local objects combined. Referencing a thread-local object means reading from a fixed offset within this heap and thus can be very fast compared to API-based TLS.</p>
+<p class="faq-answer">EA_THREAD_LOCAL is a faster way to access thread-local storage but its usage has limitations. Specifically, EA_THREAD_LOCAL:</p>
+<ul>
+  <li class="faq-answer">Can't be used with classes that require any initialization beyond built-in or default initialization.</li>
+  <li class="faq-answer">Causes extra space to be allocated to every created thread's stack space, even if the object isn't used.</li>
+  <li class="faq-answer">Can be used only with static data (global variables, class static variables, module static, function static).</li>
+  <li class="faq-answer">Can be used with Microsoft DLLs only when the DLLs are statically linked to and not dynamically linked to (e.g. via LoadLibrary).</li>
+  <li class="faq-answer">Cannot be used in PS3 PRXs (the PS3's equivalent to DLLs).</li>
+  <li class="faq-answer">Doesn't allow thread-local values to be referenced before main().</li>
+</ul>
+<p class="faq-answer">Example usage:</p>
+<blockquote>
+  <p class="faq-answer"><font face="monospace" size="2">EA_THREAD_LOCAL int n = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// OK.</span><br>
+  extern EA_THREAD_LOCAL struct Data s;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// OK.</span><br>
+  static EA_THREAD_LOCAL char* p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// OK.</span><br>
+  EA_THREAD_LOCAL int i = sizeof(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// OK.</span><br>
+  EA_THREAD_LOCAL std::string s(&quot;hello&quot;);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// Bad -- Can't be used for initialized objects.</span><br>
+  EA_THREAD_LOCAL int Function();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// Bad -- Can't be used as return value.</span><br>
+    void Function(){ EA_THREAD_LOCAL int i = 0; } <span class="ColoredComment">// Bad -- Can't be used in function.</span><br>
+    void Function(EA_THREAD_LOCAL int i){ }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// Bad -- can't be used as argument.</span><br>
+    extern int i; EA_THREAD_LOCAL int i;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// Bad -- Declarations differ.</span><br>
+    int EA_THREAD_LOCAL i;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ColoredComment">// Bad -- Can't be used as a type modifier.</span></font></p>
+</blockquote>
+<p class="faq-question">32<a name="32" id="32"></a> How could a timeout actually trigger before the specified timeout time?</p>
+<p class="faq-answer">We've seen on some platforms (e.g. BSD Unix) that primitives can return very shortly before the timeout time (e.g. a few microseconds). With Posix threads, most synchronization primitives (including condition variables) are subject to cancellation, which could cause them to return sooner. Also, Posix condition variables are subject to Spurious Wakeup, which isn't actually a timeout but rather a mistaken success. &nbsp;Also, the timeout time is based on the system absolute time, and if the system doesn't support realtime clocks then the user could change the system time and result in the primitive timing out sooner than you would expect (though technically correct in the sense of reported system time). </p>
+<hr style="width: 100%; height: 2px;">
+<p>End of document<br>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

@@ -29,7 +29,7 @@
 
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX)
+#if OS(UNIX) || defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX) || defined(EA_PLATFORM_STADIA)
 //-EAWebKitChange
 #include <unistd.h>
 #endif

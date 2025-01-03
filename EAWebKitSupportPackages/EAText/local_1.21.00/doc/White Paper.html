@@ -1,0 +1,897 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>EAText</title>
+<style>
+<!--
+.ToDo {
+    color: #FF0000
+}
+-->
+</style>
+<meta name="description" content="Introduction to the EAText typesetting engine.">
+</head>
+
+<body>
+
+<h1>EAText</h1>
+<p>Paul Pedriana<br>
+Senior Software Engineer<br>
+Electronic Arts<br>
+<a href="mailto:ppedriana@ea.com">ppedriana@ea.com</a></p>
+<h2>Introduction</h2>
+<p>EAText is an advanced next-generation text characterization, layout, and font 
+engine. </p>
+<p>The biggest difference between EAText and other systems is that 
+EAText supports all 
+conceivable EA locales, including Western, Chinese, Japanese, Korean, 
+and complex locales such as Thai, Hebrew, Hindi, and Arabic. This is the first 
+time the problem of complex script layout has been universally solved within 
+Electronic Arts and in doing so it should help lower one of the most significant 
+barriers to multi-locale development. By using EAText, you automatically get support for 
+about 25 languages in your game. This support includes basic layout and display, HTML/styled 
+display, and interactive text editing. EAText additionally comes with a set of 
+basic pipeline tools that can be used with EAText but can also be used with 
+other systems due to their pipeline/engine-neutral design. Lastly, EAText and 
+its associated packages follow standards such as Unicode, CSS, and XHTML, so 
+expectations and behavior follow well-known conventions.</p>
+<p>There are some packages within EA that have overlapping functionality with 
+EAText. Most prevalent among these is the rwfont package. EAText does not seek to 
+replace or compete against these packages but rather it attempts to provide 
+augmented functionality for users that have a need for its features. Much of the 
+EAText library and associated tools were written in such a way as to be agnostic 
+to the underlying rendering package and so can mix with other related packages.</p>
+<p>Many examples here show pictures of text in various EA games. In most cases 
+these examples were done with text layout against screenshots of the game and 
+were not done by modifying the game itself to display the text.</p>
+<h2>Features</h2>
+<p>This document provides a graphical introduction to many of EAText's features. 
+A summary of the primary features is as follows:</p>
+<ul>
+	<li>Scalable functionality; advanced features can be compiled away if desired. 
+Users with lower requirements &quot;pay&quot; only for what they need. Much of the 
+functionality listed below is optional and goes away if it's not used. Also configuration #defines allow for functionality stripping as well. </li>
+	<li>Cross-platform portable. Runs the same on all platforms, including advanced 
+script layout. </li>
+	<li>Supports all conceivable languages EA could ship to within the next ten 
+	years; see below for a detailed listing.</li>
+	<li>Supports complex script composition and layout features, such as:<ul>
+		<li>Bidirectional layout (e.g. Hebrew, Arabic). </li>
+		<li>Contextual shaping (e.g. Thai, 
+		Hindi, Arabic). </li>
+		<li>Combining characters.</li>
+	</ul></li>
+	<li>Simple high level API (Typesetter). Drawing a line of plain 
+text at the application level can be done with a single line of C++ code. </li>
+	<li>Provides a fast ASCII layout option for non-localized (e.g. debug) text.</li>
+	<li>Reasonably high performance. Low memory usage, including little or no runtime memory allocation. 
+	</li>
+	<li>Fast 
+execution, including the ability to create and save pre-built display lists.</li>
+	<li>Fast startup. Supports the pre-loading of glyphs from disk. </li>
+	<li>TrueType and OpenType font support (via Font 
+Fusion, and thus Japanese Stroked Font support). </li>
+	<li>Bitmapped font support (and 
+thus multi-colored font support). </li>
+	<li>Supports polygonal fonts, for true 3D fonts (flat or extruded). </li>
+	<li>Supports contour fonts -- outlined fonts.</li><li>Supports multiple scripts and fonts within a 
+line of text arbitrarily, allowing not just for HTML but also for overcoming 
+font glyph support problems.</li>
+	<li>Supports the CSS standard and comes with an 
+optional CSS-compliant in-game font server. </li>
+	<li>Supports advanced layout features such as ellipsizing, box-fitting, 
+	picking, justification, wrapping modes, underlining, highlighting, and password display/entry.</li>
+	<li>Comes with an optional style 
+engine so an application can work with styles instead of hard-coded fonts.</li>
+	<li>Supports the Unicode standard with respect to 
+text characterization and layout. </li>
+	<li>Supports Unicode compliant locale-proper string sorting (collation) and 
+	normalization.</li>
+	<li>Supports line breaking options as per the CSS standard.</li>
+	<li>Supports curved/Bezier path following (text along an arbitrary curve).</li>
+	<li>Includes generic Unicode-proper char/word/sentence/line/paragraph break iterators. 
+	</li>
+	<li>Supports locale-proper left-aligned, right-aligned, centered, and 
+	justified text; plus vertical alignment.</li>
+	<li>Provides basic dynamically generated text effects 
+	functionality (shadow, outline, raise).</li>
+	<li>Comes with support for standards-compliant XHTML parsing and rendering 
+	via the XHTML package.</li>
+	<li>Comes with generic interactive multi-line multi-language text editor 
+	which can be adapted to any GUI system.</li>
+	<li>Comes with BitmapFontEditor, an advanced multicolor/bitmapped font 
+	generator and WYSIWYG editor.</li>
+	<li>Comes 
+with a font WYSIWYG preview tool (EATextViewer) that lets you tinker with fonts 
+and styles on the target platform.</li>
+	<li>Allows for relatively easy porting to different rendering systems (six 
+	as of this writing).</li>
+</ul>
+<h2>EAText Metrics</h2>
+<p>EAText largely follows the established conventions of typography. There is no 
+definitive standard for typographical metrics, though there is little 
+disagreement on the topic. We present font metrics and glyph metrics 
+respectively as defined by EAText. Font metrics are metrics that describe the 
+entire font, whereas glyph metrics describe individual glyphs. </p>
+<p><b>Font Metrics</b></p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/FontMetrics.png" width="797" height="255"></p>
+</blockquote>
+<p><b>Glyph Metrics</b></p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GlyphMetrics.png" width="424" height="369"></p>
+</blockquote>
+<h2>Complex Script</h2>
+<p>Western languages uses scripts (writing systems) that are mostly 
+straightforward in their layout rules. Each stroke of the user's keyboard 
+corresponds to a single glyph on the screen to the right of the previous glyph. 
+Space separates words and punctuation ends sentences. The left arrow key moves 
+the cursor to the glyph to the left and the backspace key deletes the glyph to 
+the left. However, this doesn't quite apply to some scripts, and we call such 
+scripts <i>complex</i>.</p>
+<p><b>Bidirectionality</b></p>
+<p>Some scripts such as Hebrew are right-to-left (RTL) instead of left-to-right 
+(LTR), and thus the text starts on the right and each appended character is on 
+the left. Additionally, when numerals or Western script is used with RTL script, 
+they are ordered LTR within the RTL text. This is called bidirectionality, or 
+bidi for short. And when characters such as (), [], or “” are used in such 
+bidirectional text they need to be graphically reversed by the layout engine. 
+Let's look at a few examples.</p>
+<blockquote>
+	<p>Typing order (left) and display order (right) of Hebrew embedded into 
+	English<br>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HebrewReorder1.png" width="624" height="60"></p>
+	<p>Hebrew embedded into English embedded into Hebrew<br>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HebrewReorder2.png" width="963" height="76"></p>
+</blockquote>
+<p>There are additional problems encountered beyond re-ordering, such as glyph 
+mirroring, punctuation placement, justification, character affinity, etc. A 
+thorough discussion of these problems is outside the scope of this document. </p>
+<p><b>Substitution</b></p>
+<p>Some scripts require the displayed glyphs to be different from the characters 
+the user typed, depending on their context within a line of text. In addition to 
+being RTL, Arabic is a cursive script (i.e. like handwriting) and requires the 
+displayed text to be smoothly connected, like you connect characters when 
+handwriting. To implement this on a computer using discrete glyphs requires <i>
+contextual substitution</i>. Additionally, Arabic has required ligatures; recall 
+that a ligature is the combining of two glyphs into a single glyph. We'll 
+provide a few simple examples here.</p>
+<blockquote>
+	<p>Arabic contextual substitution<br>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ArabicSubstitution.png" width="487" height="52"></p>
+</blockquote>
+<p><b>Positioning</b></p>
+<p>Some scripts require that the displayed glyphs be positioned on screen in a 
+particular location relative to other glyphs instead of simply being in the same 
+location after the previous glyph. Thai and Hindi are two languages which 
+require custom glyph positioning lest their text be odd looking or illegible. We 
+provide a couple examples to graphically describe this situation.</p>
+<blockquote>
+	<p>Thai glyph positioning<br>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ThaiPositioning.png" width="275" height="60"></p>
+	<p>Hindi glyph positioning<br>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HindiPositioning.png" width="216" height="47"></p>
+</blockquote>
+<h2>Locale Support </h2>
+<p>EAText supports layout and interactive editing in 28 languages from 9 
+scripts, including:</p>
+<blockquote>
+	<table border="1">
+		<tr>
+			<td>Arabic (bidirectional)</td>
+			<td>French</td>
+			<td>Italian</td>
+			<td>Russian</td>
+		</tr>
+		<tr>
+			<td>Chinese</td>
+			<td>German</td>
+			<td>Japanese (kanji, hiragana, katakana)</td>
+			<td>Spanish</td>
+		</tr>
+		<tr>
+			<td>Czech</td>
+			<td>Greek</td>
+			<td>Korean</td>
+			<td>Swedish</td>
+		</tr>
+		<tr>
+			<td>Danish</td>
+			<td>Hebrew (bidirectional) </td>
+			<td>Norwegian</td>
+			<td>Thai (complex composition and breaking) </td>
+		</tr>
+		<tr>
+			<td>Dutch</td>
+			<td>Hindi (complex composition) </td>
+			<td>Polish</td>
+			<td>Tagalog</td>
+		</tr>
+		<tr>
+			<td>English</td>
+			<td>Hungarian</td>
+			<td>Portuguese</td>
+			<td>Turkish</td>
+		</tr>
+		<tr>
+			<td>Finnish</td>
+			<td>Icelandic</td>
+			<td>Romanian</td>
+			<td>Vietnamese</td>
+		</tr>
+	</table>
+</blockquote>
+<p>Some scripts are easier to support than others, with the bidirectional and 
+complex scripts being particularly difficult. Here we present some EAText renderings of 
+a few of the more esoteric scripts.</p>
+<p><b>Korean </b>script -- known as Hangul script -- is a highly organized 
+phonemic alphabet organized into syllabic blocks. Interactive editing of Hangul 
+requires an IME (input method editor) which composes building block consonants 
+and vowels (jamo) into glyphs.
+</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/KoreanGUI.png" width="925" height="694"></p>
+</blockquote>
+<p><b>Thai </b>is a complex script known for its vertical glyph composition 
+whereby decorations are dynamically applied to glyphs in positions that depend 
+on the glyphs and other decorations. Thai is also unique because it doesn't 
+separate words by spaces and doesn't delimit sentences with punctuation (note 
+the picture below). Line 
+breaking during layout needs to be done by dictionary lookup or by invisible 
+characters. Thai decorations are vertically stacked upon base glyphs, with a 
+result of this being that Thai requires more vertical space than most other 
+scripts.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ThaiText.png" width="494" height="185"></p>
+</blockquote>
+<p><b>Hebrew</b> is a right-to-left script which is noted for lacking vowels in 
+most informal usage. While Hebrew is a right-to-left script, embedded 
+left-to-right script and numbers must be rendered left-to-right inline with the 
+right-to-left Hebrew. While Western GUIs and their text are left-aligned, Hebrew 
+GUIs and text are right-aligned.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HebrewDialog.png" width="576" height="350"></p>
+</blockquote>
+<p><b>Arabic</b> is a cursive script (i.e. like handwriting), and its displayed 
+glyphs and their connections must be chosen by the layout engine based on their 
+relative positions combined with OpenType information associated with the font. 
+Arabic is a right-to-left script but embedded Western script and numbers must be 
+rendered left-to-right, as we can see in the example below.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ArabicDemo.png" width="913" height="245"></p>
+</blockquote>
+<p><b>Hindi</b> (Devanagari script) is noted for its beautiful text and raised 
+baseline. The selection of the appropriate glyphs and their positioning must be 
+done by the layout engine based on the context of the text combined with 
+OpenType information associated with the font.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HindiDemo.png" width="700" height="525"></p>
+</blockquote>
+<h2>TextEdit</h2>
+<p>Interactive text editing is a common task in PC-based games and an occasional 
+task on console-based games. It is one of the more difficult things to do 
+properly in a GUI, especially in the face of localization. As a result, many 
+games shy away from the problem by providing minimal text creation or editing 
+features in their games. EAText solves this problem and makes it relatively easy 
+for any game to implement text editing, as it comes with a generic multi-line 
+text editor that is independent of the rendering system and can be plugged into 
+any application. With it you get proper localized support for text editing in 
+all of the languages listed earlier. Think of it as being a fully abstracted 
+&quot;owner-draw&quot; text editing widget.</p>
+<p>Here's a listing of TextEdit's primary features:</p>
+<ul>
+	<li>Supports all EAText scripts and languages.</li>
+	<li>Multiple languages can be simultaneously represented within a TextEdit.</li>
+	<li>Supports single or multi-line editing.</li>
+	<li>Supports horizontal and vertical scroll bars at the user's option.</li>
+	<li>Supports proper localized password entry mode.</li>
+	<li>Provides a text length limit option.</li>
+	<li>Provides undo/redo of an user-specified limit.</li>
+	<li>Supports right-to-left or left-to-right base paragraph directions.</li>
+	<li>Supports proper bidirectional layout and editing.</li>
+	<li>Can substitute alternative fonts when text is not representable by the 
+	base font.</li>
+	<li>Supports any kind of font that EAText supports, which may include 
+	user-defined font types.</li>
+	<li>Supports traditional 2D editing as well as 3D editing in the game world.</li>
+	<li>Supports IME (input method editing) via the associated EAIME package.</li>
+	<li>Can be used in read-only mode as a text display.</li>
+</ul>
+<p>Here's a 2D scrolling TextEdit showing some highlighted text:</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/TextEditView.png" width="670" height="327"></p>
+</blockquote>
+<p>Here's a TextEdit being used interactively with a terrain view:</p>
+<blockquote>
+	<p>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/BFMETextEditAnimation.gif" width="800" height="440"></p>
+</blockquote>
+<h2>Fast Mode</h2>
+<p>EAText has &quot;fast mode&quot; layout functionality for implementing debug HUDs. In 
+this mode there is no advanced layout and instead characters are simply placed 
+one after another in a tight programming loop. This is useful for non-localized 
+needs such as frames-per-second counters, on-screen debug traces, single lines 
+of Western text, etc. Here we show an example of a debug stats HUD done via 
+the fast mode functions.</p>
+<blockquote>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/BlackHUD.png" width="800" height="397"></p>
+</blockquote>
+<h2>XHTML</h2>
+<p>EAText supports locale-proper advanced layout such as HTML. The XHTML package 
+is a separate package which implements a standards-compliant XHTML/CSS parsing 
+and display engine using EAText. XHTML is the most modern form of HTML and is the direction 
+the W3C standardization committee is going. While XHTML is best known for 
+describing web pages presented by web browsers, it can also be used to display a 
+richer gaming interface, especially interfaces with dynamic content.</p>
+<p>The following is a somewhat unrefined demo of XHTML capabitilities, but it serves the purpose of demonstrating some of its capabilities.</p>
+<blockquote>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/XHTMLDemo1.png" width="577" height="329"></p>
+</blockquote>
+<p>Below we have a pre-shipping example of XHTML as used in EA's Spore game. The view consists of XHTML dynamically downloaded by the game from a conventional HTTP server. The view below is essentially an in-game web browser displaying content authored on the server by conventional tools and formats. </p>
+<blockquote>
+  <p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/XHTMLSpore.png" width="724" height="604"></p>
+</blockquote>
+<h2>Bitmapped Fonts</h2>
+<p>In addition to TrueType fonts, EAText supports bitmapped fonts. A bitmapped 
+font is one based on custom-made bitmaps as opposed to TrueType's scalable 
+outlines. The primary advantage of bitmapped fonts is that they can be 
+multicolored with arbitrary alpha (i.e. ARGB) as opposed to being limited to 
+monochrome with edge alpha. The primary disadvantage of bitmapped fonts is that 
+they use more memory and don't scale in size well.</p>
+<p>The following should help convey the difference between outline and bitmapped 
+fonts, respectively:</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/Glow.png" width="684" height="540"></p>
+</blockquote>
+<p>A primary use of bitmapped fonts is to embed symbols or pictures inline with 
+text, such as controller button
+<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ControllerSymbol.png" width="18" height="18"> 
+symbols. This makes things easy because the pictures are treated like 
+characters, and thus no extra effort
+<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/Smiley.png" width="15" height="15"> is required by 
+the programmer or artist. </p>
+<p>With EAText you can use bitmapped fonts mixed with TrueType fonts. Because 
+EAText layout is style-based instead of font-based, setting up the display or 
+editing of mixed outline/bitmapped fonts requires little effort on the part of 
+the programmer or artist.</p>
+<h2>Dynamic Text Effects</h2>
+<p>EAText supports some basic common text effects dynamically. By dynamically we mean that the effect is synthesized at runtime algorithmically as opposed to being done at production time with a bitmapped font. While dynamic effects have a runtime execution cost, they can save memory due to creating only what's needed. These text affects are implemented per-glyph as opposed to per layout and thus they have some limitations that are best overcome by doing layout level effects (e.g. double line rendering).</p>
+<blockquote>
+  <p>outline<br>
+  <img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/TextOutline.png" width="138" height="37">  </p>
+  <p>shadow<br>
+  <img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/TextShadow.png" width="123" height="35">  </p>
+  <p>emboss<br>
+  <img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/TextEmboss.png" width="123" height="35"> </p>
+</blockquote>
+<p>The above effects are not done by EAText; they are Photoshop mockups. EAText has these options but as of this writing (January 2007) the options don't look as nice as they should and are scheduled to be revised.</p>
+<h2>Layout Options</h2>
+<p><b>Alignment</b></p>
+<p>EAText supports the usual set of alignment options with plain text, styled 
+text and interactive text editing. This functionality is properly implemented 
+across all scripts, including cursive scripts such as Arabic. We display some horizontal alignment options here, but EAText also does vertical aligment as well. </p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/AlignmentDemonstration.png" width="643" height="218"></p>
+</blockquote>
+<p><b>Ellipsizing</b></p>
+<p>One of the options provided is line-level and paragraph-level ellipsizing, 
+whereby ellipsis are automatically laid out with the text appropriately for all 
+languages.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/Ellipsis.png" width="700" height="349"></p>
+</blockquote>
+<p><b>Highlighting</b></p>
+<p>EAText can provide highlighting information, which allows correct highlighting of text by the rendering system. This is useful in an interactive text editing environment and is used by the TextEdit component of EAText. This feature is not trivial, as highlighted text can have no self-overlapping regions (the user may be drawing with alpha) and the highlighted ranges may be discontiguous in the presence of bidirectional text.</p>
+<p>The following consists of a contiguous selection. Really. </p>
+<blockquote>
+  <p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HighlightHebrew.png" width="660" height="62"></p>
+</blockquote>
+<p>Try it for yourself:</p>
+<blockquote>
+  <p><font face="Arial" size="2">The Hebrew author wrote, &quot;&#1513;&#1508;&#1503; &#1488;&#1499;&#1500; &#1511;&#1510;&#1514; &#1490;&#1494;&#1512; &#1489;&#1496;&#1506;&#1501; (yes, lettuce) &#1495;&#1505;&#1492;, &#1493;&#1491;&#1497;&quot; and I realized later that it was a pangram.</font></p>
+</blockquote>
+<p>Overlapping glyphs should contribute to highlight alpha only once:</p>
+<blockquote>
+  <p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/HighlightThai.png" width="518" height="36"> </p>
+</blockquote>
+<p><b>Underlining</b></p>
+<p>EAText can provide underline layout, which allows correct underlining of text by the rendering system. This is most useful for PC titles that implement hyperlinks in-game. This feature is not quite as simple as it may seem, as glyphs may be overlapping and underlined ranges may be visually discontiguous in bidirectional environments. </p>
+<p><b>Owner draw</b></p>
+<p>EAText allows the user to implement owner-draw objects inline with the text without having to resort to using full-blown XHTML. The objects use the same glyph metrics as do text glyphs and so are not limited to sitting on the baseline. The user can assign basic properties to objects in order to control their word- and line-breaking properties. Here we show two objects owner-drawn and a lightning post-effect linking them. </p>
+<blockquote>
+  <p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/OwnerDrawObjects.png" width="688" height="394"> </p>
+</blockquote>
+<p><b>Password shaping</b></p>
+<p>EAText implements password display and interactive entry without the 
+programmer or font artist do any work, as is commonly needed for this. To use 
+password display with EAText/Typesetter, just enable the TextStyle password 
+option and it does the rest. </p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/PasswordEntry.png" width="700" height="373"></p>
+</blockquote>
+<p><strong>Line wrapping</strong></p>
+<p>EAText supports the following line breaking modes which follow the CSS3 text-wrap standard:</p>
+<ul>
+  <li>normal - text is wrapped at proper break locations as defined by the Unicode standard.</li>
+  <li>none - text is not wrapped at all but instead overflows its boundary.</li>
+  <li>unrestricted - text may break between glyph clusters (within words).</li>
+  <li>hard (no longer part of CSS) - text may break outside of its boundary but only at valid break locations. </li>
+</ul>
+<p><b>Character and line spacing</b></p>
+<p>EAText allows the user to explicitly control character spacing (tracking) and 
+line spacing. Here we have some text laid out with variable character spacing 
+settings. </p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/Character%20Spacing.png" width="358" height="321"></p>
+</blockquote>
+<p><b>Curved text</b></p>
+<p>EAText allows you to lay out text along the inside or the outside of an 
+arbitrary user-defined curve. A Bezier mode comes built-in, and a simple Bezier 
+was used to generate the picture below. A common in-game use would be to flow 
+text around a logo, put text on players' jerseys, place text on a curving road, 
+etc.</p>
+<blockquote>
+	<p>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/SC4CurvedRoadName.png" width="770" height="382"></p>
+</blockquote>
+<h2>BitmapFontEditor</h2>
+<p>The BitmapFontEditor (BFE) is a WYSIWYG editor for multi-colored bitmapped 
+fonts. It is flexible with respect to the font file format it works with, as it 
+is independent of any private or proprietary binary standards. The font metrics 
+consist of a text file and the font graphics consist of open standard graphics 
+formats such as .png, .tga, or anything else gimex.dll can read/write. 
+Developers are expected to convert these graphics files to optimized 
+platform-specific formats as part of the build process. It is not up to 
+BitmapFontEditor to try to decide what's best in this respect for teams.<br>
+<br>
+BFE is a typographically proper implementation of a font generator and editor. 
+All aspects of editing are available via the GUI and it has the following basic 
+feature set: </p>
+<ul>
+	<li>Open file format. Header is text and textures are any of the common 
+	bitmap types, such as png, tga, etc. The result is that users can use their 
+	conventional pipelines to convert the textures into whatever optimized 
+	format they want. Nobody is tied to a proprietary system. </li>
+	<li>Portable implementation which has no dependencies on external libraries. 
+	The TrueType converter -- &quot;BitmapFontGenerator&quot; (BFG) --&nbsp;itself is a 
+	standalone applet which uses Font Fusion. </li>
+	<li>Font&nbsp;properties are CSS-proper and savvy. </li>
+	<li>Can&nbsp;generate a font&nbsp;from an outline font (e.g. TTF) or from simply a 
+	texture generated by Photoshop or another source.&nbsp;Typically the font 
+	graphics will be developed in Photoshop while the metrics are set in 
+	BitmapFontEditor.</li>
+	<li>The BitmapFontGenerator can be script 
+	driven and automated. </li>
+	<li>Outline font generation comes with many features, such as face index, 
+	size, dpi, stretch, texture size spec, padding size, smoothing, kerning, 
+	ligatures, shadow, outline, raised, depressed effects, character selection 
+	via file or char picker, etc. </li>
+	<li>Automatic glyph outline detection during glyph creation. Just 
+	double-click in the center of the glyph. </li>
+	<li>Texture view with zoom and scroll and user-selectable background color 
+	or bitmap (e.g. game screen or GUI). </li>
+	<li>Ability to add and remove textures from the texture set dynamically 
+	during editing. </li>
+	<li>Kerning support, both import and editing. Kerning is properly done at 
+	the glyph level and not the character level. </li>
+	<li>Ligature support, both import and editing. Ligatures are properly done 
+	at the glyph level as well as the character level. </li>
+	<li>Proper char mapping, whereby multiple chars can be mapped to the same 
+	glyph for memory savings with mixed locales. </li>
+	<li>Automatic detection of texture file changes (e.g by Photoshop) during 
+	editing, with automatic reload.&nbsp;Thus artists can tweak the glyphs while 
+	working on the font. </li>
+	<li>Text preview, WYSIWYG, with color or textured (e.g. from GUI) 
+	background. </li>
+	<li>Unicode-savvy and proper. </li>
+	<li>Multiple texture support. </li>
+	<li>GUI glyph editor with draggable glyph and font metrics. Arbitrary zoom 
+	and scroll as well. </li>
+	<li>Much context menu support. </li>
+	<li>Realtime editing updates across all views. </li>
+	<li>Character mapper with hex and Unicode standard character descriptions.</li>
+</ul>
+<p><b>BitmapFont examples</b></p>
+<p>Here we present a small collection of bitmapped fonts created with 
+BitmapFontEditor (graphics by Photoshop). A couple of these may be slightly over-the-top, but they represent real things you can do with ARGB fonts. </p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/EATextBlock.png" width="494" height="197"></p>
+	<p>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/ReflectedRenderWare.png" width="465" height="152"></p>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/EATextFire2.png" width="579" height="367"></p>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/EASportsLogo.png" width="611" height="192"></p>
+	<p>
+	<img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/UnicodeEmbroidery.png" width="509" height="146"></p>
+</blockquote>
+<p><b>BitmapFontEditor screenshots</b></p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GlyphEditor.png" width="612" height="431"></p>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/BitmapFontEditor1.png" width="1280" height="962"></p>
+</blockquote>
+<h2>PolygonFontGenerator</h2>
+<p>EAText supports 3D polygonal text generated from an arbitrary TrueType font 
+with various parameters via PolygonFontGenerator. User-supplied glyph models can 
+be used as well, but can still be laid out by the EAText Typesetter. EAText 
+baseline curve fitting can be applied to polygonal text the same as textured 
+text.</p>
+<ul>
+	<li>Large on-screen text without the excessive texture memory usage Animated 
+	text above avatars, waypoints, etc.</li>
+	<li>Personalization of in-world entities</li>
+	<li>Dynamic (e.g. localized) text on in-game objects Proper dynamic 
+	placement of in-game signs that have previously been fixed and pre-composed.</li>
+	<li>Can use the text geometry to do effects that can't be done with a 
+	textured quad.</li>
+</ul>
+<p>PolygonFontGenerator converts a TrueType font (outline font) to a polygonal 
+representation suitable for rendering with 3D graphics operations. This is as 
+opposed to the traditional method of converting an outline font to a bitmapped 
+representation at runtime. </p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/PolygonFontGeneration.png" width="336" height="259"> </p>
+</blockquote>
+<p>Here's a picture of a PolygonFont being used with the EAText text editor in 
+3D: </p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/3DJapanese.gif" width="1002" height="620"></p>
+</blockquote>
+<p>Here we can see the mesh used to draw a simple glyph:</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/3DMesh.gif" width="568" height="377"></p>
+</blockquote>
+<p>&nbsp;</p>
+<h2>ContourFontGenerator</h2>
+<p>ContourFontGenerator creates fonts that are defined not by polygons but by 
+their outlines as line segments. You can do various effects with this such as 
+treating the outline contour as a path. The following is an example of how a 
+pixel shader might implement a stroked path along a ContourFont. ContourFont is 
+new for EAText and doesn't yet have an elaborate demo, so we make a nifty 
+picture here with Photoshop to suggest a possibility.</p>
+<blockquote>
+	<p><img border="0" src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/NeonEA.png" width="926" height="273"></p>
+</blockquote>
+<h2>EATextViewer</h2>
+<p>The EATextViewer tool is a tool that lets artists, producers, and programmers 
+rapidly preview text of a variety of fonts and styles in WYSIWYG form.</p>
+<p>The app shown below is a Windows app, but the tool runs natively on XBox 360 
+and PS3 as well (native Wii not available yet), so you can get a WYSIWYG view 
+directly on the target platform. A couple of the options shown below haven't 
+been implemented in the viewer yet, but that will be rectified. The GUI below 
+looks like a Windows GUI, but actually it's a UTFWin GUI designed to mimic 
+Windows. The four text large boxes at the bottom are text editors. You need to 
+connect your mouse and keyboard to your 360 and PS3 if you want to use the app 
+interactively on those platforms. </p>
+<blockquote>
+	<p><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/EATextViewer2.png" width="900" height="707"></p>
+</blockquote>
+<h2>Performance</h2>
+<p>A comprehensive discussion of benchmarks is outside the scope of this document and would be more suitable for a technical document. Nevertheless, users would probably like to know how fast EAText  is and how much memory it uses. It turns out that neither of these have a simple answer, as the performance and memory usage of EAText depends on how you set its configuration options and how you use it. We present a few bulleted statements on the topic here:</p>
+<ul>
+  <li> EAText is probably fast enough for most localized and non-localized uses. Unless you are displaying hundreds of characters which are changing on the screen frequently, you will likely not notice EAText's processing. </li>
+  <li>EAText allocates no memory while running, assuming the user sets up things like fonts and buffers up front.</li>
+  <li>A couple kilobytes of static tables are used by various functions; how much memory they use depends on the configuration. </li>
+  <li> A flexible dynamic glyph cache is provided and uses DXT compression by default.</li>
+  <li>Single line layout is significantly faster than multi line layout.</li>
+  <li>The fast text layout functions are significantly faster than the regular functions but provide little localization support. </li>
+  <li>Complex script layout (e.g. Thai, Hebrew, Arabic) takes significantly more time than regular localized layout. </li>
+  <li>Layout modifiers such as the text-along-a-curve feature are optional and take extra time on top of regular layout, as they are a post-process.</li>
+  <li>As of this writing, there are multiple optimization opportunities that haven't been taken yet. </li>
+</ul>
+<p>Here we provide some basic benchmark results of character throughput under various configurations and platforms. The numbers here highly dependent on a number of factors, but should provide rough figures to go by. Note that the measurements are for drawing 1000 characters, which is at least an order of magnitude greater than most games need to layout at a time. These benchmarks will improve when additional optimization is implemented. </p>
+<blockquote>
+  <table border="0">
+    <tr>
+      <td><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GraphSimpleLayout.png" width="484" height="315"></td>
+      <td><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GraphLineLayout.png" width="484" height="315"></td>
+    </tr>
+    <tr>
+      <td><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GraphParagraphLayout.png" width="484" height="315"></td>
+      <td><img src="http://eaos.rws.ad.ea.com:8080/@md=d&c=And@//EAOS/UTF/DL/_docs/EAText/Images/GraphComplexParagraphLayout.png" width="484" height="315"></td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Glossary</h2>
+<p>We provide a brief glossary of terms used in this document.</p>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2" cellspacing="2">
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Advance<br>
+		Advance width</td>
+		<td style="vertical-align: top;">Advance width refers to the distance 
+		from the beginning of one character on a printed display to the 
+		beginning of the next character on the display.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top;">Ascent<br>
+&nbsp;</td>
+		<td>The ascent of a glyph is the distance from the base line to the 
+		topmost portion of the glyph. The ascent of a font is the distance from 
+		the baseline to the topmost portion of any glyph.<br>
+		See Descent.<br>
+		See <a href="http://en.wikipedia.org/wiki/Typeface">
+		http://en.wikipedia.org/wiki/Typeface</a> for some related typographical 
+		concepts.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top;">Baseline<br>
+&nbsp;</td>
+		<td>The baseline is the line upon which a string of text is drawn. For 
+		horizontal text, it is at the bottom of the glyphs; for vertical text, 
+		it goes through the center of glyphs.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Bidirectional<br>
+		Bidi</td>
+		<td style="vertical-align: top;">Refers to text that when viewed flows 
+		in two opposite directions, usually left-to-right and right-to-left.<br>
+		See <a href="http://en.wikipedia.org/wiki/Bi-directional_text">
+		http://en.wikipedia.org/wiki/Bi-directional_text</a><br>
+		See <a href="http://www.unicode.org/reports/tr9/">
+		http://www.unicode.org/reports/tr9/</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Character </td>
+		<td style="vertical-align: top;">A character is an atomic unit of a 
+		written language. Consists of letters, Asian ideograms, numerals, 
+		punctuation, etc. In computer systems, the term 'character' is somewhat 
+		ambiguous.<br>
+		See <a href="http://en.wikipedia.org/wiki/Grapheme">
+		http://en.wikipedia.org/wiki/Grapheme</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Character set </td>
+		<td style="vertical-align: top;">A character set is an assignment of 
+		glyphs to numerical values (e.g. A == 65). ASCII is a character set, as 
+		is Chinese Big 5. Unicode specifies a single unified character set with 
+		each character called a &quot;code point.&quot;<br>
+		See <a href="http://en.wikipedia.org/wiki/Character_encoding">
+		http://en.wikipedia.org/wiki/Character_encoding</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Cluster </td>
+		<td style="vertical-align: top;">A cluster is a contiguous set of 
+		characters that combine together in a single glyph cell and are 
+		considered one indivisible&nbsp; unit. A simple example is the cluster of a 
+		and ` together as à. Complex scripts have more complex examples. <br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Complex script</td>
+		<td>A complex script has at least one of the following attributes:<ul>
+			<li>Bidirectional character ordering</li>
+			<li>Contextual shaping</li>
+			<li>Combining characters</li>
+			<li>Specialized word-breaking and justification rules</li>
+			<li>Illegal character combinations</li>
+		</ul></td>
+	</tr>
+	<tr>
+		<td>CSS<br>
+		Cascading Style Sheets<br>
+&nbsp;</td>
+		<td>Cascading Style Sheets is a mechanism for adding style (e.g. fonts, 
+		colors, spacing) to documents. It is used with HTML to provide a rich 
+		layout system.<br>
+		See <a href="http://www.w3.org/Style/CSS">
+		http://www.w3.org/Style/CSS</a>.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Descent<br>
+&nbsp;</td>
+		<td>The descent of a glyph is the distance between the baseline and the 
+		lowest part of a glyph. The descent of a font is the largest distance 
+		between the baseline and the bottom of any glyph. For most Western 
+		scripts, the descent is a value less or equal to zero, as the bottoms of 
+		such glyphs are usually at the baseline or below it.<br>
+		See Ascent.<br>
+		See <a href="http://en.wikipedia.org/wiki/Typeface">
+		http://en.wikipedia.org/wiki/Typeface</a> for some related typographical 
+		concepts.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Diacritic</td>
+		<td>A diacritic is an accent mark added to a letter. Examples include 
+		(but are not limited to) accent, macron, umlaut, breve, caron, 
+		circumflex, cedilla, and ogonek.<br>
+		See <a href="http://en.wikipedia.org/wiki/Diacritical">
+		http://en.wikipedia.org/wiki/Diacritical</a></td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Embedding</td>
+		<td>Embedding refers to the inclusion of a run of opposing direction 
+		text within a run of text. If you have an English sentence and put some 
+		RTL text in the middle of it, the RTL text is embedded within the 
+		primary LTR text. If you then embed a run of LTR text within the RTL 
+		text then you have an additional level of embedding in place. An 
+		embedding level of 0 means LTR, a level of 1 means RTL alone or within 
+		LTR 0, a level of 2 means LTR within RTL 1, a level of 3 means RTL 
+		within LTF of level 2, etc.<br>
+		See <a href="http://www.unicode.org/reports/tr9/">
+		http://www.unicode.org/reports/tr9/</a></td>
+	</tr>
+	<tr>
+		<td>Family</td>
+		<td>A family is a class of related fonts. A family is very similar to a 
+		typeface, though strictly speaking it is possible to define a family 
+		which has multiple typefaces in it. However, it often occurs that a 
+		family has a single typeface in it and the two terms become synonymous.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Font</td>
+		<td>A font is a particular incarnation of a typeface (e.g. 10 pt courier 
+		bold). It is common to confuse fonts with their superset -- typefaces.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Glyph</td>
+		<td>A glyph is a graphical representation of a character. In terms of 
+		computer text processing and display, a glyph may be a combination of 
+		multiple code points, as would be the case with separate accents or 
+		other diacriticals. There is a distinction between glyphs and characters 
+		that is subtle but significant. Character are what the user types on 
+		their keyboard, whereas glyphs are the physical manifestation of such 
+		characters. The ratio between characters and glyphs is not necessarily 
+		1:1, though it is often so for simple English text.<br>
+		See <a href="http://en.wikipedia.org/wiki/Glyph">
+		http://en.wikipedia.org/wiki/Glyph</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top;">Jamo</td>
+		<td>Jamo are the Korean equivalent of letters.&nbsp; They are combined in 
+		square two-dimensional patterns of two to four jamo to form what are 
+		known as Hangul. <br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top;">Justification<br>
+&nbsp;</td>
+		<td>Justification is the process of fitting horizontal text within its 
+		left and right boundaries such that it meets both edges. It is a common 
+		mistake to confuse alignment with justification. There is left 
+		alignment, but there is no such thing as left justification, as that's 
+		like saying something meets both sides on the left side.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Hangul</td>
+		<td>The name of the script used to write the Korean language. There are 
+		11,172 encoded characters in the Hangul Syllables character<br>
+		block, AC00..D7A3. Looks like this: <font face="Arial Unicode MS">&#54620;&#47448;</font><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Kerning</td>
+		<td>Kerning is the process of altering the space between specific pairs 
+		of glyphs. Normally kerning is found only with variably spaced fonts and 
+		not with monospaced fonts. A kerning value for a font is an adjustment 
+		of the normal advance vector for a given glyph to the next glyph. Thus, 
+		a zero value means that there is no adjustment and the glyphs are 
+		regularly drawn; a negative value means the glyphs are made closer 
+		together than normal, and a positive value means the glyphs are farther 
+		apart than normal. <br>
+		See <a href="http://en.wikipedia.org/wiki/Kerning">
+		http://en.wikipedia.org/wiki/Kerning</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Layout</td>
+		<td>Layout is the process of arranging glyphs from string of text. 
+		Layout of some scripts (e.g. Latin) is relatively simple, whereas the 
+		layout of others (e.g. Arabic, Thai) is complex. <br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Ligature</td>
+		<td>A ligature is a single glyph which is a derived from two otherwise 
+		independent side-by-side glyphs. The combination of a and e to form æ is 
+		an example of a ligature.<br>
+		See <a href="http://en.wikipedia.org/wiki/Ligature_(typography%2529">
+		http://en.wikipedia.org/wiki/Ligature_(typography)</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">LTR<br>
+		Left to Right<br>
+&nbsp;</td>
+		<td>LTR refers to text display directionality. Most scripts use the left 
+		to right direction to display their text. See RTL. </td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">OpenType<br>
+&nbsp;</td>
+		<td>A typographical system that consists of a font specification and a 
+		layout assistance specification. OpenType fonts are similar to TrueType&nbsp; 
+		fonts but have additional information and can have PostScript outlines. 
+		OpenType fonts files usually use the .otf file extension. <br>
+		See <a href="http://en.wikipedia.org/wiki/OpenType">
+		http://en.wikipedia.org/wiki/OpenType</a>
+      	<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Outline font</td>
+		<td>An outline font that is primarily defined by filled curves such as 
+		Bezier curves. Such fonts are usually scalable; a single outline 
+		specification allows for various sizes of rendered glyphs. TrueType, 
+		PostScript, and OpenType fonts are examples of outline fonts.<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">RTL<br>
+		Right to Left<br>
+&nbsp;</td>
+		<td>RTL refers to text display directionality. Middle-Eastern scripts 
+		such as Arabic, Hebrew, and Farsi are right to left. See LTR.</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Script</td>
+		<td>A script is a writing system, such as Latin, Arabic, Hangul. Western 
+		languages such as English, French, and Spanish all fall under the 
+		category of Latin script.<br>
+		See <a href="http://en.wikipedia.org/wiki/Writing_system">
+		http://en.wikipedia.org/wiki/Writing_system</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Shaping</td>
+		<td>Shaping is the process of converting a string of keyboard derived 
+		characters into a string of glyphs properly designed for display. This 
+		may include adding, removing, and changing glyphs from the original 
+		string. For example, a two character string of a` may be shaped into à. 
+		Similarly, Arabic text shaping causes characters to change 
+		representation depending on their position within a word (beginning, 
+		middle, end, or alone). <br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">TrueType</td>
+		<td>TrueType is an outline font specification. TrueType fonts files use 
+		the .ttf or .ttc file extension.<br>
+		See <a href="http://en.wikipedia.org/wiki/TrueType">
+		http://en.wikipedia.org/wiki/TrueType</a>
+      	<br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width: 150px; vertical-align: top;">Unicode</td>
+		<td>Unicode is a character set that attempts to encompass all known 
+		written languages. Additionally Unicode defines a number of standardized 
+		conventions for the basic computational processing of text from these 
+		languages.<br>
+		See <a href="http://en.wikipedia.org/wiki/Unicode">
+		http://en.wikipedia.org/wiki/Unicode</a><br>
+		See <a href="http://en.wikipedia.org/wiki/ISO_10646">
+		http://en.wikipedia.org/wiki/ISO_10646</a><br>
+&nbsp;</td>
+	</tr>
+	<tr>
+		<td>x-height<br>
+&nbsp;</td>
+		<td>The height of short lower-case glyphs such as 'x' in Latin fonts.<br>
+		See <a href="http://en.wikipedia.org/wiki/Typeface">
+		http://en.wikipedia.org/wiki/Typeface</a> for some related typographical 
+		concepts.<br>
+&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p><hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

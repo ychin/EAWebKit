@@ -1,0 +1,181 @@
+<html>
+<head>
+    <title>EASystemEventMessageDispatcher</title>
+    <link href="../style_sheet/style_sheet.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="toc.js"></script>
+    <script type="text/javascript" src="../scripts/highlight/highlight.js"></script>
+    <script type="text/javascript">
+        initHighlightingOnLoad('cpp', 'python', 'xml');
+    </script>
+</head>
+<body onLoad="loadMenu('')">
+
+<div id="body">
+<div id="header"></div>
+<div id="menubar"></div>
+<div id="content">
+
+
+<h1>EASystemEventMessageDispatcher</h1>
+
+<h2>Introduction</h2>
+
+<p>
+    The EASystemEventMessageDispatcher package handles cases where the platform on which the application runs 
+    only supports handling system events in a single location. This is useful because often times an application
+    has multiple sub systems that are interested in specific system events, thus handling system events in a single
+    location is not an appropriate solution since the events are consumed the first time they are polled. In
+    particular this is a problem when using 3rd party libraries that have to query the system events, since you can
+    get into a situation where two packages need access to the same system events.
+</p>
+
+<p>
+    The EASystemEventMessageDispatcher solves this problem by functioning as the single point where the system 
+    events are processed and EAMessage messages are forwarded to any message handlers that the client code has registered.
+</p>
+
+<img src="../images/OverviewImage.png" width="500px"/>
+
+<p>
+    In the image above the orange "System" is the system layer that provides the application with system events. The green
+    "EASystemEventMessageDispatcher" is this package and the blue MessageHandlers are the various message handlers that were
+    registered with the EASystemEventMessageDispatcher and hence each of these message handlers receives a message corresponding
+    to the system event.
+</p>
+
+<h2>Usage</h2>
+
+<p>
+    Using EASystemEventMessageDispatcher involves the following steps:
+</p>
+
+    <ol>
+        <li>Initialize the system libraries</li>
+        <li>Initialize an EASystemEventMessageDispatcher instance</li>
+        <li>Register message handlers at the EASystemEventMessageDispatcher instance</li>
+        <li>Call EASystemEventMessageDispatcher::Tick() every frame or so</li>
+        <li>Shutdown the EASystemEventMessageDispatcher instance</li>
+        <li>Shutdown the system libraries</li>
+    </ol>
+
+<p>
+    Before showing a snippet of the code to accomplish the steps above the reader should be aware of the following. 
+</p>
+    
+<p>
+    First note that the EASystemEventMessageDispatcher itself does not initialize any system libraries. This choice was made because in general system
+    libraries allow you to configure their initialization and abstracting these initialization settings would not only be a lot of extra code to add to the package,
+    but would also likely make the initialization process more confusing than it has to be. Each platform has a clear description on how to initialize 
+    the system libraries and what settings are used, so there is no need for us to wrap them.
+</p>
+
+<p>
+    Secondly note that the messages returned from the EASystemEventMessageDispatcher are generic data container messages which hold platform specific
+    data. The client code should acquire this platform specific data by calling the <code>GetData</code> method and casting it to the appropriate data types
+    (see the headers for which data type matches which message group.) This choice was made because most system messages are platform unique and abstracting their data
+    members would only complicate the details of the message.
+</p>
+
+<h2>Example</h2>
+
+<p>The follow code example shows how to just use the UserService event handling. For more information on how to initialize the other system libraries, please see the 
+    test suite that comes with the EASystemEventMessageDispatcher package on EAOS: <code>//EAOS/Kettle/packages/EASystemEventMessageDispatcherTest/</code> or see the 
+    documentation that ships with the platform SDKs.
+</p>
+
+<pre><code class="cpp">
+//
+// 1. Initialize the system libraries
+//
+int32_t ret = sceUserServiceInitialize(NULL);
+EA_ASSERT(ret == SCE_OK);
+
+//
+// 2. Initialize an EASystemEventMessageDispatcher instance
+//
+EA::Allocator::ICoreAllocator* pAllocator = EA::Allocator::ICoreAllocator::GetDefaultAllocator();
+
+// Configure the settings.
+EA::SEMD::SystemEventMessageDispatcherSettings settings;
+settings.useSystemService = false; // This defaults to true, but we do not want to use this for this example.
+
+// Initialize the system event message dispatcher
+EA::SEMD::SystemEventMessageDispatcher systemEventMessageDispatcher(settings, pAllocator);
+
+// 
+// 3. Register message handlers at the EASystemEventMessageDispatcher instance
+//
+UserServiceHandler userServiceHandler;
+systemEventMessageDispatcher.AddMessageHandler(&userServiceHandler, EA::SEMD::kGroupUserService, false, 0);
+
+//
+// 4. Call EASystemEventMessageDispatcher::Tick() every frame or so
+//
+
+// While in some update loop
+systemEventMessageDispatcher.Tick();
+
+// 
+// 5. Shutdown the system libraries
+// 
+int32_t ret = sceUserServiceTerminate();
+EA_ASSERT(ret == SCE_OK);
+
+</code></pre>
+
+<p>
+    Here is the code for the message handler that is used in point 3.
+</p>
+
+<pre><code class="cpp">
+
+struct UserServiceHandler : EA::Messaging::IHandler
+{
+    virtual bool HandleMessage(EA::Messaging::MessageId messageId, void* pMessage)
+    {
+        EA_ASSERT(messageId == EA::SEMD::kGroupUserService);
+
+        EA::SEMD::Message* pSEMDMessage = reinterpret_cast<EA::SEMD::Message*>(pMessage);
+        
+        // Here we handle the platform specific event based off the platform agnostic message we get 
+        // from the EASystemEventMessageDispatcher.    
+        const SceUserServiceEvent* pEvent = pSEMDMessage->GetData<const SceUserServiceEvent*>();
+                
+        switch(pEvent->eventType)
+        {
+            case SCE_USER_SERVICE_EVENT_TYPE_LOGIN:
+            {
+                char userName[SCE_USER_SERVICE_MAX_USER_NAME_LENGTH + 1];
+                int ret = sceUserServiceGetUserName( pEvent->userId, userName, sizeof(userName));
+                EA_ASSERT(ret == SCE_OK);                
+                printf("USER ADDED: %s (%" PRId64 ")\n", userName, pEvent->userId);
+                return true;
+            }
+
+            case SCE_USER_SERVICE_EVENT_TYPE_LOGOUT:
+            {
+                printf("USER REMOVED: (%" PRId64 ")\n", pEvent->userId);
+                return true;
+            }
+
+            default:
+            {
+                EA_FAIL_FORMATTED( ("We recieved an unhandled event: %d", pEvent->eventType) );
+                return false;
+            }
+        }
+    }
+};
+
+</code></pre>
+
+
+</div>
+<div id="footer"></div>
+
+</div>
+</body>
+</html>
+
+

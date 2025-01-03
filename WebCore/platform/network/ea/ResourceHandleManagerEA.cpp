@@ -85,7 +85,7 @@
 #include <internal/include/EAWebKitAssert.h>
 #include <EAIO/FnEncode.h>          // For Strlcpy and friends.
 #include <EASTL/fixed_substring.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 
 namespace Local
 {

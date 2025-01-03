@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFileBase</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFileBase</h1>
+<h2>Introduction</h2>
+<p>EAFileBase provides basic typedefs and enumerations that the EAFile system uses. Some of these are platform-specific definitions while others are simply generic definitions used by EAFile.</p>
+<p>Most of this document is simply an echo of what's in EAFileBase.h, but we'll add some additional comments where useful. </p>
+<h2>Fundamental Typedefs</h2>
+<p>All the file IO APIs use the size_type and off_type typedefs. These typedefs are used because file systems on different platforms have different file IO APIs, some of which are 32 bit and some of which are 64 bit, and this bit depth is not always the same as the size of pointers or registers on the given platform. For example, the Win32 API has support for 64 bit file IO. </p>
+<pre class="code-example"><span class="code-example-comment">/// Unsigned type used to denote data position values.
+</span>typedef &lt;platform specific&gt; size_type;
+
+<span class="code-example-comment">/// Unsigned type used to denote data position offsets.
+/// sizeof(off_type) == sizeof(size_type)
+</span>typedef &lt;platform specific&gt; off_type;
+
+<span class="code-example-comment">/// Used to designate an error condition for many functions that return size_type.
+</span>const size_type kSizeTypeError = (size_type)-1;
+<br><span class="code-example-comment">/// Used to designtate a nul-terminated string or similarly terminated entity.
+</span>const size_type kLengthNull = (size_type)-1;</pre>
+<h2>File Attributes</h2>
+<p>File attributes are boolean properties assigned to files and directories. The Attribute enumeration is used in file manipulation APIs found in <a href="EAFileUtil.html">EAFileUtil</a>. </p>
+<pre class="code-example">enum Attribute<br>{<br>    kAttributeNone       = 0x00,  <span class="code-example-comment">/// No attribute in particular.</span><br>    kAttributeReadable   = 0x01,  <span class="code-example-comment">/// The entity is readable. For multi-user systems, this refers to the current user.</span><br>    kAttributeWritable   = 0x02,  <span class="code-example-comment">/// The entity is writable. For multi-user systems, this refers to the current user.</span><br>    kAttributeExecutable = 0x04,  <span class="code-example-comment">/// The entity is executable. For multi-user systems, this refers to the current user.</span><br>    kAttributeDirectory  = 0x08,  <span class="code-example-comment">/// The entity is a directory, as opposed to being a file.</span><br>    kAttributeAlias      = 0x10,  <span class="code-example-comment">/// The entity is an alias (a.k.a. &quot;symbolic link&quot;, or &quot;shortcut&quot;).</span><br>    kAttributeArchive    = 0x20,  <span class="code-example-comment">/// The entity has the archive attribute set.</span><br>    kAttributeHidden     = 0x40,  <span class="code-example-comment">/// The entity is hidden. This is somewhat Microsoft-specific.</span><br>    kAttributeSystem     = 0x80   <span class="code-example-comment">/// The entity is a system file. This is somewhat Microsoft-specific.</span><br>};</pre>
+<h2>Directory Entry Types</h2>
+<p>DirectoryEntry is an enumeration that defines things that might exist in a directory, such as files and (sub)directories. This enumeration is used in functions such as the directory iteration functions found in <a href="EAFileDirectory.html">EAFileDirectory</a>. DirectoryEntry values are powers of two so that they may also be used as flags.</p>
+<pre class="code-example">enum DirectoryEntry<br>{<br>    kDirectoryEntryNone       =  0x00,  <span class="code-example-comment">/// No type in particular.</span><br>    kDirectoryEntryDirectory  =  0x01,  <span class="code-example-comment">/// Refers to a directory.</span> <br>    kDirectoryEntryFile       =  0x02,  <span class="code-example-comment">/// Refers to a file.</span><br>    kDirectoryEntryCurrent    =  0x04,  <span class="code-example-comment">/// Refers to the &quot;current&quot; directory (&quot;.&quot;).</span> 
+    kDirectoryEntryParent     =  0x08,  <span class="code-example-comment">/// Refers to the &quot;parent&quot; directory (&quot;..&quot;) of the current directory.</span><br>    kDirectoryEntryAll        =  0xff   <span class="code-example-comment">/// This is a flag that refers to all types of file system entries.</span><br>};</pre>
+<h2>File Time Types</h2>
+<p>Desktop and server operating systems keep track of file modification times, and tools and even games for those platforms can make use of this information. The FileTimeType enumeration defines basic types of file times for use in API functions that query modify file time information. Some of these functions are found in <a href="EAFileUtil.html">EAFileUtil</a>.</p>
+<pre class="code-example">enum FileTimeType<br>{<br>    kFileTimeTypeNone             = 0x00, <span class="code-example-comment">/// No time in particular.</span><br>    kFileTimeTypeCreation         = 0x01, <span class="code-example-comment">/// The time the file was created.</span><br>    kFileTimeTypeLastModification = 0x02, <span class="code-example-comment">/// The time the file was last modified.</span><br>    kFileTimeTypeLastAccess       = 0x04  <span class="code-example-comment">/// The time the file was last opened.</span><br>};</pre>
+<h2>File System</h2>
+<p>A file system has intrinsic attributes that relate to its organization and limitations. An well-known example of this is the FAT file system's file name limitation to &quot;8.3&quot; names. Other attributes include the file system's character set and encoding, maximum file count per directory, maximum file size, and maximum file system size. There are a few APIs in <a href="EAFileUtil.html">EAFileUtil</a> that use this enumeration, but its use is not mandatory; most of the time users don't have to worry about the file system in use.</p>
+<pre class="code-example">enum FileSystem<br>{<br>    kFileSystemNone,     <span class="code-example-comment">/// No file system in particular.</span>
+    kFileSystemFAT,      <span class="code-example-comment">/// File Allocation Table. Single byte path names.</span><br>    kFileSystemFAT32,    <span class="code-example-comment">/// 32 bit extentsion of FAT. Single byte and UCS2 Unicode path names.</span><br>    kFileSystemNTFS,     <span class="code-example-comment">/// Windows NT File System. UCS2 Unicode path names.</span><br>    kFileSystemUnix,     <span class="code-example-comment">/// Unix family of file systems. UTF8 Unicode path names.</span><br>    kFileSystemISO9660,  <span class="code-example-comment">/// Basic CD file system, 31 character single byte path component names. </span><br>    kFileSystemJoliet,   <span class="code-example-comment">/// An extension of ISO9660 which supports UCS2 Unicode in path component names. </span><br>    kFileSystemUDF,      <span class="code-example-comment">/// Universal Disk Format, used by modern CD and DVD systems. UTF8 or UCS2 Unicode.</span><br>    kFileSystemDefault   <span class="code-example-comment">/// The default file system used by the given platform.</span>
+};</pre>
+<h2>Drive Types</h2>
+<p>We provide a basic enumeration of drive types found on platforms of interest. </p>
+<pre class="code-example">enum DriveType                 <br>{<br>    kDriveTypeUnknown,    <span class="code-example-comment">/// Unknown drive type.</span><br>    kDriveTypeFixed,      <span class="code-example-comment">/// Fixed (normally internal) drives. FireWire and USB drives are considered 'fixed' drives.</span><br>    kDriveTypeCD,         <span class="code-example-comment">/// Includes generic compact discs (CDs).</span><br>    kDriveTypeDVD,        <span class="code-example-comment">/// Includes generic DVD discs. Similar to CDs but can store more data.</span><br>    kDriveTypeMemoryCard, <span class="code-example-comment">/// Console memory cards as drives.</span><br>    kDriveTypeRAM,        <span class="code-example-comment">/// A RAM disk is a virtual disk drive whose storage is implemented via RAM memory.</span><br>    kDriveTypeRemovable,  <span class="code-example-comment">/// Generic removable drive. This encompasses removable drives not specifically enumerated.</span><br>    kDriveTypeRemote 	  <span class="code-example-comment">/// Remote (normally network) drive.</span><br>};</pre>
+<h2>Special Directories</h2>
+<p>Desktop operating systems  have the concept of specially designated directory locations. Windows users are familiar with the concept of the &quot;My Documents&quot; directory which differs on a per-user basis. It turns out that there are additional special directories that a properly written Windows application or installer must recognize. The Macintosh and Unix operating systems have a similar concept, and some console machines (e.g. XBox 360) have a little bit of this functionality as well. We have the SpecialDirectory enum and have functions which look up these directories in <a href="EAFileUtil.html">EAFileUtil</a>. </p>
+<pre class="code-example">enum SpecialDirectory<br>{<br>    kSpecialDirectoryNone,                   <span class="code-example-comment">/// No directory in particular</span><br>    kSpecialDirectoryTemp,                   <span class="code-example-comment">/// Windows example: &quot;C:\WinNT\Temp\&quot;</span><br>    kSpecialDirectoryOperatingSystem,        <span class="code-example-comment">/// Windows example: &quot;C:\WinNT\&quot;</span><br>    kSpecialDirectoryOperatingSystemTrash,   <span class="code-example-comment">/// Windows example: &quot;Recycle Bin&quot;</span><br>    kSpecialDirectoryOperatingSystemFonts,   <span class="code-example-comment">/// Windows example: &quot;C:\WinNT\Fonts\&quot;</span><br>    kSpecialDirectoryCurrentApplication,     <span class="code-example-comment">/// Windows example: &quot;C:\Program Files\Some App\&quot;</span><br>    kSpecialDirectoryUserDesktop,            <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\&lt;username&gt;\Desktop\&quot;</span><br>    kSpecialDirectoryCommonDesktop,          <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\All Users\Desktop\&quot;</span><br>    kSpecialDirectoryUserApplicationData,    <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\&lt;username&gt;\Application Data\&quot;</span><br>    kSpecialDirectoryCommonApplicationData,  <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\All Users\Application Data\&quot;</span><br>    kSpecialDirectoryUserDocuments,          <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\&lt;username&gt;\My Documents\&quot;</span><br>    kSpecialDirectoryCommonDocuments,        <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\All Users\Documents\&quot;</span><br>    kSpecialDirectoryUserMusic,              <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\&lt;username&gt;\My Documents\My Music\&quot;</span><br>    kSpecialDirectoryCommonMusic,            <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\All Users\Documents\My Music\&quot;</span><br>    kSpecialDirectoryUserProgramsShortcuts,  <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\&lt;username&gt;\Start Menu\Programs\&quot;</span><br>    kSpecialDirectoryCommonProgramsShortcuts <span class="code-example-comment">/// Windows example: &quot;C:\Documents and Settings\All Users\Start Menu\Programs\&quot;</span><br>};</pre>
+<h2>Path Components</h2>
+<p>The file and directory path manipulation functions in EAFilePath </p>
+<pre class="code-example">enum PathComponent<br>{<br>    kPathComponentNone           = 0x00,  <span class="code-example-comment">/// No component in particular.</span><br>    kPathComponentDrive          = 0x01,  <span class="code-example-comment">/// Also known as volume. </span><br>    kPathComponentDirectory      = 0x02,  <span class="code-example-comment">/// Defines a directory. </span><br>    kPathComponentDirectoryAlone = 0x04, <span class="code-example-comment"> /// Same as kPathComponentDirectory except ... (see EAFileBase.h)</span><br>    kPathComponentFile           = 0x08,  <span class="code-example-comment">/// Defines a file name. </span><br>    kPathComponentFileAlone      = 0x10,  <span class="code-example-comment">/// Same as kPathComponentFile except ... (see EAFileBase.h)</span><br>    kPathComponentFileExtension  = 0x20   <span class="code-example-comment">/// Defines a file name extension alone.</span><br>};</pre>
+<p>A drive is any prefix characters in the path up to but not including the first directory separator. Thus in the path &quot;c:\a\b\c&quot; the drive is &quot;c:&quot;. The UTF file system treats drives and volumes equivalently. Thus in the UNC path &quot;\\server\a\b\c&quot; the drive is &quot;\\server&quot;.</p>
+<p>A directory is the string of characters from the beginning of the path (including an initial drive) up to the last path separator before a file name. If no file name is present, the path is a directory path and ends with a path separator. If no path separator was specified at the end of a directory path, it would be ambiguous as to whether the path referred to a file or a directory. A directory that refers to only the characters after the drive/volume is referred to as the 'directory name alone', as with kPathComponentDirectoryAlone. </p>
+<p>A file is the string of all characters after the last directory separator in a path string, including any characters after a dot ('.'). A file name that refers to only the characters before the dot (i.e. extension) is referred to as the 'file name alone', as with kPathComponentFileAlone.</p>
+<p>A file extension is defined as the last dot ('.') and anything after it in the file name. If no dot chars are present, there is no extension. If multiple dots are present, the extension is the text from the last dot onward. If there is nothing after the dot, the extension is simply &quot;.&quot;.</p>
+<h2>Path Properties  </h2>
+<p>File paths are represented by strings and more or less have a layout format. However, this format differs between platforms. Here are some examples of how they differ between platforms, by example:</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td><strong>Platform</strong></td>
+      <td><strong>Example file paths </strong></td>
+    </tr>
+    <tr>
+      <td valign="top">Windows</td>
+      <td><p>C:\Program Files\Chess\data\game.pak<br>
+        \\SomeUNCName\Chess\data\game.pak</p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">Unix</td>
+      <td>/usr/local/bin/Chess/game.pak</td>
+    </tr>
+    <tr>
+      <td valign="top">XBox 360 </td>
+      <td>d:\Chess\data\game.pak<br>
+        dvd:\Chess\data\game.pak</td>
+    </tr>
+    <tr>
+      <td valign="top">PS3</td>
+      <td>/dvd/Chess/data/game.pak</td>
+    </tr>
+  </table>
+</blockquote>
+<p>Here are the path properties defined by EAFileBase for the Windows platform. Other platforms will have the same properties but possibly different values. </p>
+<pre class="code-example"><span class="code-example-comment">// Here is the Windows version of path properties; other platforms may differ.
+</span> 
+const char16_t        kFilePathSeparator16              = '\\';<br>const char16_t* const kFilePathSeparatorString16        = L&quot;\\&quot;;
+const char16_t        kFilePathSeparatorAlt16           = '/';<br>const char16_t* const kFilePathSeparatorAltString16     = L&quot;/&quot;;
+const char16_t        kFilePathDriveSeparator16         = ':';
+const char16_t* const kFilePathDriveSeparatorString16   = L&quot;:&quot;;
+
+const char            kFilePathSeparator8               = '\\';<br>const char*     const kFilePathSeparatorString8         = &quot;\\&quot;;<br>const char            kFilePathSeparatorAlt8            = '/';<br>const char*     const kFilePathSeparatorAltString8      = &quot;/&quot;;<br>const char            kFilePathDriveSeparator8          = ':';<br>const char*     const kFilePathDriveSeparatorString8    = &quot;:&quot;;
+
+const int             kMaxPathLength 					= 260;
+const int             kMaxDriveLength 					= 256;
+const int             kMaxDirectoryLength 				= 256;<br>const int             kMaxFileNameLength 				= 256;
+const int             kMaxDirectoryNameLength 			= 256; 
+const int             kMaxExtensionLength 				= 256;
+const int             kMaxVolumeNameLength 				= 128;
+const int             kMaxVolumeSerialNumberLength 		= 128;
+
+<span class="code-example-comment">// Utility function for portably testing if a character is a path separator.</span>
+inline bool IsFilePathSeparator(int c){ ... }<br>
+</pre>
+<h2>Line Termination</h2>
+<p>Plain text files use &quot;\n&quot; or &quot;\r\n&quot; to mark the endings of lines. Which is used tends to depend on the platform, with Windows using &quot;\r\n&quot; and just about all other platforms using simply &quot;\n&quot;. It turns out that even Windows appears to be migrating towards &quot;\n&quot;, as most software written for Windows now recognizes &quot;\n&quot; as a line delimiter.  EAFile provides definitions for line delimiters and EAFile functions which read lines accept both forms of line termination.</p>
+<p>Here are the definitions that EAFileBase provides:</p>
+<pre class="code-example">#define EA_LINEEND_WINDOWS_8   &quot;\r\n&quot;<br>#define EA_LINEEND_WINDOWS_16 L&quot;\r\n&quot;
+
+#define EA_LINEEND_UNIX_8       &quot;\n&quot;
+#define EA_LINEEND_UNIX_16     L&quot;\n&quot;
+
+#define EA_LINEEND_NATIVE_8    <em>&lt;platform specific&gt;</em><br>#define EA_LINEEND_NATIVE_16   <em>&lt;platform specific&gt;</em><br>
+</pre>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

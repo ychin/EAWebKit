@@ -1,16 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+=======
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>>>>>>> mirror
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>pc64-vc-dev-debug</Configuration>
+    <Configuration>pc64-vc-debug</Configuration>
     <Platform>x64</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="pc64-vc-dev-debug|x64">
-      <Configuration>pc64-vc-dev-debug</Configuration>
+    <ProjectConfiguration Include="pc64-vc-debug|x64">
+      <Configuration>pc64-vc-debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="pc64-vc-dev-opt|x64">
-      <Configuration>pc64-vc-dev-opt</Configuration>
+    <ProjectConfiguration Include="pc64-vc-opt|x64">
+      <Configuration>pc64-vc-opt</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,28 +22,42 @@
     <ProjectGuid>{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}</ProjectGuid>
     <Keyword>x64Proj</Keyword>
     <ProjectName>libjpegEAWebKit</ProjectName>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <UCRTContentRoot>C:\Program Files (x86)\Windows Kits\10\</UCRTContentRoot>
     <UniversalCRTSdkDir>C:\Program Files (x86)\Windows Kits\10\</UniversalCRTSdkDir>
     <WindowsSdkDir_10>C:\Program Files (x86)\Windows Kits\10\</WindowsSdkDir_10>
     <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
     <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
+=======
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+>>>>>>> mirror
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
@@ -47,30 +65,31 @@
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-bigobj /FS </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS /Zf </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;LIBJPEG_EA_SUPPORT_ENABLED=1;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;LIBJPEG_EA_SUPPORT_ENABLED=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-debug\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -80,50 +99,52 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-debug\lib\libjpegEAWebKit.lib</OutputFile>
+      <OutputFile>pc64-vc-debug\lib/libjpegEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-debug\lib" mkdir "pc64-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-debug\build\libjpegEAWebKit" mkdir "pc64-vc-dev-debug\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc64-vc-debug\lib" mkdir "pc64-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\libjpegEAWebKit" mkdir "pc64-vc-debug\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
-    <OutDir>pc64-vc-dev-debug\lib\</OutDir>
-    <IntDir>pc64-vc-dev-debug\build\libjpegEAWebKit\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
+    <OutDir>pc64-vc-debug\lib\</OutDir>
+    <IntDir>pc64-vc-debug\build\libjpegEAWebKit\v\</IntDir>
+    <TLogLocation>pc64-vc-debug\build\libjpegEAWebKit\v.tlog\</TLogLocation>
     <TargetName>libjpegEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS /Zf </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;LIBJPEG_EA_SUPPORT_ENABLED=1;NDEBUG;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;LIBJPEG_EA_SUPPORT_ENABLED=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-opt\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -133,21 +154,22 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-opt\lib\libjpegEAWebKit.lib</OutputFile>
+      <OutputFile>pc64-vc-opt\lib/libjpegEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-opt\lib" mkdir "pc64-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-opt\build\libjpegEAWebKit" mkdir "pc64-vc-dev-opt\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc64-vc-opt\lib" mkdir "pc64-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\libjpegEAWebKit" mkdir "pc64-vc-opt\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
-    <OutDir>pc64-vc-dev-opt\lib\</OutDir>
-    <IntDir>pc64-vc-dev-opt\build\libjpegEAWebKit\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
+    <OutDir>pc64-vc-opt\lib\</OutDir>
+    <IntDir>pc64-vc-opt\build\libjpegEAWebKit\v\</IntDir>
+    <TLogLocation>pc64-vc-opt\build\libjpegEAWebKit\v.tlog\</TLogLocation>
     <TargetName>libjpegEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
@@ -208,6 +230,7 @@
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jutils.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+<<<<<<< HEAD
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />-->
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />-->
   <ImportGroup Label="ExtensionTargets">
@@ -220,3 +243,11 @@
     </VisualStudio>
   </ProjectExtensions>
 </Project>
+=======
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>
+>>>>>>> mirror

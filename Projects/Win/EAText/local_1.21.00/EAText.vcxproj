@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-debug|Win32">
+      <Configuration>pc-vc-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-opt|Win32">
+      <Configuration>pc-vc-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>EAText</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include";"..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include";"..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4619; 4548; 4530; 4365; 4217; 4005; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;EATEXT_BITMAP_USE_EAGIMEX=0;EATEXT_USE_FREETYPE=1;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-debug\lib\EAText.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-debug\lib/EAText.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-debug\lib" mkdir "pc-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-debug\build\EAText" mkdir "pc-vc-debug\build\EAText" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <OutDir>pc-vc-debug\lib\</OutDir>
+    <IntDir>pc-vc-debug\build\EAText\v\</IntDir>
+    <TLogLocation>pc-vc-debug\build\EAText\v.tlog\</TLogLocation>
+    <TargetName>EAText</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include";"..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include";"..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4619; 4548; 4530; 4365; 4217; 4005; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;EATEXT_BITMAP_USE_EAGIMEX=0;EATEXT_USE_FREETYPE=1;NDEBUG;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-opt\lib\EAText.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-opt\lib/EAText.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-opt\lib" mkdir "pc-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-opt\build\EAText" mkdir "pc-vc-opt\build\EAText" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <OutDir>pc-vc-opt\lib\</OutDir>
+    <IntDir>pc-vc-opt\build\EAText\v\</IntDir>
+    <TLogLocation>pc-vc-opt\build\EAText\v.tlog\</TLogLocation>
+    <TargetName>EAText</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Commonly Confused Characters.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Effects.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\FAQ.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Font Quality.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Glossary.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Graphics Engine Support.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\How-To.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Language Characters.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Metrics.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Motivation.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Requirements.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Sub-pixel Antialiasing (ClearType).html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Typesetter.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Character Sets.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Families, Faces, and Fonts.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Phonetic Modifiers.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\User Guide.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\White Paper.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EAText.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBaseline.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBmpFont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBreak.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCache.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCollation.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCompression.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextConfig.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextDebugFont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextEffects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextFont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextFontServer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextIterator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextLayout.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextOutlineFont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextPolygonFont.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextScript.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextStyle.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextStyleReader.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextTypesetter.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextUnicode.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\D3D\EATextGlyphCache_D3D.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EASkeleton\EATextGlyphCache_EASkeleton.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\gxm\EATextGlyphCache_gxm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EALexer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EAStackAllocatorNew.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextBidi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextBitmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCollation.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCoreAllocatorNew.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCoreAllocatorStack.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextOpenType.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextRefCount.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptArabic.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptHangul.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptHebrew.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptThai.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextSquish.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\OpenGL_ES\EATextGlyphCache_OpenGL_ES.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\PSGL\EATextGlyphCache_PSGL.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\RNA\EATextGlyphCache_RNA.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\Xenon\EATextGlyphCache_Xenon.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EAText.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBaseline.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBmpFont.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBreak.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCache.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCollation.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCompression.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextDebugFont.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextEffects.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextFont.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextFontServer.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextLayout.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextOutlineFont.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextPolygonFont.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextScript.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextStyle.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextStyleReader.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextTypesetter.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextUnicode.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\D3D\EATextGlyphCache_D3D.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextBidi.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextBitmap.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextOpenType.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeArabic.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeGeneral.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeHangul.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeHebrew.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeIndic.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeThai.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextSquish.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextStream.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

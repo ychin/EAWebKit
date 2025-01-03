@@ -106,7 +106,7 @@ class DefaultAllocator : public Allocator
 		#if defined(_MSC_VER)
 			return _aligned_malloc(size, alignment);
 		#elif defined(__GNUC__) 
-            #if defined(EA_PLATFORM_OSX)
+            #if defined(EA_PLATFORM_OSX) || defined(EA_PLATFORM_STADIA)
             	void* mem;
             	posix_memalign(&mem,alignment,size); 
             	return mem;
@@ -337,7 +337,7 @@ Allocator* spEAWebKitAllocator = 0;
 
 void SetAllocator(EA::WebKit::Allocator* pAllocator)
 {
-    EAW_ASSERT_MSG(!spEAWebKitAllocator, "Setting an allocator while one already exists. It is also advisable to not call SetAllocator(0) on Shutdown since some memory might free up as part of dll unload.");
+	EAW_ASSERT_MSG(!spEAWebKitAllocator, "Setting an allocator while one already exists. It is also advisable to not call SetAllocator(0) on Shutdown since some memory might free up as part of dll unload.");
 	spEAWebKitAllocator = pAllocator;
 }
 

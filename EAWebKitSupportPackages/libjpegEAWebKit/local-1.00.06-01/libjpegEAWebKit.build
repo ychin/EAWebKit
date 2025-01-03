@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<project name="libjpegEAWebKit" default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+
+    <!-- Properties -->
+    <property name="currDir" value="@{PathGetFullPath('.')}"/>
+    <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+
+    <!-- Package declaration -->
+    <package  name="libjpegEAWebKit" targetversion="${currVer}"/>
+
+
+    <!-- There are a couple places in this package where operator new is         -->
+    <!-- currently used, though that is slated to change to ICoreAllocator soon. -->
+    <!-- In the meantime, we have the option to use standard new or EASTL's new. -->
+    <!--   <globalproperties>                                                    -->
+    <!--       LIBJPEG_EA_SUPPORT_ENABLED=1                                      -->
+    <!--   </globalproperties>                                                   -->
+    <property name="LIBJPEG_EA_SUPPORT_ENABLED"     value="0" unless="@{PropertyExists('LIBJPEG_EA_SUPPORT_ENABLED')}" />
+    <property name="EATECH_WARNINGSASERRORS"        value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+
+
+    <!-- Create extra build types which modifies the build -->
+    <optionset name="config-options-library-mod" fromoptionset="config-options-library-c">
+        <option name="buildset.name" value="CLibraryMod"/>
+        <option name="warnings" value="off"/>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-mod" />
+    <optionset name="CLibraryMod">
+        <option name="cc.options" if="${config-compiler} == 'vc' and @{StrIndexOf('${config-name}', '-opt')} != -1">
+            <!-- Use /O1 (minimize size) instead of /O2 (maximize speed) -->
+            @{StrReplace(@{OptionSetGetValue('buildsettings', 'cc.options')}, '-O2', '-O1')}
+        </option>
+    </optionset>
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildmodules" value="libjpegEAWebKit"/>
+    <property name="runtime.libjpegEAWebKit.buildtype" value="CLibraryMod"/>
+
+    <property name="runtime.libjpegEAWebKit.defines">
+        ${property.value}
+        LIBJPEG_EA_SUPPORT_ENABLED=${LIBJPEG_EA_SUPPORT_ENABLED}
+    </property>
+
+    <property name="runtime.libjpegEAWebKit.warningsuppression"/>
+
+    <property name="runtime.libjpegEAWebKit.usedependencies">
+        ${property.value}
+    </property>
+
+    <property name="runtime.libjpegEAWebKit.includedirs">
+        ${package.dir}/include
+        ${package.dir}/source
+    </property>
+
+    <fileset name="runtime.libjpegEAWebKit.sourcefiles">
+        <includes name="${package.dir}/source/jcapimin.c"/>
+        <includes name="${package.dir}/source/jcapistd.c"/>
+        <includes name="${package.dir}/source/jccoefct.c"/>
+        <includes name="${package.dir}/source/jccolor.c"/>
+        <includes name="${package.dir}/source/jcdctmgr.c"/>
+        <includes name="${package.dir}/source/jchuff.c"/>
+        <includes name="${package.dir}/source/jcinit.c"/>
+        <includes name="${package.dir}/source/jcmainct.c"/>
+        <includes name="${package.dir}/source/jcmarker.c"/>
+        <includes name="${package.dir}/source/jcmaster.c"/>
+        <includes name="${package.dir}/source/jcomapi.c"/>
+        <includes name="${package.dir}/source/jcparam.c"/>
+        <includes name="${package.dir}/source/jcphuff.c"/>
+        <includes name="${package.dir}/source/jcprepct.c"/>
+        <includes name="${package.dir}/source/jcsample.c"/>
+        <includes name="${package.dir}/source/jctrans.c"/>
+        <includes name="${package.dir}/source/jdapimin.c"/>
+        <includes name="${package.dir}/source/jdapistd.c"/>
+        <includes name="${package.dir}/source/jdatadst.c"/>
+        <includes name="${package.dir}/source/jdatasrc.c"/>
+        <includes name="${package.dir}/source/jdcoefct.c"/>
+        <includes name="${package.dir}/source/jdcolor.c"/>
+        <includes name="${package.dir}/source/jddctmgr.c"/>
+        <includes name="${package.dir}/source/jdhuff.c"/>
+        <includes name="${package.dir}/source/jdinput.c"/>
+        <includes name="${package.dir}/source/jdmainct.c"/>
+        <includes name="${package.dir}/source/jdmarker.c"/>
+        <includes name="${package.dir}/source/jdmaster.c"/>
+        <includes name="${package.dir}/source/jdmerge.c"/>
+        <includes name="${package.dir}/source/jdphuff.c"/>
+        <includes name="${package.dir}/source/jdpostct.c"/>
+        <includes name="${package.dir}/source/jdsample.c"/>
+        <includes name="${package.dir}/source/jdtrans.c"/>
+        <includes name="${package.dir}/source/jerror.c"/>
+        <includes name="${package.dir}/source/jfdctflt.c"/>
+        <includes name="${package.dir}/source/jfdctfst.c"/>
+        <includes name="${package.dir}/source/jfdctint.c"/>
+        <includes name="${package.dir}/source/jidctflt.c"/>
+        <includes name="${package.dir}/source/jidctfst.c"/>
+        <includes name="${package.dir}/source/jidctint.c"/>
+        <includes name="${package.dir}/source/jidctred.c"/>
+        <includes name="${package.dir}/source/jmemmgr.c"/>
+        <!-- includes name="${package.dir}/source/jmemansi.c" We don't use this. Instead we use jmemnobs.c or jsupport_ea.c -->
+        <includes name="${package.dir}/source/jmemnobs.c"    if="${Dll} and (${LIBJPEG_EA_SUPPORT_ENABLED} == 0)" />
+        <includes name="${package.dir}/source/jsupport_ea.c" if="not (${LIBJPEG_EA_SUPPORT_ENABLED} == 0)"/>
+        <includes name="${package.dir}/source/jquant1.c"/>
+        <includes name="${package.dir}/source/jquant2.c"/>
+        <includes name="${package.dir}/source/jutils.c"/>
+    </fileset>
+
+
+</project>
+
+
+
+
+
+

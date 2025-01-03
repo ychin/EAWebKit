@@ -1,0 +1,62 @@
+<project default="build">
+    <property name="currDir" value="@{PathGetFullPath('.')}" />
+    <property name="currVer" value="@{PathGetFileName('${currDir}')}" />
+    <package name="zlibEAWebKit" targetversion="${currVer}" />
+
+    <property name="runtime.buildmodules" value="zlibEAWebKit" unless="${config-system} == 'ps3'"/>
+    <property name="runtime.buildmodules" value="zlibEAWebKit zlibEAWebKit_spu" if="${config-system} == 'ps3'"/>
+
+    <property name="runtime.zlibEAWebKit.includedirs" value="${package.dir}/install"/>
+    <property name="runtime.zlibEAWebKit.buildtype" value="CLibrary"/>
+    <property name="zlibEAWebKit.Z_PREFIX" value="0" unless="@{PropertyExists('zlibEAWebKit.Z_PREFIX')}"/>
+
+    <fileset name="runtime.zlibEAWebKit.sourcefiles">
+        <includes name="${package.dir}/install/adler32.c"/>
+        <includes name="${package.dir}/install/compress.c"/>
+        <includes name="${package.dir}/install/crc32.c"/>
+        <includes name="${package.dir}/install/deflate.c"/>
+        <includes name="${package.dir}/install/infback.c"/>
+        <includes name="${package.dir}/install/inffast.c"/>
+        <includes name="${package.dir}/install/inflate.c"/>
+        <includes name="${package.dir}/install/inftrees.c"/>
+        <includes name="${package.dir}/install/trees.c"/>
+        <includes name="${package.dir}/install/uncompr.c"/>
+        <includes name="${package.dir}/install/zutil.c"/>
+    </fileset>
+
+  <property name="runtime.zlibEAWebKit.defines">
+    MY_ZCALLOC
+  </property>
+  <property name="runtime.zlibEAWebKit.defines" if="${zlibEAWebKit.Z_PREFIX} != 0">
+    ${property.value}
+    Z_PREFIX=1
+  </property>
+  
+    <property name="runtime.zlibEAWebKit.warningsuppression" if="${config-compiler} == vc">
+        -wd4131
+        -wd4127
+        -wd4242
+        -wd4255
+        -wd4244
+        -wd4210
+    </property>
+
+	<property name="runtime.zlibEAWebKit.warningsuppression.rev">
+		-w noimplicit,nounusedarg
+    </property>
+
+    <do if="${config-compiler} == 'sn'">
+        <property name="runtime.zlibEAWebKit.warningsuppression.ps3">
+            --diag_suppress=1111,112
+            --diag_suppress=178  <!-- variable "inflate_copyright" was declared but never referenced -->
+        </property>
+    </do>
+
+    <property name="runtime.zlibEAWebKit_spu.includedirs" value="${runtime.zlibEAWebKit.includedirs}"/>
+    <property name="runtime.zlibEAWebKit_spu.buildtype" value="SPUCLibrary"/>
+    <property name="runtime.zlibEAWebKit_spu.defines" value="${runtime.zlibEAWebKit.defines}"/>
+    <fileset name="runtime.zlibEAWebKit_spu.sourcefiles">
+        <includes fromfileset="runtime.zlibEAWebKit.sourcefiles"/>
+    </fileset>
+
+</project>

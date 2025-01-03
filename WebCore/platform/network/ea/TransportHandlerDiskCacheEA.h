@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitTransport.h>
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 #include <EASTL/core_allocator_adapter.h>
 #include <EASTL/string.h>
 #include <EASTL/hash_map.h>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build">
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+  <package name="LLIntOffsetsExtractor" targetversion="${currVer}" />
+
+  <property name="OpenSourceDll" value="false" unless="@{PropertyExists('OpenSourceDll')}"/>
+  <property name="EAWebKit.ENABLE_LEAN_AND_MEAN" value="false" unless="@{PropertyExists('EAWebKit.ENABLE_LEAN_AND_MEAN')}"/>
+
+  <!--abaldeva - There isn't a way to avoid setting a property to false first and then set it to true based on predicate result.
+  This has been verified from the Framework2 mailing list.  -->
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', 'debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', 'opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', 'final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsXboxOne"  value="false"/>
+  <property name="OsIsPS4"      value="false"/>
+
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsXboxOne"  value="true" if="${config-system} == capilano"/>
+  <property name="OsIsPS4"      value="true"  if="${config-system} == kettle"/>
+
+  <!-- ********************* -->
+  <!-- Runtime configuration -->
+  <!-- ********************* -->
+
+  <optionset name="customized-config-options-program" fromoptionset="config-options-program">
+    <option name="buildset.name" value="CustomizedProgram"/>
+  </optionset>
+
+  <task name="GenerateBuildOptionset" configsetname="customized-config-options-program"/>
+
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedProgram">
+      <!-- Disable the warnings as lot of them are generated. -->
+      <option name="cc.options">@{StrReplace(${option.value}, '-W4', '-W0')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-Wall', ' ')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-WX', ' ')}</option>
+      <!--EAWebKitTODO: Investigate /fp:except- and /TP -->
+      <option name="cc.options">
+        ${option.value}
+        /fp:precise
+        /fp:except-
+        /TP
+        /vmg    <!-- Fix issue when a member function pointer is created before defining the class -->
+      </option>
+    </optionset>
+  </do>
+  <do if="${config-compiler} == 'gcc'">
+    <optionset name="CustomizedProgram">
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+    </optionset>
+  </do>
+
+  <property name="runtime.buildtype" value="CustomizedProgram" />
+  <property name="runtime.outputname" value="LLIntOffsetsExtractor"/>
+
+  <property name="runtime.defines">
+    ${property.value}
+    BUILDING_LLIntOffsetsExtractor
+    BUILDING_EA__=1
+    BUILDING_EA__
+    JS_NO_EXPORT
+    _LIB
+    _CRT_SECURE_NO_WARNINGS
+    __STD_C
+    _UNICODE
+    _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
+    _HAS_EXCEPTIONS=0
+  </property>
+
+  <property name="runtime.defines" if="${EAWebKit.ENABLE_LEAN_AND_MEAN}">
+    ${property.value}
+    ENABLE_SVG=0
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin}">
+    ${property.value}
+    WIN32 <!-- defined for both Win32 and Win 64 http://msdn.microsoft.com/en-us/library/b0084kay -->
+    _WINDOWS
+  </property>
+
+  <!-- For a config other than debug, define following. This is so that you are not accidentally shipping a configuration with debug information.
+  FWIW, the use of macros such as NDEBUG for defining release like configurations is discouraged in EA but it is very common in lot of frameworks. 
+  -->
+  <property name="runtime.defines" if="!${ConfigIsDebug}">
+    ${property.value}
+    NDEBUG
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin} or ${OsIsXboxOne}">
+    ${property.value}
+    EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;
+    NOMINMAX=1
+  </property>
+
+  <property name="runtime.interfacedependencies">
+      WTF
+      JavaScriptCore
+      EABase
+      EASTL
+  </property>
+
+  <fileset name="runtime.headerfiles">
+  </fileset>
+
+  <!--EAWebKitTODO - investigate the reason behind naming some of these files as .cc and how these files will be compiled on other platforms-->
+  <fileset name="runtime.sourcefiles">
+      <includes name="../../JavaScriptCore/local/JavaScriptCore/llint/LLIntOffsetsExtractor.cpp" />
+  </fileset>
+
+  <!-- Even though, all the warnings are disabled, this one somehow makes it through on VS 2010-->
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    ${property.value}
+    -wd4275
+    -wd4996
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'clang'">
+    ${property.value}
+    -Wno-narrowing <!-- non-constant-expression cannot be narrowed from type -->
+    -Wno-invalid-noreturn
+    -Wno-unused-function
+    -Wno-tautological-compare
+    -Wno-unused-variable
+  </property>
+</project>

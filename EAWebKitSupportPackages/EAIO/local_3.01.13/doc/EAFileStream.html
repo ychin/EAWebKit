@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFileStream</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFileStream</h1>
+<h2>Introduction</h2>
+<p>EAFileStream is an IStream which reads and writes disk files. It is your typical C++ File class. It is the C++ equivalent of the C FILE struct and associated API. We use a FileStream class instead of using C or C++ file IO primarily because our FileStream class takes advantage of system specific high performance IO, whereas the C and C++ IO functionality is slow and limited in extensibility. </p>
+<h2>Example usage</h2>
+<p>Here we provide an example of using a FileStream:</p>
+<pre class="code-example">bool Application::SaveGame(const char16_t* pFilePath)
+{
+    bool result = false;
+ 
+    AutoRefCount&lt;FileStream&gt; pStream = new FileStream(pFilePath);
+ 
+    if(pStream-&gt;Open(kAccessFlagReadWrite, kCDOpenAlways))
+    {
+        result = mAI.Save(pStream);
+ 
+        if(result)
+            result = mSimulation.Save(pStream);
+ 
+        if(result)
+            result = mSceneManager.Save(pStream);
+ 
+<span class="code-example-comment">        // The stream will close itself when it is released.
+</span>    }
+ 
+    return result;
+}</pre>
+<p>Here's an example of using FileStream as an automatic variable as opposed to allocated by operator new:</p>
+<pre class="code-example">bool Application::ReadText(const char16_t* pFilePath)
+{
+    bool result = false;
+ 
+    FileStream fileStream(pFilePath);
+    fileStream.AddRef();   <span class="code-example-comment">// Causes the object to be destroyed only when it goes out of scope.</span>
+ 
+    if(fileStream.Open(kAccessFlagRead))
+    {
+        char buffer[256];<br>        IO::size_type size;
+<br>        while((size = IO::ReadLine(&amp;fileStream, buffer, 256)) != kSizeTypeDone)<br>            printf(&quot;%s&quot;, buffer);<br>
+        result = true;
+    }
+ 
+    return result;
+}</pre>
+<h2>Interface</h2>
+<p>FileStream error codes:</p>
+<pre class="code-example">enum IOResultCode
+{
+    kFSErrorBase = 0xcfde0000,      <span class="code-example-comment">/// Error code base for this module</span>
+    kFSErrorNotOpen,                <span class="code-example-comment">/// Attempt to read a stream that hasn't been opened</span>
+    kFSErrorNoMemory,               <span class="code-example-comment">/// Insufficient memory to perform operation</span>
+    kFSErrorInvalidName,            <span class="code-example-comment">/// Invalid file name</span>
+    kFSErrorFileNotFound,           <span class="code-example-comment">/// Attempt to open a nonexistent file for reading</span>
+    kFSErrorPathNotFound,           <span class="code-example-comment">/// Attempt to access a file in a non-existent directory</span>
+    kFSErrorAccessDenied,           <span class="code-example-comment">/// Insufficient privileges to open the file</span>
+    kFSErrorWriteProtect,           <span class="code-example-comment">/// Attempt to open a read-only file for writing</span>
+    kFSErrorSharingViolation,       <span class="code-example-comment">/// Attempt to modify a file that is in use</span>
+    kFSErrorDiskFull,               <span class="code-example-comment">/// Out of space on the device</span>
+    kFSErrorFileAlreadyExists,      <span class="code-example-comment">/// Attempt to create a new file with the same name as existing file</span>
+    kFSErrorDeviceNotReady,         <span class="code-example-comment">/// Attempt to access a hardware device that isn't ready</span>
+    kFSErrorDataCRCError,           <span class="code-example-comment">/// The data read off of the disk was corrupted in some way</span>
+    kFSErrorGeneral                 <span class="code-example-comment">/// Catchall for all other errors</span>
+};
+</pre>
+<p>FileStream:</p>
+<pre class="code-example"><span class="code-example-comment">// We highlight parts of FileStream that are additions beyond IStream in <span class="style1">blue</span>.
+</span> 
+class FileStream : public IStream
+{
+public:
+<span class="style1">    enum { kTypeFileStream = 0x34722300 };
+ 
+    enum Share
+    {
+        kShareNone   = 0x00,     </span><span class="code-example-comment">/// No sharing.</span><span class="style1">
+        kShareRead   = 0x01,     </span><span class="code-example-comment">/// Allow sharing for reading.</span><span class="style1">
+        kShareWrite  = 0x02,     </span><span class="code-example-comment">/// Allow sharing for writing.</span><span class="style1">
+        kShareDelete = 0x04      </span><span class="code-example-comment">/// Allow sharing for deletion.</span><span class="style1">
+    };
+ 
+    enum UsageHints
+    {
+        kUsageHintNone       = 0x00,
+        kUsageHintSequential = 0x01,
+        kUsageHintRandom     = 0x02
+    };
+</span> 
+public:
+<span class="style1">    FileStream(const char* pPath8 = NULL);
+    FileStream(const char16_t* pPath16);
+ 
+</span><span class="code-example-comment">    // FileStream
+    // Does not copy information related to an open file, such as the file handle.
+</span><span class="style1">    FileStream(const FileStream& fs);
+
+    virtual ~FileStream();
+
+</span><span class="code-example-comment">    // operator=
+    // Does not copy information related to an open file, such as the file handle.
+</span><span class="style1">    FileStream& operator=(const FileStream& fs);
+</span>
+    virtual int       AddRef();
+    virtual int       Release();
+
+<span class="style1">    virtual void      SetPath(const char* pPath8);
+    virtual void      SetPath(const char16_t* pPath16);
+    virtual size_t    GetPath(char* pPath8, size_t nPathLength);
+    virtual size_t    GetPath(char16_t* pPath16, size_t nPathLength);
+
+    virtual bool      Open(int nAccessFlags = kAccessFlagRead, int nCreationDisposition = kCDDefault, 
+                             int nSharing = kShareRead, int nUsageHints = kUsageHintNone); 
+</span>    virtual bool      Close();
+    virtual uint32_t  GetType() const;
+    virtual int       GetAccessFlags() const;
+    virtual int       GetState() const;
+
+    virtual size_type GetSize() const;
+    virtual bool      SetSize(size_type size);
+
+    virtual off_type  GetPosition(PositionType positionType = kPositionTypeBegin) const;
+    virtual bool      SetPosition(off_type position, PositionType positionType = kPositionTypeBegin);
+
+    virtual size_type GetAvailable() const;
+
+    virtual size_type Read(void* pData, size_type nSize);
+    virtual bool      Write(const void* pData, size_type nSize);
+    virtual bool      Flush();
+};</pre>
+<p></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

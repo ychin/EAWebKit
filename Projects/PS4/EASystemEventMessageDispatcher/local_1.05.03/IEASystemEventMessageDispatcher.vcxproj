@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>kettle-clang-debug</Configuration>
+    <Platform>ORBIS</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}</ProjectGuid>
+    <Keyword>ORBISProj</Keyword>
+    <ProjectName>IEASystemEventMessageDispatcher</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\build\IEASystemEventMessageDispatcher\</OutDir>
+    <IntDir>kettle-clang-debug\build\IEASystemEventMessageDispatcher\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\IEASystemEventMessageDispatcher\v.tlog\</TLogLocation>
+    <TargetName>IEASystemEventMessageDispatcher</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\build\IEASystemEventMessageDispatcher\</OutDir>
+    <IntDir>kettle-clang-opt\build\IEASystemEventMessageDispatcher\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\IEASystemEventMessageDispatcher\v.tlog\</TLogLocation>
+    <TargetName>IEASystemEventMessageDispatcher</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\include\IEASystemEventMessageDispatcher\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\include\IEASystemEventMessageDispatcher\ISystemEventMessageDispatcher.h" />
+  </ItemGroup>
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+</Project>

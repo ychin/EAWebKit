@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAText/EATextCache.h>
 #include <EAText/EATextBreak.h> 
 #include <EAText/EATextTypesetter.h>
-#include <eastl/map.h>
+#include <EASTL/map.h>
 
 namespace EA
 {

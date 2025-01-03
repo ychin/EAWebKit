@@ -139,6 +139,7 @@ private:
 
 //+EAWebKitChange
 //08/27/2015 added implimentations of the below methods for vs2015 support
+/*
     void* operator new[](size_t)
     {
         ASSERT_NOT_REACHED();
@@ -158,7 +159,8 @@ private:
     {
 		ASSERT_NOT_REACHED();
     }
-//-EAWebKitChange    
+ */
+//-EAWebKitChange
 };
 
 class ArgList {

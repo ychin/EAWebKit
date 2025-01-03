@@ -1,0 +1,86 @@
+/*!
+    \Mainpage DirtySock
+
+    \Section intro Introduction
+
+        DirtySock is a collection of platform-independent APIs providing access to common
+        network library functions. At the most fundamental base level, it provides a Sockets
+        interface similar in many respects to BSD/Sockets and Winsock but with much of the
+        incongruities of those APIs addressed.  To support the upper layer protocols, the
+        DirtySock library also includes some basic systems functions like memory management,
+        critical sections, idle functions, and diagnostic output.
+
+        Running on top of DirtySock Sockets are a number of different protocols.  These protocols
+        include both industry standards such as SSL and HTTP/HTTPS, as well custom protocols that
+        implement more game-specific functionalies such as reliable UDP and controller passing.
+        For more on protocols, follow the Comm/Game and Proto links below.
+
+        Also included in the DirtySock SDK are encryption routines used by the secure protocols,
+        utility functions for processing data such as images, Base64 data, XML, and JSON.
+
+        Current platforms supported by DirtySock include: Android, iOS, OSX, OSX64, Linux,
+        PC, PC64, PS4, PS5, Switch, Xbox One and Xbox GDK.
+
+    \Subsection overview Overview
+
+    DirtySock can be broken down into several basic categories:
+
+    - \link Comm        Comm        \endlink - Low-level UDP communications protocols, these are accessed via the NetGame interface
+    - \link Crypt       Crypt       \endlink - Cryptography routines, implementing industry-standard hash and encryption algorithms
+    - \link DirtySock   DirtySock   \endlink - Platform-independent sockets layer
+    - \link Game        Game        \endlink - Game networking modules, utilizing Comm protocols, VoIP, and NAT technologies
+    - \link Graph       Graph       \endlink - Image decoding routines covering JPEG, GIF, and PNG formats
+    - \link Misc        Misc        \endlink - Miscelleneous APIs; other network APIs
+    - \link User        User        \endlink - Miscelleneous APIs; other network APIs
+    - \link Proto       Proto       \endlink - Implementations of mostly industry-standard protocols, with a few custom ones
+    - \link Util        Util        \endlink - Utility functions generally involving data parsing, processing, and conversion of industry-standard data formats
+    - \link Voip        Voip        \endlink - Platform-independent VoIP functionality (not available on all platforms)
+
+    \Subsection platforms Supported Platforms
+
+    | Platform     | First Release | Last Release |
+    |------------- | ------------- | -------------|
+    | Android      | 8.14.x        | present      |
+    | iOS          | 8.14.x        | present      |
+    | Linux        | 2.x           | present      |
+    | OSX          | 8.18.x        | present      |
+    | PC           | 1.x           | present      |
+    | PS3          | 4.x           | 15.1.1.1.0   |
+    | PS4          | 13.3.x        | present      |
+    | PS5          | 15.1.6.0.2    | present      |
+    | WinPRT       | 8.18.x        | 15.1.2.3.0   |
+    | WinRT        | 8.18.x        | 15.1.2.3.0   |
+    | Xbox 360     | 3.x           | 15.1.1.1.0   |
+    | Xbox One     | 13.3.x        | present      |
+    | Xbox GDK     | 15.1.6.0.2    | present      |
+    | PS2          | 1.x           | 6.x          |
+    | Xbox         | 2.x           | 6.x          |
+    | PSP          | 2.x           | 7.x          |
+    | Nintendo DS  | 4.x           | 7.x          |
+    | Wii          | 4.x           | 8.14.x       |
+    | NX           | 15.1.5.0.1    | present      |
+    | Freebox      | 8.18.x        | 13.3.x       |
+    | Vita         | 8.18.x        | 13.3.x       |
+    | WiiU         | 8.18.x        | 8.18.x       |
+    | BlackBerry10 | 13.3.x        | 13.3.x       |
+
+    \Subsection history Revision History
+
+    Major release lines of the DirtySock SDK, with date of latest release, and some of the more notable additions:
+
+    \Version 14.2.x     06/11/2014  Deprecated Freebox
+    \Version 13.3.x     01/28/2014  Added BlackBerry10, PS4, and Xbox One
+    \Version 8.18.x     02/28/2013  Added Freebox, OSX, Vita, WinPRT, WinRT, and WiiU; Deprecated Wii
+    \Version 8.14.x     10/16/2012  Added Android, iOS, and Playbook
+    \Version 8.8.x      04/16/2012
+    \Version 8.5.x      12/15/2010  Deprecated Nintendo DS and PSP
+    \Version 7.x        11/10/2010  Deprecated PS2 and Xbox
+    \Version 6.x        04/28/2009
+    \Version 5.x        05/13/2008
+    \Version 4.x        02/06/2007  Added PS3, Nintendo DS, and Wii,
+    \Version 3.x        11/16/2005  Added Xbox 360,
+    \Version 2.x        11/23/2004  Added PSP, Linux, and Xbox,
+    \Version 1.x        11/21/2003  First release line of DirtySDK, supporting PC and PS2.
+
+    \sa <a href="changelog.txt">Changelog</a>
+*/

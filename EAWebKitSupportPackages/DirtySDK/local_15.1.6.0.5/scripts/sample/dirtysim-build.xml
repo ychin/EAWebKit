@@ -1,0 +1,40 @@
+<project>
+    <Program name="dirtysim" frompartial="DSProgram">
+        <headerfiles basedir="${package.dir}">
+            <includes name="sample/ticker/source/${dirtyplat}/*.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="sample/dirtysim/project/source.txt" if="@{FileExists('${package.dir}/sample/dirtysim/project/source.txt')}" optionset="CProgramExtra"/>
+            <includes fromfile="sample/dirtysim/project/sourcecpp.txt" if="@{FileExists('${package.dir}/sample/dirtysim/project/sourcecpp.txt')}"/>
+        </sourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+                DirtySDK/common
+
+                <do if="${config-system} == 'kettle'">
+                    EASTL
+                    coreallocator
+                    EASystemEventMessageDispatcher
+                    EAAssert
+                    EAThread
+                    IEASystemEventMessageDispatcher
+                    EAMessage
+                    IEAUser
+                    IEAController
+                    EAControllerUserPairing
+                </do>
+            </auto>
+        </dependencies>
+
+        <config>
+            <warningsuppression>
+                <do if="${config-compiler} == 'gcc'">
+                    -Wno-unused-but-set-variable
+                </do>
+            </warningsuppression>
+        </config>
+    </Program>
+</project>

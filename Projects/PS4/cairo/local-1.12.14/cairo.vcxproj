@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>kettle-clang-dev-debug</Configuration>
+    <Configuration>kettle-clang-debug</Configuration>
     <Platform>ORBIS</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="kettle-clang-dev-debug|ORBIS">
-      <Configuration>kettle-clang-dev-debug</Configuration>
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="kettle-clang-dev-opt|ORBIS">
-      <Configuration>kettle-clang-dev-opt</Configuration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,40 +18,40 @@
     <ProjectGuid>{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>cairo</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include";"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-uninitialized -Wno-unused-function -Wno-conversion -Wno-unused-variable -Wno-switch -Wno-parentheses-equality -fPIC </AdditionalOptions>
-      <CompileAs>CompileAsC</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include";"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-uninitialized -Wno-unused-function -Wno-conversion -Wno-unused-variable -Wno-switch -Wno-parentheses-equality -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_DEBUG;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;HAVE_STDINT_H;HAVE_UINT64_T=1</NantUnescapedPreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_DEBUG;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;HAVE_STDINT_H;HAVE_UINT64_T=1</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
@@ -60,41 +60,40 @@
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-debug\lib\libcairo.a</OutputFile>
+      <OutputFile>kettle-clang-debug\lib\libcairo.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-debug\build\cairo" mkdir "kettle-clang-dev-debug\build\cairo" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-debug\lib" mkdir "kettle-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-debug\build\cairo" mkdir "kettle-clang-debug\build\cairo" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <OutDir>kettle-clang-dev-debug\lib\</OutDir>
-    <IntDir>kettle-clang-dev-debug\build\cairo\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\lib\</OutDir>
+    <IntDir>kettle-clang-debug\build\cairo\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\cairo\v.tlog\</TLogLocation>
     <TargetName>libcairo</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include";"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-uninitialized -Wno-unused-function -Wno-conversion -Wno-unused-variable -Wno-switch -Wno-parentheses-equality -fPIC </AdditionalOptions>
-      <CompileAs>CompileAsC</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include";"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-error -fno-elide-type -fdata-sections -ffunction-sections -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-uninitialized -Wno-unused-function -Wno-conversion -Wno-unused-variable -Wno-switch -Wno-parentheses-equality -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;HAVE_STDINT_H;HAVE_UINT64_T=1;NDEBUG</NantUnescapedPreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;HAVE_STDINT_H;HAVE_UINT64_T=1;NDEBUG</PreprocessorDefinitions>
@@ -104,20 +103,21 @@
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-opt\lib\libcairo.a</OutputFile>
+      <OutputFile>kettle-clang-opt\lib\libcairo.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-opt\build\cairo" mkdir "kettle-clang-dev-opt\build\cairo" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-opt\lib" mkdir "kettle-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-opt\build\cairo" mkdir "kettle-clang-opt\build\cairo" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <OutDir>kettle-clang-dev-opt\lib\</OutDir>
-    <IntDir>kettle-clang-dev-opt\build\cairo\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\lib\</OutDir>
+    <IntDir>kettle-clang-opt\build\cairo\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\cairo\v.tlog\</TLogLocation>
     <TargetName>libcairo</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
@@ -127,7 +127,6 @@
     <ProjectReference Include="..\..\libpngEAWebKit\local-1.01.00-01\libpngEAWebKit.vcxproj">
       <Project>{C77E27F0-AA71-6169-241E-0184FBD0F95B}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -135,7 +134,6 @@
     <ProjectReference Include="..\..\pixman\local-0.28.2\pixman.vcxproj">
       <Project>{E0C359C8-17A5-C1EE-D97F-86677C6226DA}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -143,7 +141,6 @@
     <ProjectReference Include="..\..\zlibEAWebKit\local-1.2.5-7-01\zlibEAWebKit.vcxproj">
       <Project>{03994ABE-57B1-4D7C-896F-62AEE8658914}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -156,200 +153,200 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo-features.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo-malloc.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-analysis-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-analysis-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-analysis-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-analysis-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-analysis-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-analysis-surface-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-arc.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-arc.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-arc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-arc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-arc.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-arc-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-array.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-array.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-array.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-array.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-array.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-array-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-atomic.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-atomic.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-atomic.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-atomic.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-atomic.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-atomic-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-backend-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-base85-stream.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-base85-stream.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-base85-stream.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-base85-stream.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-base85-stream.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-bentley-ottmann.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-bentley-ottmann.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-bentley-ottmann.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-bentley-ottmann.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann-rectangular.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-bentley-ottmann-rectangular.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-bentley-ottmann-rectangular.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-bentley-ottmann-rectangular.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-bentley-ottmann-rectangular.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann-rectilinear.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-bentley-ottmann-rectilinear.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-bentley-ottmann-rectilinear.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-bentley-ottmann-rectilinear.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-bentley-ottmann-rectilinear.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-boxes.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-boxes.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes-intersect.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-boxes-intersect.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-boxes-intersect.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-boxes-intersect.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-boxes-intersect.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-box-inline.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cache.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-cache.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-cache.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-cache.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-cache.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cache-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cff-subset.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-cff-subset.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-cff-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-cff-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-cff-subset.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-boxes.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip-boxes.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip-boxes.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-inline.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-polygon.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip-polygon.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip-polygon.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-region.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip-region.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip-region.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip-region.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip-region.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-tor-scan-converter.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-clip-tor-scan-converter.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-clip-tor-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-clip-tor-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-clip-tor-scan-converter.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-color.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-color.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-color.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-color.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-color.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-combsort-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compiler-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-composite-rectangles.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-composite-rectangles.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-composite-rectangles.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-composite-rectangles.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-composite-rectangles.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-composite-rectangles-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compositor-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-contour.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-contour.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-contour.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-contour.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-damage.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-damage.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-damage.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-damage.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-damage.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-damage-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-debug.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-debug.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-debug.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-debug.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-debug.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-default-context.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-default-context.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-default-context.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-default-context.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-default-context.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-default-context-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-device.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-device.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-device.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-device.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-device.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-device-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-error.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-error.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-error.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-error.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-error.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-error-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fallback-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-fallback-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-fallback-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-fallback-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-fallback-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-fixed.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-fixed.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-fixed.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-fixed.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed-type-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-font-face.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-font-face.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-font-face.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-font-face.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face-twin.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-font-face-twin.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-font-face-twin.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-font-face-twin.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-font-face-twin.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face-twin-data.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-font-face-twin-data.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-font-face-twin-data.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-font-face-twin-data.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-font-face-twin-data.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-options.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-font-options.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-font-options.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-font-options.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-font-options.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freed-pool-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-freelist.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-freelist.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-freelist.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-freelist.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist-type-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-gstate.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-gstate.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-gstate.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-gstate.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-gstate.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-gstate-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hash.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-hash.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-hash.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-hash.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-hash.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hash-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hull.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-hull.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-hull.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-hull.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-hull.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-image-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-image-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-image-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-image-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-info.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-image-info.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-image-info.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-image-info.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-image-info.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-info-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-source.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-image-source.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-image-source.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-image-source.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-image-source.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-image-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-image-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-image-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-image-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface-private.h" />
@@ -357,306 +354,306 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-list-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-list-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-lzw.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-lzw.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-lzw.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-lzw.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-lzw.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-malloc-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mask-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-mask-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-mask-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-mask-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-mask-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-matrix.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-matrix.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-matrix.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-matrix.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-matrix.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mesh-pattern-rasterizer.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-mesh-pattern-rasterizer.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-mesh-pattern-rasterizer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-mesh-pattern-rasterizer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-mesh-pattern-rasterizer.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-misc.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-misc.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-misc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-misc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-misc.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mono-scan-converter.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-mono-scan-converter.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-mono-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-mono-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-mono-scan-converter.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-mutex.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-mutex.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-mutex.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-mutex.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-impl-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-list-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-type-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-no-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-no-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-no-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-no-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-no-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-observer.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-observer.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-observer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-observer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-observer.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-output-stream.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-output-stream.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-output-stream.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-output-stream.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-output-stream.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-output-stream-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-paginated-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-paginated-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-paginated-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-paginated-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-surface-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-bounds.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-bounds.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-bounds.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-bounds.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-bounds.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fill.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-fill.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-fill.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fixed.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-fixed.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-fixed.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-fixed.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-fixed.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fixed-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-in-fill.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-in-fill.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-in-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-in-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-in-fill.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-stroke.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-stroke.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-stroke.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-stroke.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-boxes.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-stroke-boxes.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-stroke-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-stroke-boxes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-stroke-boxes.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-polygon.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-stroke-polygon.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-stroke-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-stroke-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-stroke-polygon.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-traps.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-stroke-traps.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-stroke-traps.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-stroke-traps.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-stroke-traps.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-tristrip.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-path-stroke-tristrip.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-path-stroke-tristrip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-path-stroke-tristrip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-path-stroke-tristrip.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-pattern.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-pattern.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-pattern.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-pattern.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pen.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-pen.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-pen.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-pen.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-pen.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-png.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-png.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-png.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-png.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-png.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-polygon.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-polygon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-polygon.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon-intersect.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-polygon-intersect.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-polygon-intersect.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-polygon-intersect.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-polygon-intersect.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon-reduce.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-polygon-reduce.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-polygon-reduce.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-polygon-reduce.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-polygon-reduce.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-raster-source-pattern.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-raster-source-pattern.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-raster-source-pattern.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-raster-source-pattern.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-raster-source-pattern.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-recording-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-recording-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-recording-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-recording-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-rectangle.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-rectangle.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-rectangle.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-rectangle.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-rectangle.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-rectangular-scan-converter.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-rectangular-scan-converter.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-rectangular-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-rectangular-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-rectangular-scan-converter.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-reference-count-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-region.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-region.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-region.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-region.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-region.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-region-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-scaled-font.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-scaled-font.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-scaled-font.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-scaled-font.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-subsets.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-scaled-font-subsets.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-scaled-font-subsets.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-scaled-font-subsets.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-scaled-font-subsets.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-subsets-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-shape-mask-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-shape-mask-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-shape-mask-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-shape-mask-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-shape-mask-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-slope.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-slope.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-slope.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-slope.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-slope.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-slope-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-spans.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-spans.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-spans.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-spans.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-spans-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-spans-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-spans-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-spans-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-compositor-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spline.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-spline.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-spline.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-spline.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-spline.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-dash.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-stroke-dash.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-stroke-dash.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-stroke-dash.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-stroke-dash.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-dash-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-style.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-stroke-style.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-stroke-style.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-stroke-style.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-stroke-style.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-backend-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-clipper.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-clipper.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-clipper.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-clipper.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-clipper.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-clipper-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-fallback.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-fallback.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-fallback.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-fallback.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-fallback.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-fallback-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-observer-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-offset.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-offset.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-offset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-offset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-offset.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-offset-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-snapshot.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-snapshot.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-snapshot.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-snapshot.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-subsurface.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-subsurface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-subsurface.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-subsurface.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface-inline.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-wrapper.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-surface-wrapper.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-surface-wrapper.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-surface-wrapper.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-surface-wrapper.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-wrapper-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tee-surface-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-time-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tor22-scan-converter.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-tor22-scan-converter.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-tor22-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-tor22-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-tor22-scan-converter.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tor-scan-converter.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-tor-scan-converter.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-tor-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-tor-scan-converter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-tor-scan-converter.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-toy-font-face.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-toy-font-face.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-toy-font-face.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-toy-font-face.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-toy-font-face.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-traps.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-traps.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-traps.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-traps.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps-compositor.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-traps-compositor.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-traps-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-traps-compositor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-traps-compositor.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tristrip.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-tristrip.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-tristrip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-tristrip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-tristrip.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tristrip-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-truetype-subset.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-truetype-subset.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-truetype-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-truetype-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-truetype-subset.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-truetype-subset-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-fallback.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-type1-fallback.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-type1-fallback.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-type1-fallback.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-type1-fallback.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-glyph-names.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-type1-glyph-names.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-type1-glyph-names.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-type1-glyph-names.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-type1-glyph-names.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-subset.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-type1-subset.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-type1-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-type1-subset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-type1-subset.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-types-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-unicode.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-unicode.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-unicode.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-unicode.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-unicode.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-user-font.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-user-font.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-user-font.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-user-font.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-user-font.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-user-font-private.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-version.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-version.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-version.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-version.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-version.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-version.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\cairo\cairo-wideint.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\cairo\cairo-wideint.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\cairo\cairo-wideint.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\cairo\cairo-wideint.c.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint-type-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-win32.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-win32-private.h" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -665,4 +662,10 @@
       <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
 </Project>

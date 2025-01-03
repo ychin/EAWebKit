@@ -1,0 +1,451 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>EAText -- Understanding Phonetic Modifiers</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta
+ content="Description of phonetic modifiers used in writing systems."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div>
+  <h1>Understanding Phonetic
+  Modifiers</h1>
+  <p><small>Note: You will likely need to have the "Arial Unicode MS" font
+    installed on
+  your system to read the tables below.</small></p>
+  <p>Phonetic
+    modifiers (a.k.a. diacritics) are small glyphs attached to primary
+    alphabetic glyphs whose purpose is generally to modify the
+    pronunciation of the primary glyph or the characters around it. Here we
+    have three tables: common modifiers, uncommon modifiers, and Thai
+    modifiers. Modifiers exist for a number of scripts (writing systems)
+    that we don't cover here, but the concepts are similar. The Thai
+    modifiers are present because we often make
+    applications for the Thai market and have to work with these modifiers
+    in text processing code. The common modifiers are used in the most
+    common European languages, while the uncommon modifiers are used
+    sporadically in other languages. The Thai modifiers are specific to
+  Thai. </p>
+  <p>In
+    many cases,
+    modifiers are built into the characters they are commonly used with.
+    For example, there are independent&nbsp; pre-built characters for
+&aacute;, &yacute;, &#263; and &#324; as well as a standalone &acute; character.
+    This makes it easy on code that processes and draws text, as it doesn't
+    need to worry about combining characters with their modifiers. However,
+    in some cases modifiers aren't built into characters and text
+    processing code must do this itself. In particular, Thai characters use
+    modifiers so extensively that the combinatorial explosion of possible
+    combinations makes it prohibitive to have pre-built characters. Thus
+    text processing and drawing code must take care of combining itself.
+  This makes writing text editors a bit more difficult, to say the least. </p>
+  <h3>Common
+  Modifiers Table</h3>
+  <p>Here
+    we have a table of the primary modifiers in use by most languages. Note
+    that each modifier has a Unicode value and a combining Unicode value.
+    The Unicode value refers to a standalone modifier character that exists
+    in its own character cell. The combining Unicode value refers to the
+    same character shifted to the left such that when drawn it appears over
+    the previous character. Combining forms of characters allow you to
+    synthesize modified characters on your own. For example, here is an
+  equals sign with a caron implemented with two characters:</p>
+  <blockquote>
+    <p><font
+ face="Arial" size="2"><font size="3">    <font face="Times New Roman">
+            </font></font><font face="Times New Roman"><font size="3"><big><big><font
+ face="Arial Unicode MS" size="4">=&#780;</font>
+          <small><br>
+          <small><small><small><small>&nbsp;</small></small></small></small></small><br>
+  </big></big></font></font></font></p>
+  </blockquote>
+</div>
+<div>
+<table
+ style="width: 100%; font-family: arial unicode ms; text-align: left;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="font-weight: bold; vertical-align: top;"><font size="5">Modifier<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Name<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Example</font> </td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Unicode Value<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Combining Unicode Value</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&acute;</font></td>
+      <td style="vertical-align: top;"><font size="+2">acute accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">&aacute;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02CA</font></td>
+      <td style="vertical-align: top;"><font size="+2">0301</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">`</font></td>
+      <td style="vertical-align: top;"><font size="+2">grave accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">&agrave;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02CB</font></td>
+      <td style="vertical-align: top;"><font size="+2">0300</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#710; </font></td>
+      <td style="vertical-align: top;"><font size="+2">circumflex
+accent </font></td>
+      <td style="vertical-align: top;"><font size="+2">&acirc;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02C6</font></td>
+      <td style="vertical-align: top;"><font size="+2">0302</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#732; </font></td>
+      <td style="vertical-align: top;"><font size="+2">tilde</font></td>
+      <td style="vertical-align: top;"><font size="+2">&atilde;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02DC</font></td>
+      <td style="vertical-align: top;"><font size="+2">0303</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&uml;</font></td>
+      <td style="vertical-align: top;"><font size="+2">diaeresis <small><small><small>(or
+umlaut)</small></small></small></font></td>
+      <td style="vertical-align: top;"><font size="+2">&auml;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">00A8</font></td>
+      <td style="vertical-align: top;"><font size="+2">0308</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#730;</font></td>
+      <td style="vertical-align: top;"><font size="+2">ring</font><small>
+(or bolle)</small> </td>
+      <td style="vertical-align: top;"><font size="+2">&aring;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02DA</font></td>
+      <td style="vertical-align: top;"><font size="+2">030A</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&cedil;</font></td>
+      <td style="vertical-align: top;"><font size="+2">cedilla</font></td>
+      <td style="vertical-align: top;"><font size="+2">&ccedil;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">00B8</font></td>
+      <td style="vertical-align: top;"><font size="+2">0327</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#711;</font></td>
+      <td style="vertical-align: top;"><font size="+2">caron</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#462;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02C7</font></td>
+      <td style="vertical-align: top;"><font size="+2">030C</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#728;</font></td>
+      <td style="vertical-align: top;"><font size="+2">breve</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#259;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02D8</font></td>
+      <td style="vertical-align: top;"><font size="+2">0306</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#713;</font></td>
+      <td style="vertical-align: top;"><font size="+2">macron</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#257;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02C9</font></td>
+      <td style="vertical-align: top;"><font size="+2">0304</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#729;</font></td>
+      <td style="vertical-align: top;"><font size="+2">dot above</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#267;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02D9</font></td>
+      <td style="vertical-align: top;"><font size="+2">0307</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#731;</font></td>
+      <td style="vertical-align: top;"><font size="+2">ogonek</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#261;</font> </td>
+      <td style="vertical-align: top;"><font size="+2">02DB</font></td>
+      <td style="vertical-align: top;"><font size="+2">0328</font></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div>
+  <h3>Uncommon
+Modifiers Table</h3>
+  <p>Below
+  is a table
+  of uncommonly used modifiers. These modifiers are used in African
+  languages, among others. You probably won't ever need to work with
+  these.<br>
+    </p>
+</div>
+<div>
+<table
+ style="width: 100%; font-family: arial unicode ms; text-align: left;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Modifier<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Name<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Example</font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Unicode Value<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Combining Unicode Value</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp; &#784;</font></td>
+      <td style="vertical-align: top;"><font size="+2">condrabindu</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#784;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0310</font></td>
+      <td style="vertical-align: top;"><font size="+2">0310</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp; &#785;</font></td>
+      <td style="vertical-align: top;"><font size="+2">inverted breve</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#785;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0311</font></td>
+      <td style="vertical-align: top;"><font size="+2">0311</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#699;</font></td>
+      <td style="vertical-align: top;"><font size="+2">turned comma</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#786;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02BB</font></td>
+      <td style="vertical-align: top;"><font size="+2">0312</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#701;</font></td>
+      <td style="vertical-align: top;"><font size="+2">reversed comma</font></td>
+      <td style="vertical-align: top;"><font size="+2">a</font></td>
+      <td style="vertical-align: top;"><font size="+2">02BD</font></td>
+      <td style="vertical-align: top;"><font size="+2">0314</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#717;</font></td>
+      <td style="vertical-align: top;"><font size="+2">low macron</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#817;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02CD</font></td>
+      <td style="vertical-align: top;"><font size="+2">0331</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#718;</font></td>
+      <td style="vertical-align: top;"><font size="+2">low grave accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#790;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02CE</font></td>
+      <td style="vertical-align: top;"><font size="+2">0316</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#719;</font></td>
+      <td style="vertical-align: top;"><font size="+2">low acute accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#791;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02CF</font></td>
+      <td style="vertical-align: top;"><font size="+2">0317</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&#783;&#783;<font size="+2">&nbsp; &#783;</font></td>
+      <td style="vertical-align: top;"><font size="+2">double grave
+accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#783;</font><br>
+      </td>
+      <td style="vertical-align: top;"><font size="+2">&lt;NA&gt;</font></td>
+      <td style="vertical-align: top;"><font size="+2">030F</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#733;</font></td>
+      <td style="vertical-align: top;"><font size="+2">double acute
+accent</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#779;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02DD</font></td>
+      <td style="vertical-align: top;"><font size="+2">030B</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&#734;</font></td>
+      <td style="vertical-align: top;"><font size="+2">rhotic hook</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#602;</font></td>
+      <td style="vertical-align: top;"><font size="+2">02DE</font></td>
+      <td style="vertical-align: top;"><font size="+2">&lt;NA&gt;</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">.</font></td>
+      <td style="vertical-align: top;"><font size="+2">dot below</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#7827;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0323</font></td>
+      <td style="vertical-align: top;"><font size="+2">0323</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp; &#804;</font></td>
+      <td style="vertical-align: top;"><font size="+2">diaeresis below</font></td>
+      <td style="vertical-align: top;"><font size="+2">a&#804;</font></td>
+      <td style="vertical-align: top;"><font size="+2">&lt;NA&gt;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0324</font></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<font face="Arial" size="2"><font
+ style="font-family: helvetica,arial,sans-serif;" size="4">
+</font></font>
+<div>
+  <h3>Thai Modifiers Table</h3>
+  <p>Below
+    is a table
+    of all Thai modifier characters. Unlike other modifiers, Thai modifiers
+    exist only in combining form. Thus there are no pre-built Thai
+    characters that have modifiers built into them like with many Western
+    characters.<br style="font-family: helvetica,arial,sans-serif;">
+  <font face="Arial" size="2"></font></p>
+</div>
+<div>
+<table
+ style="width: 100%; font-family: arial unicode ms; text-align: left;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Modifier<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Name<br>
+      </font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Example</font></td>
+      <td style="font-weight: bold; vertical-align: top;"><font
+ size="+2">Combining Unicode Value</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3633;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai mai han-akat</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3633;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E31</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3636;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara i</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3636;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E34</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3637;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara ii</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3637;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E35</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3638;<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara ue<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3638;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E36<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3639;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara uee<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3639;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E37</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp; &#3640;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara u</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3640;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E38</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3641;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai sara uu</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3641;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E39</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3642;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai phinthu</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3642;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E3A</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3655;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai maithaikhu</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3655;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E47</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3656;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai mai ek</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3656;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E48<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3657;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai mai tho</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3657;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E49</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3658;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai mai tri</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3658;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E4A</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3659;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai mai chattawa</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3659;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E4B</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3660;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai thanthakhat</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3660;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E4C</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3661;</font></td>
+      <td style="vertical-align: top;"><font size="5">Thai nikhahit<span
+ class="187335223-28082003">&nbsp;</span></font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3661;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E4D</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><font size="+2">&nbsp;&nbsp; &#3662;</font></td>
+      <td style="vertical-align: top;"><font size="+2">Thai yamakkam</font></td>
+      <td style="vertical-align: top;"><font size="+2">&#3585;&#3662;</font></td>
+      <td style="vertical-align: top;"><font size="+2">0E4E</font></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div><font face="Arial" size="2"><font
+ style="font-family: helvetica,arial,sans-serif;" size="4"><br>
+</font></font></div>
+<hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<font face="Arial" size="2"><font
+ style="font-family: helvetica,arial,sans-serif;" size="4"><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</font></font>
+</body>
+</html>

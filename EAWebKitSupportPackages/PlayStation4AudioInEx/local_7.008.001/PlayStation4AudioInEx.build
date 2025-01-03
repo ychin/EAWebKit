@@ -1,0 +1,3 @@
+﻿<project default="package">
+    <package name="PlayStation4AudioInEx" targetversion="7.008.001" />
+</project>

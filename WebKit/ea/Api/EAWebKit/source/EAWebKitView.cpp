@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "config.h"
 #include <EAWebKit/EAWebKitView.h>
-#include <EAWebKit/EAWebkitClient.h> 
+#include <EAWebKit/EAWebKitClient.h> 
  
 #include "Page.h" 
 #include "SharedTimer.h"

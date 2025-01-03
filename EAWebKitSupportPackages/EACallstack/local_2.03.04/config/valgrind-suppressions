@@ -1,0 +1,51 @@
+# Disabling the known va_list issue with Valgrind.
+{
+    DisableVsnPrintfUninitalizedJump
+    Memcheck:Cond
+    fun:_ZN2EA4StdC12SprintfLocal11VprintfCoreEPFiPKcmPvNS0_18WriteFunctionStateEES4_S3_P13__va_list_tag
+    fun:_ZN2EA4StdC9VsnprintfEPcmPKcP13__va_list_tag
+    fun:_ZN2EA4StdC8SnprintfEPcmPKcz
+    fun:_ZN2EA4Dasm3ARM18DasmARMConditionalEjRNS0_8DasmDataE
+    fun:_ZN2EA4Dasm3ARM7DasmARMEjRNS0_8DasmDataE
+    fun:_ZN2EA4Dasm15DisassemblerARM4DasmEPKvS3_RNS0_8DasmDataEjm
+    fun:_Z8TestDasmv
+    fun:_ZN2EA8UnitTest12TestFunction3RunEv
+    fun:_ZN2EA8UnitTest9TestSuite3RunERNS1_10ResultInfoE
+    fun:_ZN2EA8UnitTest9TestSuite3RunEv
+    fun:_ZN2EA8UnitTest15TestApplication3RunEv
+    fun:EAMain
+}
+
+# https://bugs.launchpad.net/ubuntu/+source/eglibc/+bug/883775
+# This appears to be a bug in libc source code that is a well known
+# issue on the ubuntu and valgrind forums.
+{
+    DisableDlOpenMemLeaks
+    Memcheck:Leak
+    fun:malloc
+    fun:_dl_signal_error
+    fun:_dl_open
+    fun:dlopen_doit
+    fun:_dl_catch_error
+    fun:_dlerror_run
+    fun:dlopen@@GLIBC_2.2.5
+    fun:_ZN2EA9Callstack20GetModuleBaseAddressEPKc
+    fun:_ZN2EA9Callstack19AddressRepLookupSet20GetAddressRepFromSetEimPN5eastl12fixed_stringIcLi256ELb1ENS0_18EASTLCoreAllocatorEEEPi
+    fun:_ZN2EA9Callstack19AddressRepLookupSet13GetAddressRepEimPN5eastl12fixed_stringIcLi256ELb1ENS0_18EASTLCoreAllocatorEEEPi
+}
+
+{
+    DisableDlopenMemLeaks2
+    Memcheck:Leak
+    fun:calloc
+    fun:_dlerror_run
+    fun:dlopen@@GLIBC_2.2.5
+    fun:_ZN2EA9Callstack20GetModuleBaseAddressEPKc
+    fun:_ZN2EA9Callstack19AddressRepLookupSet20GetAddressRepFromSetEimPN5eastl12fixed_stringIcLi256ELb1ENS0_18EASTLCoreAllocatorEEEPi
+    fun:_ZN2EA9Callstack19AddressRepLookupSet13GetAddressRepEimPN5eastl12fixed_stringIcLi256ELb1ENS0_18EASTLCoreAllocatorEEEPi
+    fun:_ZN2EA9Callstack15AddressRepCache13GetAddressRepEimPPKcPib
+    fun:_Z15VerifyCallstackRN2EA9Callstack15AddressRepCacheERN5eastl6vectorI18CallstackEntryInfoNS3_9allocatorEEERi
+    fun:_Z15TestCallstack01RN2EA9Callstack15AddressRepCacheERN5eastl6vectorI18CallstackEntryInfoNS3_9allocatorEEERi
+    fun:_ZL17TestCallstackImplPN2EA9Allocator14ICoreAllocatorE
+}
+

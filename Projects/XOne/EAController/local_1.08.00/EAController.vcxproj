@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\framework_tmp\CapilanoSDK-180715\XdkBuild.v141.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-debug|Durango">
+      <Configuration>capilano-vc-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-opt|Durango">
+      <Configuration>capilano-vc-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2217D233-E3A2-D60D-6888-A1F4F052FC87}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>EAController</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <AppContainerApplication>true</AppContainerApplication>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>15.00</MinimumVisualStudioVersion>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <AppContainerApplication>true</AppContainerApplication>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>15.00</MinimumVisualStudioVersion>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64 /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\180715\xdk\lib\amd64";"$(XboxOneExtensionSDKLatest)\References\CommonConfiguration\Neutral";"$(DurangoXDK)\180715\xdk\VS2017\vc\platform\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4628; 4472; 4471; 4946; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>capilano-vc-debug\lib\EAController.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <WinRTNoStdLib>false</WinRTNoStdLib>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>-IGNORE:4264 </AdditionalOptions>
+      <OutputFile>capilano-vc-debug\lib/EAController.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-debug\lib" mkdir "capilano-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-debug\build\EAController" mkdir "capilano-vc-debug\build\EAController" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">
+    <OutDir>capilano-vc-debug\lib\</OutDir>
+    <IntDir>capilano-vc-debug\build\EAController\v\</IntDir>
+    <TLogLocation>capilano-vc-debug\build\EAController\v.tlog\</TLogLocation>
+    <TargetName>EAController</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\180715\xdk\Include;$(DurangoXDK)\180715\xdk\Include\shared;$(DurangoXDK)\180715\xdk\Include\um;$(DurangoXDK)\180715\xdk\Include\winrt;$(NETFXKitsDir)\Include\um;$(DurangoXDK)\180715\xdk\ucrt\inc;$(DurangoXDK)\180715\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include";"..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\180715\xdk\lib\amd64";"$(XboxOneExtensionSDKLatest)\References\CommonConfiguration\Neutral";"$(DurangoXDK)\180715\xdk\VS2017\vc\platform\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4628; 4472; 4471; 4946; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>capilano-vc-opt\lib\EAController.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <WinRTNoStdLib>false</WinRTNoStdLib>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>-IGNORE:4264 </AdditionalOptions>
+      <OutputFile>capilano-vc-opt\lib/EAController.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-opt\lib" mkdir "capilano-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-opt\build\EAController" mkdir "capilano-vc-opt\build\EAController" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">
+    <OutDir>capilano-vc-opt\lib\</OutDir>
+    <IntDir>capilano-vc-opt\build\EAController\v\</IntDir>
+    <TLogLocation>capilano-vc-opt\build\EAController\v.tlog\</TLogLocation>
+    <TargetName>EAController</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\180715\xdk\Include;$(DurangoXDK)\180715\xdk\Include\shared;$(DurangoXDK)\180715\xdk\Include\um;$(DurangoXDK)\180715\xdk\Include\winrt;$(NETFXKitsDir)\Include\um;$(DurangoXDK)\180715\xdk\ucrt\inc;$(DurangoXDK)\180715\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="..\..\EAAssert\local_1.05.11\EAAssert.vcxproj">
+      <Project>{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="IEAController.vcxproj">
+      <Project>{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EAStdC\local_1.26.08\EAStdC.vcxproj">
+      <Project>{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EASTL\local_3.16.05\EASTL.vcxproj">
+      <Project>{F741D66C-94C2-1776-A80D-5FE6FCCC8890}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EAThread\local_1.33.04\EAThread.vcxproj">
+      <Project>{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\EAController.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\index.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\changelog.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\index.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\toc.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\img\logo.png">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\highlight.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\1c.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\axapta.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\dynamic.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\javascript.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rib.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rsl.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\smalltalk.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\sql.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\static.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\vbscript.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\www.js">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\style_sheet\style_sheet.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano\EAController\CapilanoController.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\EAController.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\internal\Config.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\EAController_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\source\capilano\CapilanoController.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Xbox Wheel API, Version=8.0" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

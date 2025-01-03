@@ -78,7 +78,7 @@ typedef struct HFONT__* HFONT;
 #include "FontDescription.h"
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebKitString.h>
-#include <EAWebkit/EAWebKitTextInterface.h>
+#include <EAWebKit/EAWebKitTextInterface.h>
 #include <wtf/HashFunctions.h>
 
 namespace WebCore

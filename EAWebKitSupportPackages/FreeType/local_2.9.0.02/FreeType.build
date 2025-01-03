@@ -1,0 +1,262 @@
+﻿<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+  <package  name="FreeType" initializeself="true"/>
+
+  <!-- ********************* -->
+  <!-- Runtime configuration -->
+  <!-- ********************* -->
+
+  <Module name="FreeType" buildtype="${FreeTypeBuildType}">
+    <includedirs>
+      ${package.dir}/installed/include
+	</includedirs>
+
+    <sourcefiles>
+	  <includes name="${package.dir}/installed/src/base/ftbase.c"/>
+      <includes name="${package.dir}/installed/src/base/ftbitmap.c"/>
+      <includes name="${package.dir}/installed/src/base/ftdebug.c"/>
+      <includes name="${package.dir}/installed/src/base/ftfstype.c"/>
+      <includes name="${package.dir}/installed/src/base/ftgasp.c"/>
+      <includes name="${package.dir}/installed/src/base/ftglyph.c"/>
+      <includes name="${package.dir}/installed/src/base/ftinit.c"/>
+      <includes name="${package.dir}/installed/src/base/ftlcdfil.c"/>
+      <includes name="${package.dir}/installed/src/base/ftstroke.c"/>
+      <includes name="${package.dir}/installed/src/base/ftsystem.c"/>
+      <includes name="${package.dir}/installed/src/base/ftbbox.c"/>
+      <includes name="${package.dir}/installed/src/base/ftmm.c"/>
+      <includes name="${package.dir}/installed/src/base/ftpfr.c"/>
+      <includes name="${package.dir}/installed/src/base/ftsynth.c"/>
+      <includes name="${package.dir}/installed/src/base/fttype1.c"/>
+	  <includes name="${package.dir}/installed/src/base/ftwinfnt.c"/>
+	  <includes name="${package.dir}/installed/src/base/ftfntfmt.c"/>
+      <includes name="${package.dir}/installed/src/autofit/autofit.c"/>
+      <includes name="${package.dir}/installed/src/bdf/bdf.c"/>
+      <includes name="${package.dir}/installed/src/cff/cff.c"/>
+      <includes name="${package.dir}/installed/src/cache/ftcache.c"/>
+      <includes name="${package.dir}/installed/src/gzip/ftgzip.c"/>
+      <includes name="${package.dir}/installed/src/lzw/ftlzw.c"/>
+      <includes name="${package.dir}/installed/src/smooth/smooth.c"/>
+      <includes name="${package.dir}/installed/src/pcf/pcf.c"/>
+      <includes name="${package.dir}/installed/src/pfr/pfr.c"/>
+      <includes name="${package.dir}/installed/src/psaux/psaux.c"/>
+      <includes name="${package.dir}/installed/src/pshinter/pshinter.c"/>
+      <includes name="${package.dir}/installed/src/psnames/psmodule.c"/> <!-- or should we compile psmodule.c ? -->
+      <includes name="${package.dir}/installed/src/raster/raster.c"/>
+      <includes name="${package.dir}/installed/src/sfnt/sfnt.c"/>
+      <includes name="${package.dir}/installed/src/truetype/truetype.c"/>
+      <includes name="${package.dir}/installed/src/type1/type1.c"/>
+      <includes name="${package.dir}/installed/src/cid/type1cid.c"/>
+      <includes name="${package.dir}/installed/src/type42/type42.c"/>
+      <includes name="${package.dir}/installed/src/winfonts/winfnt.c"/>
+    </sourcefiles>
+    
+	<headerfiles>
+		<includes name="${package.dir}/installed/include/**.h"/>
+	</headerfiles>
+
+    <config>
+      <defines>
+        FT2_BUILD_LIBRARY
+      </defines>
+      <defines if="@{OptionSetGetValue('config-options-common','debugflags')} == on and @{OptionSetGetValue('config-options-common','optimization')} == off">
+        FT_DEBUG_LEVEL_ERROR
+        FT_DEBUG_LEVEL_TRACE
+      </defines>
+      
+      <warningsuppression if="${config-compiler} == vc">
+		-wd4005			<!-- macro redefinition -->
+		-wd4101			<!-- unreferenced local variable -->
+        -wd4127         <!-- disable warning: conditional expression is constant -->
+        -wd4131         <!-- disable warning: function uses old-style declarator -->
+        -wd4146         <!-- disable warning: unary minus operator applied to unsigned type, result still unsigned -->
+        -wd4189         <!-- local variable is initialized but not referenced -->
+        -wd4242         <!-- disable warning: conversion .. -->
+        -wd4244         <!-- disable warning: conversion .. -->
+        -wd4245         <!-- disable warning: conversion .. -->
+        -wd4255         <!-- disable warning: "no function prototype given: converting '()' to '(void)'" -->
+        -wd4267         <!-- disable warning: conversion from 'size_t' to 'int', possible loss of data -->
+        -wd4305         <!-- disable warning: truncation from 'void *' to 'unsigned long'              -->
+        -wd4306         <!-- disable warning: conversion from 'int' to 'FT_Pointer' of greater size    -->
+		-wd4312         <!-- disable warning: conversion from 'unsigned long' to 'void*' of greater size    -->
+		-wd4505         <!-- disable warning: 'gray_dump_cells': unreferenced local function has been removed -->
+		-wd4611         <!-- disable warning: interaction between '_setjmp' and C++ object destruction is non-portable -->
+        -wd4703         <!-- disable warning: potentially uninitialized local pointer variable 'loader' used -->
+        -wd4701         <!-- disable warning: potentially uninitialized local variable 'levels' used   -->
+        -wd4702         <!-- disable warning: unreachable code   -->
+        -wd4464         <!-- disable warning: relative include path contains '..'   -->
+      </warningsuppression>
+      <warningsuppression if="${config-compiler} == sn or ${config-compiler} == ghs or ${config-compiler} == rvct or ${compiler.supports.EDG??false}">
+        --diag_suppress=1669  <!--  Potential uninitialized reference to "X" in function "Y". -->
+        --diag_suppress=1786  <!--  Cast of address from "X" to "Y" violates strict-aliasing rules. -->
+        --diag_suppress=236   <!--  Controlling expression is constant. -->
+        --diag_suppress=129   <!--  loop is not reachable -->
+        --diag_suppress=552   <!--  variable was set but never used -->
+      </warningsuppression>
+      <warningsuppression if="${config-compiler} == gcc or ${config-compiler} == clang">
+        -fno-strict-aliasing
+        -Wextra
+        -Wno-unused-function
+        -Wno-uninitialized
+        -Wno-unused
+        -Wno-shorten-64-to-32
+		-Wno-unused-parameter
+		-Wno-macro-redefined
+      </warningsuppression>
+      <warningsuppression if="${config-compiler}==gcc and (${config-system} == iphone or ${config-system} == iphonesim or ${config-system} == ipad or ${config-system} == ipadsim)">
+        -fno-tree-vectorize
+      </warningsuppression>
+    </config>
+	<do if="${config-system} != iphone">
+		<bulkbuild enable="true"/>
+	</do>
+  </Module>
+
+  <!-- ********************* -->
+  <!-- Test configuration    -->
+  <!-- ********************* -->
+
+  <tests>
+    <Program name="FreeTypeTest">
+      <includedirs>
+        ${package.dir}/installed/include
+      </includedirs>
+
+      <sourcefiles>
+        <includes name="${package.dir}/test/*.cpp"/>
+      </sourcefiles>
+
+      <libraries>
+        <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+      </libraries>
+    
+      <dependencies>
+        <build>
+          EAAssert
+          EABase
+          EAStdC
+          EASTL
+          EAMain
+          EATest
+          EAThread
+        </build>
+        <auto>
+          FreeType/FreeType
+        </auto>
+      </dependencies>
+
+      <config>
+        <warningsuppression>
+          ${runtime.FreeType.warningsuppression??}
+        </warningsuppression>
+      </config>
+    </Program>
+  
+    <!-- FreeType demo apps that can be built -->
+    <!-- 
+        Demo App    Note        Description
+        - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        ftbench                 - Benchmark
+        ftdump                  - 
+        ftlint                  - 
+        ttdebug                 - 
+        ftvalid                 - 
+        ftchkwd                 -   
+        ftmemchk                - 
+        ftpatchk                - 
+        fttimer                 - 
+        testname                - 
+        ftdiff      graphical   - 
+        ftgamma     graphical   - 
+        ftgrid      graphical   - 
+        ftmulti     graphical   - 
+        ftstring    graphical   - Displays basic string with some settings.
+        ftview      graphical   - 
+        - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    -->
+
+    <!-- ftbench -->
+    <!-- Enabled for Windows only because some other platforms don't support C main and/or because we don't execute to execute this binary on them. -->
+    <do if="${config-system} == pc or ${config-system} == pc64">
+      <Module name="ftbench" buildtype="CProgram">
+        <includedirs value="${package.dir}/freetype-2.5.2/include"/>
+        <sourcefiles>
+          <includes name="${package.dir}/test/installed/src/common.c"/>
+          <includes name="${package.dir}/test/installed/src/ftbench.c"/>
+		  <includes name="${package.dir}/test/installed/src/mlgetopt.c"/>
+        </sourcefiles>
+        <dependencies>
+          <auto>
+            FreeType/FreeType
+			EABase
+          </auto>
+        </dependencies>
+        <config>
+          <warningsuppression value="${runtime.FreeType.warningsuppression??}"/>
+        </config>
+      </Module>
+    </do>
+
+    <!-- Enabled for Windows only because we don't have the bandwidth to ensure this works on other platforms. -->
+    <do if="${config-system} == pc or ${config-system} == pc64">
+      <!-- ftstring -->
+      <Module name="ftstring" buildtype="CProgram" if="${config-system} == pc or ${config-system} == pc64">
+        <includedirs>
+          ${package.dir}/installed/include
+          ${package.dir}/test/installed/graph
+        </includedirs>
+        <sourcefiles>
+          <includes name="${package.dir}/test/installed/graph/*.c"/>
+          <excludes name="${package.dir}/test/installed/graph/xtest.c"/>
+          <includes name="${package.dir}/test/installed/graph/win32/*.c"/>
+          <includes name="${package.dir}/test/installed/src/common.c"/>
+          <includes name="${package.dir}/test/installed/src/ftcommon.c"/>
+          <includes name="${package.dir}/test/installed/src/ftstring.c"/>
+		  <includes name="${package.dir}/test/installed/src/mlgetopt.c"/>
+        </sourcefiles>
+        <dependencies>
+          <auto>
+            FreeType/FreeType
+			EABase
+          </auto>
+        </dependencies>
+        <config>
+          <defines>
+            DEVICE_WIN32
+          </defines>
+          <warningsuppression value="${runtime.FreeType.warningsuppression??}"/>
+        </config>
+      </Module>
+    
+      <!-- ftview -->
+      <Module name="ftview" buildtype="CProgram" if="${config-system} == pc or ${config-system} == pc64">
+        <includedirs>
+          ${package.dir}/installed/include
+          ${package.dir}/test/installed/graph
+        </includedirs>
+        <sourcefiles>
+          <includes name="${package.dir}/test/installed/graph/*.c"/>
+          <excludes name="${package.dir}/test/installed/graph/xtest.c"/>
+          <includes name="${package.dir}/test/installed/graph/win32/*.c"/>
+          <includes name="${package.dir}/test/installed/src/common.c"/>
+          <includes name="${package.dir}/test/installed/src/ftcommon.c"/>
+          <includes name="${package.dir}/test/installed/src/ftview.c"/>
+		  <includes name="${package.dir}/test/installed/src/mlgetopt.c"/>
+        </sourcefiles>
+        <dependencies>
+          <auto>
+            FreeType/FreeType
+			EABase
+          </auto>
+        </dependencies>
+        <config>
+          <defines>
+            DEVICE_WIN32
+            FT2_BUILD_LIBRARY
+          </defines>
+          <warningsuppression value="${runtime.FreeType.warningsuppression??}"/>
+        </config>
+      </Module>
+    </do>
+  </tests>
+
+</project>

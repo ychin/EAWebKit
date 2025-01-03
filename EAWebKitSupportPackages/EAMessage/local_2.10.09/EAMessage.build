@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EAMessage" default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-buildall" value="include" />
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<!-- Package declaration -->
+	<package name="EAMessage" initializeself="true"/>
+
+	<!-- Options -->
+	<!-- To enable options put (e.g.) <globalproperties>EAMessage.EAMESSAGE_DEFER_ENABLED=1</globalproperties> -->
+	<!-- in your masterconfig file or use -D:EAMessage.EAMESSAGE_DEFER_ENABLED=1 on the nant command line.     -->
+	<!-- The EAMessage.EAMessage_XXX values here directly correspond to EAMessage config #defines.                              -->
+
+	<property name="Dll" value="${Dll??false}" />
+	<property name="package.EAMessage.force-static-lib" value="false" unless="@{PropertyExists('package.EAMessage.force-static-lib')}" />
+	<property name="EAMessage.EAMESSAGE_DEFER_ENABLED" value="0" unless="@{PropertyExists('EAMessage.EAMESSAGE_DEFER_ENABLED')}" />
+	<property name="EAMessage.EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR" value="0" unless="@{PropertyExists('EAMessage.EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR')}" />
+	<property name="EAMessage.EAMESSAGE_C_HANDLER_ENABLED" value="1" unless="@{PropertyExists('EAMessage.EAMESSAGE_C_HANDLER_ENABLED')}" />
+	<property name="EAMessage.EAMESSAGE_TRACE_ENABLED" value="0" unless="@{PropertyExists('EAMessage.EAMESSAGE_TRACE_ENABLED')}" />
+	<property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+
+
+	<!-- Create extra build types which simply add some additional compiler arguments -->
+	<optionset name="config-options-library-extra" fromoptionset="config-options-library">
+		<option name="buildset.name" value="LibraryExtra" />
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+	</optionset>
+	<task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+	<optionset name="LibraryExtra">
+		<option name="cc.options" if="${config-compiler} == 'gcc'">
+			@{StrReplace(${option.value}, '-fno-strict-aliasing', '-fstrict-aliasing')}
+		</option>
+		<option name="cc.options" if="${config-compiler} == 'mw'">
+			@{StrReplace(@{StrReplace(${option.value}, '-w nofilecaps', '-w filecaps')}, '-w nosysfilecaps', '-w sysfilecaps')}
+		</option>
+	</optionset>
+
+
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+	<property name="runtime.buildmodules" value="EAMessage" />
+
+	<property name="runtime.EAMessage.buildtype" value="LibraryExtra" />
+	<property name="runtime.EAMessage.buildtype" value="DynamicLibrary" if="${Dll} and ${package.EAMessage.force-static-lib} == false" />
+
+	<fileset name="runtime.EAMessage.sourcefiles">
+		<includes name="${package.dir}/source/*.cpp" />
+	</fileset>
+
+	<fileset name="runtime.EAMessage.bulkbuild.sourcefiles" fromfileset="runtime.EAMessage.sourcefiles" />
+
+	<fileset name="runtime.EAMessage.vcproj.excludedbuildfiles">
+		<includes name="${package.dir}/doc/**.*" />
+		<includes name="${package.dir}/scripts/**.*" />
+		<includes name="${package.dir}/*.build" />
+		<includes name="${package.dir}/Manifest.xml" />
+	</fileset>
+
+	<property name="runtime.EAMessage.defines">
+		${property.value}
+		EAMESSAGE_DEFER_ENABLED=${EAMessage.EAMESSAGE_DEFER_ENABLED}                       <!-- See above for the declaration of this option. -->
+		EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR=${EAMessage.EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR} <!-- See above for the declaration of this option. -->
+		EAMESSAGE_C_HANDLER_ENABLED=${EAMessage.EAMESSAGE_C_HANDLER_ENABLED}               <!-- See above for the declaration of this option. -->
+	</property>
+
+	<property name="runtime.EAMessage.usedependencies">
+		${property.value}
+		EABase
+		coreallocator
+	</property>
+
+	<property name="runtime.EAMessage.autodependencies">
+		${property.value}
+		EAAssert
+		EASTL
+		EAThread
+	</property>
+
+	<property name="runtime.EAMessage.autodependencies" if="${EAMessage.EAMESSAGE_TRACE_ENABLED??0} == 1">
+		${property.value}
+		EATrace
+	</property>
+
+	<property name="runtime.EAMessage.defines">
+		${property.value}
+		UTF_USE_EAASSERT=1
+		EAMESSAGE_TRACE_ENABLED=${EAMessage.EAMESSAGE_TRACE_ENABLED}
+	</property>
+
+	<property name="runtime.EAMessage.defines" if="${Dll} and ${config-compiler} == 'vc'">
+		${property.value}
+		EAMESSAGE_API=__declspec(dllexport)
+	</property>
+
+	<property name="runtime.EAMessage.warningsuppression" if="${config-compiler} == 'vc'">
+		-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+		-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+	</property>
+
+	<property name="runtime.EAMessage.warningsuppression" if="${config-compiler} == 'gcc'">
+		-Wstrict-aliasing=3
+		-Wextra
+	</property>
+
+
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+
+	<tests>
+		<Program name="EAMessageTest">
+			<copylocal value="true" />
+			<config>
+				<defines>
+					EAMESSAGE_DEFER_ENABLED=${EAMessage.EAMESSAGE_DEFER_ENABLED}                       <!-- See above for the declaration of this option. -->
+					EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR=${EAMessage.EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR} <!-- See above for the declaration of this option. -->
+					EAMESSAGE_C_HANDLER_ENABLED=${EAMessage.EAMESSAGE_C_HANDLER_ENABLED}               <!-- See above for the declaration of this option. -->
+					UTF_USE_EAASSERT=1
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+				</defines>
+				<warningsuppression if="${config-compiler} == 'vc'">
+					-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+					-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+				</warningsuppression>
+			</config>
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+				</use>
+				<build>
+					EASTL
+					EAAssert
+					EAThread
+					EAStdC
+					EACOM
+					MemoryMan
+					PPMalloc
+					EATest
+					EAMain
+				</build>
+			</dependencies>
+
+			<includedirs>
+				${package.dir}/include
+				${package.dir}/test/source
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+
+
+		</Program>
+	</tests>
+
+	<do if="@{StrCompareVersions('${package.eaconfig.version}','5.13.02')} gt 0">
+		<generateDefaultBuildLayout OutputFile="EAMessageTest.buildlayout" EntrypointModule="EAMessageTest" BuildType="EATest" Group="test"/>
+	</do>
+
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

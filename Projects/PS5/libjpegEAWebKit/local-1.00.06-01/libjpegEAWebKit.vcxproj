@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>libjpegEAWebKit</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-everything -fno-elide-type -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\liblibjpegEAWebKit.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\libjpegEAWebKit" mkdir "ps5-clang-debug\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\libjpegEAWebKit\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\libjpegEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>liblibjpegEAWebKit</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-everything -fno-elide-type -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\liblibjpegEAWebKit.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\libjpegEAWebKit" mkdir "ps5-clang-opt\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\libjpegEAWebKit\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\libjpegEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>liblibjpegEAWebKit</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jconfig.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jerror.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jmemsys.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jmorecfg.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jpeglib.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jsupport_ea.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcapimin.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcapimin.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcapimin.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcapistd.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcapistd.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcapistd.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jccoefct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jccoefct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jccoefct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jccolor.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jccolor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jccolor.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcdctmgr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcdctmgr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcdctmgr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jchuff.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jchuff.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jchuff.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcinit.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcinit.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcinit.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmainct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcmainct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcmainct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmarker.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcmarker.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcmarker.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmaster.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcmaster.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcmaster.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcomapi.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcomapi.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcomapi.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcparam.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcparam.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcparam.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcphuff.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcphuff.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcphuff.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcprepct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcprepct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcprepct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcsample.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jcsample.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jcsample.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jctrans.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jctrans.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jctrans.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdapimin.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdapimin.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdapimin.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdapistd.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdapistd.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdapistd.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdatadst.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdatadst.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdatadst.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdatasrc.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdatasrc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdatasrc.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdcoefct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdcoefct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdcoefct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdcolor.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdcolor.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdcolor.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jddctmgr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jddctmgr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jddctmgr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdhuff.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdhuff.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdhuff.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdinput.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdinput.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdinput.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmainct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdmainct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdmainct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmarker.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdmarker.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdmarker.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmaster.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdmaster.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdmaster.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmerge.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdmerge.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdmerge.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdphuff.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdphuff.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdphuff.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdpostct.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdpostct.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdpostct.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdsample.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdsample.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdsample.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdtrans.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jdtrans.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jdtrans.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jerror.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jerror.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jerror.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctflt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jfdctflt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jfdctflt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctfst.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jfdctfst.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jfdctfst.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctint.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jfdctint.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jfdctint.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctflt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jidctflt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jidctflt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctfst.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jidctfst.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jidctfst.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctint.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jidctint.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jidctint.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctred.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jidctred.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jidctred.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jmemmgr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jmemmgr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jmemmgr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jquant1.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jquant1.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jquant1.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jquant2.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jquant2.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jquant2.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jsupport_ea.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jsupport_ea.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jsupport_ea.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jutils.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libjpegEAWebKit\jutils.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libjpegEAWebKit\jutils.c.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

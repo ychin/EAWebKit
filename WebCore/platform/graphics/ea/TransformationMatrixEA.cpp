@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #include "TransformationMatrix.h"
 
-#include <EAWebKit/EAWebkitSystem.h>
+#include <EAWebKit/EAWebKitSystem.h>
 
 namespace WebCore {
 

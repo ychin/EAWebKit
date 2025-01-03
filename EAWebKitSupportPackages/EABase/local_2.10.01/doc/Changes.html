@@ -1,0 +1,1280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EABase Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between EASTL versions.">
+  <meta name="generator" content="Nvu HTML editor">
+  <style type="text/css">
+	.small {
+		font-size: smaller
+    }
+	.code {
+		font-family: "Courier New", Courier, mono;
+		font-size: 9pt;
+	}
+  </style>
+</head>
+<body>
+
+<h1>EABase Changes</h1>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.10.01</span> (Jun 25, 2020)</p>
+<p>Changes</p>
+<ul>
+	  <li>Ensure use defined() instead of relying on the fact that macros expand to 0 if not defined. Fixes warnings in partner code that does not have the using undefined macro warning disabled.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.10.00</span> (May 08, 2020)</p>
+<p>Changes</p>
+<ul>
+	  <li>Added eadeprecated.h to support deprecation tooling</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.13</span> (Apr 23, 2020)</p>
+<p>Changes</p>
+<ul>
+	<li>Fixed compile error when compiling C files with newer Android NDKs</li>
+	<li>Enabling xbsx tests</li>
+	<li>Fixed usage of _GAMING_XBOX that is defined for both scarlett and xb1, need to instead use _GAMING_XBOX_XBOXONE for xb1 and _GAMING_XBOX_SCARLETT for xbsx</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.12</span> (Jan 20, 2020)</p>
+<p>Changes</p>
+<ul>
+	  <li>Added EA_HAS_INCLUDE() && EA_HAS_INCLUDE_AVAILABLE</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.11</span> (Jan 13, 2020)</p>
+<p>Changes</p>
+<ul>
+	<li>Gemini to Xbsx</li>
+	<li>Adding warning suppression to an alignment annotation test which doesn't take into account the natural alignment requirements of the struct members.</li>
+	<li>Added stadia.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.10</span> (Nov 08, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Resolving endian bug in int128_t code.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.09</span> (Oct 28, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Balin compiler fixes.</li>
+	<li>GSDK support fixes.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.08</span> (Oct 01, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Balin compiler fixes.</li>
+	<li>GSDK support fixes.</li>
+	<li>Implemented the EA_FORCE_INLINE_LAMBDA macro.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.07</span> (September 20, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Added Windows ARM64 support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.06</span> (Jul 17, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Adding C++20 feature test macro EA_COMPILER_NO_DESIGNATED_INITIALIZERS.</li>
+	<li>Updated EA_HAVE_nanosleep_DECL to be defined for NX.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.05</span> (Jun 26, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Adding support for the following standardized C++ macro constants: INTPTR_MIN, INTPTR_MAX, INTMAX_MIN, INTMAX_MAX, UINTMAX_MIN, UINTMAX_MAX.</li>
+	<li>Adding EA_CHAR8_UNIQUE as a feature flag when char8_t is a unique type for UTF8 characters in the type system. This is for C++20 support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.04</span> (May 30, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Added support for EA_WINAPI_FAMILY_GAMES.</li>
+	<li>Updated the EA_WINAPI_FAMILY, EA_WINAPI_PARTITION and EA_WINAPI_FAMILY_PARTITION defines for Windows to match other platforms.</li>
+	<li>Preparing for open source release.</li>
+	<li>Using _MSVC_LANG to determine if C++17 is enabled on MSVC.</li>
+	<li>Clang warning suppression macro allows unknown pragmas to prevent guarding against compiler versions.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.03</span> (Apr 17, 2019)</p>
+<p>Changes</p>
+<ul>
+	<li>Updated EA_HAVE_SIGNAL_H to not be defined for NX.</li>
+	<li>Using _MSVC_LANG to determine what C++ language standard the compiler is targeting so we can safely enable C++17 features when users enable the /std:c++17 compiler command line switch.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.02</span> (Dec 14, 2018)</p>
+<p>Changes</p>
+<ul>
+	<li>Promoted EA_CURRENT_FUNCTION from other packages to have a single version of the code.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.01</span> (Dec 05, 2018)</p>
+<p>Changes</p>
+<ul>
+	<li>Added EA_CONST_EXPR_IF portability macro.</li>
+	<li>Codestripper script updates.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.09.00</span> (Oct 01, 2018)</p>
+<p>Changes</p>
+<ul>
+	<li>int128_t / uint128_t now supported.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.08.04</span> (Aug 10, 2018)</p>
+<p>Changes</p>
+<ul>
+	<li>Fixed minimal malloc alignment for Android on x64</li>
+	<li>Ensures PS4 does not define EA_FP128 1, as Sony does not support the type: https://ps4.siedev.net/resources/documents/SDK/5.500/CPU_Compiler_ABI-Overview/0003.html</li>
+	<li>Enabled EA_ABM on PS4.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.08.03</span> (Dec 11, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Added NX platform support</li>
+	<li>Fixed minimal malloc alignment for Android</li>
+	<li>Fixed va_list_reference when compiling Android for AMR64</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.08.02</span> (Dec 1, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Fix potential order of operations problems when using SI units macros</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.08.01</span> (Oct 19, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Defining _SSIZE_T_ and _SSIZE_T_DEFINED when EABase provides the implementation for the ssize_t type.</li>
+	<li>Added EA_NEON define.</li>
+	<li>Updated 'EA_COMPILER_NO_NEW_THROW_SPEC / EA_THROW_SPEC_NEW / EA_THROW_SPEC_DELETE' for C++14.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.08.00</span> (Sept 15, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Added SI units macros:
+		<ul>
+			<li>EA_BYTE</li>
+			<li>EA_KILOBYTE</li>
+			<li>EA_MEGABYTE</li>
+			<li>EA_GIGABYTE</li>
+			<li>EA_TERABYTE</li>
+			<li>EA_PETABYTE</li>
+			<li>EA_EXABYTE</li>
+			<li>EA_KIBIBYTE</li>
+			<li>EA_MEBIBYTE</li>
+			<li>EA_GIBIBYTE</li>
+			<li>EA_TEBIBYTE</li>
+			<li>EA_PEBIBYTE</li>
+			<li>EA_EXBIBYTE</li>
+		</ul>
+	</li>
+	<li>Added EA_BMI, EA_BMI2, EA_ABM, EA_TBM, EA_AVX, EA_AVX2 macros indicating whether the targeted architecture supports:
+		<ul>
+			<li>Bit Manipulation Instructions (BMI1, BMI2)</li>
+			<li>Advanced Bit Manipulation (ABM)
+			<li>Trailing Bit Manipulation (TBM)
+			<li>Advanced Vector Extensions (AVX1, AVX2)</li>
+		</ul>
+	</li>
+	<li>Added support for new C++ attributes:
+		<ul>
+			<li>EA_FALLTHROUGH</li>
+			<li>EA_NODISCARD</li>
+			<li>EA_MAYBE_UNUSED</li>
+			<li>Details:  http://en.cppreference.com/w/cpp/language/attributes</li>
+		</ul>
+	</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.07</span> (Jul 04, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Added feature support macro for C++17 inline variables (EA_COMPILER_NO_INLINE_VARIABLES).</li>
+	<li>Fixed a redefinition of static_assert issue which could fire if building using a compiler with C11 support.</li>
+	<li>Added EA_NO_UBSAN and EA_NO_ASAN macros to disable LLVM/Clang sanitizers from analysing the tagged function.</li>
+	<li>EA_ASAN_ENABLED macro to write custom code when running under LLVM/Clang address sanitizer.</li>
+	<li>Fixes a build issue on android when building C code since the AndroidNDK does not support static_assert despite claiming to be a C11 compiler.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.06</span> (Jun 19, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Added feature support macro for C++17 compilers (EA_COMPILER_CPP17_ENABLED).</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.05</span> (May 12th, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Build fix for EA_HAVE_ISNAN on Unix which could break on certain versiosn of Ubuntu.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.04</span> (April 16th, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Added feature support macro for C11 compilers (EA_COMPILER_IS_C11).</li>
+	<li>Added compiler support macro for __float128 type usage (EA_FP128) </li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.03</span> (Feb 14, 2017)</p>
+<p>Changes</p>
+<ul>
+	<li>Changes to support building with AppleClang and Clang on MacOSX.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.02</span> (Dec 8, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Minor fix to enable wchar_t when compiling via Clang on Windows.</li>
+	<li>Fix to prevent defining static_assert when compiling in C mode using GLIBC 2.16.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.01</span> (Aug 25, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Added support for disabling compiler generated member functions via the <span class="small">EA_DISABLE_*</span> macros.</li>
+</ul>
+	
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.07.00</span> (August 10th, 2016)</p>
+<p>Changes</p>
+<ul>
+	<li>Added support for detecting if C++/CX compiler support has been enabled via the <span class="small">EA_COMPILER_WINRTCX_ENABLED</span> macro.</li>
+	<li>Resolved drift in implementation of <span class="small">EA_IS_ENABLED</span> and <span class="small">FB_USING</span> macros.</li>
+	<li>Enabled variable templates on VS2015+ / GCC5 / Clang3.4.</li>
+</ul>
+	
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.06.07</span> (January 21st, 2016)</p>
+<p>Changes</p>
+<ul>
+    <li>Fixed a large number of warnings generated on VS2015 Update 1.</li>
+	<li>Updated <span class="small">EA_DISABLE_VC_WARNING</span> macro for VS2015 to explicitly disable warning 4472.</li>
+	<li>Updated definitions for <span class="small">PR[diouxX]dPTR</span> and <span class="small">SCN[dioux]PTR</span> defines to avoid format argument warnings when they are used in format specifiers on VS2015.</li>
+	<li>Enabling usage of constexpr on Visual Studio 2015 and above.</li>
+	<li>Fix build issue with name conflict with SUCCESS in earesult.h with a macro in RasError.h from WindowsSDK</li>
+	<li>Disable warning 4755 within macro EA_DISABLE_ALL_VC_WARNINGS (for Microsoft SDK)</li>	
+	<li>Removed Gen3 and older platforms code that are no longer relevant.</li>	
+	<li>Fixed warnings when using <span class="small">EA_NON_COPYABLE</span> for function local class/structures.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.06.06</span> (September 25th, 2015)</p>
+<p>Changes</p>
+<ul>
+    <li>Updated C++ feature macro: EA_COMPILER_NO_THREAD_LOCAL for VS2015.</li>
+    <li>Converted initialize.xml to structured-XML which fixes warnings generated by Framework.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.06.05</span> (July 6, 2015)</p>
+<p>Changes</p>
+<ul>
+    <li>Added new C++ feature macro: EA_COMPILER_NO_VARIABLE_TEMPLATES.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.06.04</span> (June 15th, 2015)</p>
+<p>Changes</p>
+<ul>
+    <li>Enabled the EA_OPTIMIZE_ON/OFF macros on clang 3.4 and higher on all platforms except Unix (this enables support on OSX and iOS).</li>
+    <li>rvalue reference overload for EAArrayCount.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">2.06.03</span> (March 16th, 2015)</p>
+<p>Changes</p>
+<ul>
+    <li>Added EA_CACHE_LINE_SIZE as expected best guess value for the cache line size on a compile target. (this potentially could have changed cache line size for ARM64</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.06.02</span> (Feb 9th, 2015)</p>
+<p>Changes</p>
+<ul>
+    <li>Updated EABase to work properly with Android SDK API level 21.  <b>Note:</b> You must use android_config-1.08.00 or greater for EABase to properly detect the Android API level.</li>
+    <li>Added a utility macro named <span class="small">EA_IS_ENABLED(x)</span>.  This macro is used for detecting if another macros is enabled or disabled.  It is analogous to the
+    <span class="small">FB_USING(x)</span> macro used in Frostbite.</li>
+    <li>Added support for the VS2015 compiler.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.06.01</span> (October 13th, 2014)</p>
+<p>Changes</p>
+<ul>
+    <li>Change to test suite in regards to passing "%s" rather than an empty string in VCall.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.06.00</span> (September 10th, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added support for 64bit iOS ARM and simulator builds.</li>
+  <li>Made a small fix for VS2013 <span class="small">float_t</span> typedef that could affect 32bit x86 builds depending on float precision and architecture compiler flags.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.05.00</span> (July 14, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added a public version.h header.</li>
+  <li>PS3 SDK 4.6 compatibility update: the SN compiler has built-in support for char16_t and char32_t, so EA_CHAR16_NATIVE and EA_CHAR32_NATIVE are defined by EABase.h.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.04.00</span> (June 12, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added <span class="small">CHAR8_MIN</span>, <span class="small">CHAR8_MAX</span>, <span class="small">CHAR16_MIN</span>, <span class="small">CHAR16_MAX</span>, <span class="small">CHAR32_MIN</span>, <span class="small">CHAR32_MAX</span>. </li>
+  <li>Improved the portability of the exception declaration macros for when Dinkumware (e.g. VC++) is in use. </li>
+  <li>Fixed some compile problems under older versions of EDG-based compilers.</li>
+  <li> Modified EABase to be slightly more robust when users include system headers like stdint.h prior to including EABase. Prior to this change some macros like <span class="small">UINT64_C</span> could be undefined if users included stdint.h prior to eabase.h. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.01</span> (April 15, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Revised the definitions of <span class="small">EA_NON_COPYABLE</span> and EANonCopyable for C++98 compilers to not use {} after the declarations. In practice the {} was causing various problems that are better solved by removing the {} and forcing the user to define the copy constructor and assigment operator when the compiler requires them. In practice this won't affect any current users because we aren't actively using compilers that would cause us to have to define these functions. </p>
+  </li>
+  <li>Fixed a bug in the implementation of <span class="code">EA_SIZEOF_MEMBER</span>.</li>
+  <li>Fixed define of <span class="small">EA_COMPILER_NO_EXTENDED_SIZEOF</span> to apply to versions prior to 4.5 of SN Compiler which doesn't support sizeof(struct::member) while inside a member function.</li>
+  <li>Added <span class="code">VA_ARG_COUNT</span>, which returns the count of arguments to a  macro. </li>
+  <li>Modified eabase to be slightly more robust when users include system headers like stdint.h prior to including EABase.  Prior to this change some macros like <span class="code">UINT64_C</span> could be undefined if users included stdint.h prior to eabase.h.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.00</span> (March 10, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added <span class="small">EA_FUNCTION_DELETE</span>:<br>
+    <span class="code">&nbsp;&nbsp;// Semi-portable way of specifying a deleted function which allows for <br>
+&nbsp;&nbsp;// cleaner code in class declarations. <br>
+&nbsp;&nbsp;// Example usage:<br>
+&nbsp;&nbsp;// &nbsp;&nbsp;class Example<br>
+&nbsp;&nbsp;// &nbsp;&nbsp;{<br>
+&nbsp;&nbsp;// &nbsp;&nbsp;&nbsp;&nbsp;private: // For portability with pre-C++11 compilers, make the function private.<br>
+&nbsp;&nbsp;// &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void foo() EA_FUNCTION_DELETE;<br>
+&nbsp;&nbsp;// &nbsp;&nbsp;};</span></li>
+    <li>Added <span class="code">EA_SIZEOF_MEMBER</span> which allows for a portable way to determine the 
+        sizeof a member without requiring an instantiated struct or class.</li>
+    <li>Improved the check for wchar_t support when building with the EDG compiler.</li>
+</ul>
+<p> </p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.02.00</span> (January 15, 2014) </p>
+<p> Changes </p>
+<ul>
+  <li>Fixed PS3 SDK 4.50 SN compiler <span class="small">EA_CHAR16()</span>/<span class="small">EA_CHAR32()</span> problem for when C++ 11 is enabled.</li>
+  <li>Added <span class="small">EA_FINAL_OVERRIDE</span>, which is simply a combination of both override and final.</li>
+  <li>Added <span class="small">EA_COMPILER_HAS_BUILTIN</span>.</li>
+  <li>Added  <span class="small">EA_PRAGMA_PACK_VC</span>.</li>
+  <li>Removed support for the following platforms:</li>
+  <ul>
+      <li>Bada</li>
+      <li>Freebox</li>
+      <li>GameCube</li>
+      <li>Marmalade / Airplay</li>
+      <li>Nintendo DS</li>
+      <li>Nintendo 3DS / CTR</li>
+      <li>Palm</li>
+      <li>Playbook / BB10</li>
+      <li>Playstation 2</li>
+      <li>Playstation Portable</li>
+      <li>Wii U / Cafe</li>
+      <li>Wii / Revolution</li>
+      <li>WinCE</li>
+  </ul>
+
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.00</span> (December 9, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Added support for the PS4 and XBox One platforms. Previously this support was available only in a separate branch of this package.</li>
+  <li>Added support for Added clang-specific support for EAAlignOf. This fixes a couple cases of EAAlignOf not working with some types.</li>
+  <li>Added VS2013 support. This affected only the <span class="small">EA_COMPILER_NO_XXX</span> C++11 functionality. In particular this fixes problems compiling EASTL. '</li>
+  <li>Fixed some compatibility issues related to nullptr. For example, it previously worked incorrectly on the ARM BB10 platform.
+    <ul>
+      <li>Added <span class="small">EA_COMPILER_NO_NULLPTR</span>. </li>
+      <li>Added <span class="small">EA_HAVE_nullptr_t_IMPL</span></li>
+      <li>Deprecated <span class="small">EA_HAVE_nullptr_IMPL</span> in favor of <span class="small">EA_COMPILER_NO_NULLPTR</span>. </li>
+      <li>Updated a nullptr.h to use the above changes. </li>
+    </ul>
+  </li>
+  <li>Fixed compilation warnings encountered when compiling with GCC 4.8.1.</li>
+  <li>Added va_copy and va_list_reference with the new header &lt;eabase/eastdarg.h&gt;.</li>
+  <li>Fixed definition of <span class="small">EA_PLATFORM_WORD_SIZE</span> for native 64 bit platforms. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.44</span> (Oct 10, 2013) </p>
+<p> Changes </p>
+<ul>
+    <li>Added a <span class="small">EA_PLATFORM_MIN_MALLOC_ALIGNMENT</span> macro.  This macro defines what the minimal alignment a malloc implementation should maintain for any memory allocation.  It is useful when implementing a custom allocator that should maintain the same alignment guarantees as malloc.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.43</span> (August 29, 2013) </p>
+<p> Changes </p>
+<ul>
+    <li>Fixed problems with <span class="small">EA_THROW_SPEC_NEW/DELETE</span> macro definitions with XCode5.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.42</span> (August 6, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Fixed potential compiler warning in eahave.h coming from a VC++ header. </li>
+  <li>Fixed definition of  <span class="small">EA_HAVE_CPP11_INITIALIZER_LIST</span> and <span class="small">EA_HAVE_CPP11_SYSTEM_ERROR</span> in eahave.h for the case of android clang. </li>
+  <li>Fixed definition of <span class="small">EA_HAVE_CPP11_TYPE_TRAITS</span> in eahave.h for the case of GCC 4.3 - 4.6.</li>
+  <li> Fixed definition of <span class="small">EA_HAVE_CPP11_CONTAINERS</span>, <span class="small">EA_HAVE_CPP11_ATOMIC</span>, <span class="small">EA_HAVE_CPP11_CONDITION_VARIABLE</span>, <span class="small">EA_HAVE_CPP11_MUTEX</span>, <span class="small">EA_HAVE_CPP11_THREAD</span> for the case of using clang with libstdc++ (usually found with Android when using clang). </li>
+  <li>Made the processor identification for x64 be consistent across platforms. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.41</span> (June 27, 2013) </p>
+<p> Changes </p>
+<ul>
+    <li>Resolved an issue where the type <tt>ptrdiff_t</tt> wasn't defined by EABase on OSX clang configurations.</li>
+    <li>Fixed issues related to <tt>isnan</tt> and <tt>isinf</tt> (<span class="small">EA_HAVE_ISNAN</span> and <span class="small">EA_HAVE_ISINF</span>) for the latest AndroidNDK.</li>
+    <li>Fixed a possible compiler warning regarding the <span class="code">_POSIX_TIMERS</span> define in eahave.h. </li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.40</span> (May 6, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Fixed some broken existing EA_HAVE_XXX identifiers as part of adding unit tests for &lt;EABase/eahave.h&gt;</li>
+  <li>Augmented the C++ compiler support with additions and updates, with the complete set being the following:
+    <ul>
+      <li class="small">EA_COMPILER_NO_RVALUE_REFERENCES</li>
+      <li class="small">EA_COMPILER_NO_EXTERN_TEMPLATE</li>
+      <li class="small">EA_COMPILER_NO_RANGE_BASED_FOR_LOOP</li>
+      <li class="small">EA_COMPILER_NO_CONSTEXPR</li>
+      <li class="small">EA_COMPILER_NO_OVERRIDE</li>
+      <li class="small">EA_COMPILER_NO_INHERITANCE_FINAL</li>
+      <li class="small">EA_COMPILER_NO_AUTO</li>
+      <li class="small">EA_COMPILER_NO_DECLTYPE</li>
+      <li class="small">EA_COMPILER_NO_DEFAULTED_FUNCTIONS</li>
+      <li class="small">EA_COMPILER_NO_DELETED_FUNCTIONS</li>
+      <li class="small">EA_COMPILER_NO_LAMBDA_EXPRESSIONS</li>
+      <li class="small">EA_COMPILER_NO_TRAILING_RETURN_TYPES</li>
+      <li class="small">EA_COMPILER_NO_STRONGLY_TYPED_ENUMS</li>
+      <li class="small">EA_COMPILER_NO_FORWARD_DECLARED_ENUMS</li>
+      <li class="small">EA_COMPILER_NO_VARIADIC_TEMPLATES</li>
+      <li class="small">EA_COMPILER_NO_TEMPLATE_ALIASES</li>
+      <li class="small">EA_COMPILER_NO_INITIALIZER_LISTS</li>
+      <li class="small">EA_COMPILER_NO_NORETURN</li>
+      <li class="small">EA_COMPILER_NO_CARRIES_DEPENDENCY</li>
+      <li class="small">EA_COMPILER_NO_NONSTATIC_MEMBER_INITIALIZERS</li>
+      <li class="small">EA_COMPILER_NO_RIGHT_ANGLE_BRACKETS</li>
+      <li class="small">EA_COMPILER_NO_ALIGNOF</li>
+      <li class="small">EA_COMPILER_NO_ALIGNAS</li>
+      <li class="small">EA_COMPILER_NO_DELEGATING_CONSTRUCTORS</li>
+      <li class="small">EA_COMPILER_NO_INHERITING_CONSTRUCTORS</li>
+      <li class="small">EA_COMPILER_NO_USER_DEFINED_LITERALS</li>
+      <li class="small">EA_COMPILER_NO_STANDARD_LAYOUT_TYPES</li>
+      <li class="small">EA_COMPILER_NO_EXTENDED_SIZEOF</li>
+      <li class="small">EA_COMPILER_NO_INLINE_NAMESPACES</li>
+      <li class="small">EA_COMPILER_NO_UNRESTRICTED_UNIONS</li>
+      <li class="small">EA_COMPILER_NO_EXPLICIT_CONVERSION_OPERATORS</li>
+      <li class="small">EA_COMPILER_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS</li>
+      <li class="small">EA_COMPILER_NO_LOCAL_CLASS_TEMPLATE_PARAMETERS</li>
+      <li class="small">EA_COMPILER_NO_NOEXCEPT</li>
+      <li class="small">EA_COMPILER_NO_RAW_LITERALS</li>
+      <li class="small">EA_COMPILER_NO_UNICODE_STRING_LITERALS</li>
+      <li class="small">EA_COMPILER_NO_UNICODE_CHAR_NAME_LITERALS</li>
+      <li class="small">EA_COMPILER_NO_UNIFIED_INITIALIZATION_SYNTAX</li>
+      <li class="small">EA_COMPILER_NO_EXTENDED_FRIEND_DECLARATIONS</li>
+      <li class="small">EA_COMPILER_NO_THREAD_LOCAL</li>
+    </ul>
+  </li>
+  <li>Added C++11 Standard Library support of &lt;EABase/eahave.h&gt; with the following additions:
+    <ul>
+      <li class="small">EA_HAVE_CPP11_CONTAINERS</li>
+      <li class="small">EA_HAVE_CPP11_ATOMIC</li>
+      <li class="small">EA_HAVE_CPP11_CONDITION_VARIABLE</li>
+      <li class="small">EA_HAVE_CPP11_MUTEX</li>
+      <li class="small">EA_HAVE_CPP11_THREAD</li>
+      <li class="small">EA_HAVE_CPP11_FUTURE</li>
+      <li class="small">EA_HAVE_CPP11_TYPE_TRAITS</li>
+      <li class="small">EA_HAVE_CPP11_TUPLES</li>
+      <li class="small">EA_HAVE_CPP11_REGEX</li>
+      <li class="small">EA_HAVE_CPP11_RANDOM</li>
+      <li class="small">EA_HAVE_CPP11_CHRONO</li>
+      <li class="small">EA_HAVE_CPP11_SCOPED_ALLOCATOR</li>
+      <li class="small">EA_HAVE_CPP11_INITIALIZER_LIST</li>
+      <li class="small">EA_HAVE_CPP11_SYSTEM_ERROR</li>
+      <li class="small">EA_HAVE_CPP11_CODECVT</li>
+      <li class="small">EA_HAVE_CPP11_TYPEINDEX</li>
+      <li class="small">EA_HAVE_CPP11_ITERATOR_IMPL</li>
+      <li class="small">EA_HAVE_CPP11_SMART_POINTER_IMPL</li>
+      <li class="small">EA_HAVE_CPP11_FUNCTIONAL_IMPL</li>
+      <li><span class="small">EA_HAVE_CPP11_EXCEPTION_IMPL
+      </span>        </li>
+    </ul>
+  </li>
+  <li>Note that you have to manually #include &lt;EABase/eahave.h&gt; to use EA_HAVE; it's not automatically included as part of &lt;EABase/eabase.h&gt; </li>
+  <li>Updated EA_ANALYSIS_ASSUME to use !!(x) instead of (x) in order to allow more flexibility in the expressions it accepts. </li>
+  <li>Fixed macro definition of EA_ONCE.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.39</span> (April 12, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Compiler fixes required for Clang.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.38</span> (March 1, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EA_COMPILER_CPP11_ENABLED</span>, which identifies whether the compiler has its C++11 support enabled.</li>
+  <li>Revised EAArrayCount to take advantage of C++11 constexpr when possible in order to provide better assertions.</li>
+  <li>Added <span class="small">EA_NON_COPYABLE</span> and struct EANonCopyable. These allow you to declare a class as not supporting copy construction or assignment from its own type.</li>
+  <li>    Added the following C++11-related compiler support identifiers:
+    <ul><li> <span class="small">EA_COMPILER_NO_CONSTEXPR</span></li>
+      <li class="small"> EA_COMPILER_NO_OVERRIDE</li>
+      <li class="small"> EA_COMPILER_NO_INHERITANCE_FINAL</li>
+      <li class="small"> EA_COMPILER_NO_AUTO</li>
+      <li class="small"> EA_COMPILER_NO_DECLTYPE</li>
+      <li class="small"> EA_COMPILER_NO_DEFAULTED_FUNCTIONS</li>
+      <li class="small"> EA_COMPILER_NO_DELETED_FUNCTIONS</li>
+      <li class="small"> EA_COMPILER_NO_LAMBDA_EXPRESSIONS</li>
+      <li class="small"> EA_COMPILER_NO_TRAILING_RETURN_TYPES</li>
+      <li class="small"> EA_COMPILER_NO_VARIADIC_TEMPLATES</li>
+      <li class="small"> EA_COMPILER_NO_TEMPLATE_ALIASES</li>
+      <li class="small"> EA_COMPILER_NO_INITIALIZER_LISTS</li>
+    </ul>
+  </li>
+  <li>Added <span class="small">EA_DELETED_FUNCTION</span></li>
+  <li>Added <span class="small">EA_DELETED_FUNCTION</span>, <span class="small">EA_NON_COPYABLE</span>, and EANonCopyable (inheritable base class)</li>
+  <li>Added PS3 SDK 430 C++11 support, mostly via testing for EDG &gt;= 4.1 or 4.3.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.37</span> (February 4, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Corrected a bug in the  test entry point implementation. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.36</span> (January 11, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li>Added define <span class="small">EA_PLATFORM_WINRT</span>.</li>
+  <li>Fixed warnings in regard to use of EA_SSE3 and EA_SSE2 usage before definition.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.35</span> (January 3, 2013) </p>
+<p> Changes </p>
+<ul>
+  <li><strike>Fixed warnings in regard to use of EA_SSE3 and EA_SSE2 usage before definition.</strike></li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.34</span> (December 12, 2012) </p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EA_COMPILER_NO_EXTERN_TEMPLATE</span>, which tells if the compiler supports C++11's extern template declarations. </li>
+  <li>Added <span class="small">EA_COMPILER_NO_RVALUE_REFERENCES</span>, which tells if the compiler supports C++11's rvalue references. </li>
+  <li>Added <span class="small">EA_COMPILER_NO_RANGE_BASED_FOR_LOOP</span>, which tells if the compiler supports C++11's range-based for loops. </li>
+  <li>Added <span class="small">EA_INHERITANCE_FINAL</span>, which wraps C++11's final keyword. </li>
+  <li>Added <span class="small">EA_CONSTEXPR</span>, which wraps C++11's constexpr keyword. </li>
+  <li>Added clang compiler support for EA_SSE.</li>
+  <li>Fixed <span class="small">EA_PLATFORM_FREEBSD</span> spelling. </li>
+  <li>The static_assert fallback now works in all builds, not just debug builds.</li>
+  <li>Improved WinRT and Windows Phone support. </li>
+  <li>Added additional defines for detecting SSE and AVX support (i.e. <span class="small">EA_SSE2, EA_SSE3, EA_SSSE3, EA_SSE4A, EA_SSE4_1, EA_SSE4_2</span>).</li>
+  <li>Added support for Wii U (i.e. <span class="small">EA_PLATFORM_CAFE</span>) and the GHS compiler.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.33 </span>(July 20, 2012)</p>
+<p> Changes </p>
+<ul>
+  <li>Added support to WinPRT</li>
+  <li>disable WinRT extensions for C file TestEABaseC.c as they are not supported for C files.</li>
+  <li>Turned EA_HAVE_nanosleep_DECL on for iPhone and OSX, since ThreadSleep was currently not doing anything on those platforms.</li>
+
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.32 </span>(July 3, 2012)</p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EA_DISABLE_ALL_VC_WARNINGS / EA_RESTORE_ALL_VC_WARNINGS</span>, <span class="small">EA_DISABLE_ALL_SN_WARNINGS / EA_RESTORE_ALL_SN_WARNINGS</span>, <span class="small">EA_DISABLE_ALL_CW_WARNINGS / EA_RESTORE_ALL_CW_WARNINGS</span>. These complement the existing macros to disable individual warnings.</li>
+  <li>Significantly augmented the <span class="small">EA_HAVE</span> support in eahave.h. Added ability for user to cancel individual have support via <span class="small">EA_NO_HAVE</span>.</li>
+  <li>Added <span class="small">EA_STRINGIFY</span>, which is a classic preprocessor string-making macro. </li>
+  <li>Added Intel compiler support.</li>
+  <li>Preliminary Windows Phone 8 support added.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.31 </span>(June 4th, 2012)</p>
+<p> Changes </p>
+<ul>
+  <li>Revised the definition of <span class="small">EA_INIT_PRIORITY_AVAILABLE</span> to always include the SN compiler. This fixes the case of the SN PSVita compiler. Reported by Toan Pham.</li>
+  <li>Added clang support to <span class="small">EA_COMPILER_NO_RTTI</span>.</li>
+  <li>Enabled some warning suppression flags around Windows header files.</li>
+  <li>Added support for FreeBSD.</li>
+  <li>Added support for disabling warnings with the Green Hills compiler.</li>
+  <li>Added <span class="small">EA_HAVE_EXECINFO_H</span> to eahave.h</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.30 </span>(May 7th, 2012)</p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EA_WCHAR_UNIQUE</span> to EABase which indicates that wchar_t is a type unique from the C++11 unicode char types char16_t/char32_t.</li>
+  <li>Added first-class support for the clang compiler keyed to the <span class="small">EA_COMPILER_CLANG</span> symbol. In previous releases clang masqueraded as GCC 4.2.1 but some functionality isn't available in these older versions of GCC that clang now supports.</li>
+  <li>Added <span class="small">EA_STANDARD_LIBRARY_MSVC</span> / <span class="small">EA_STANDARD_LIBRARY_AIRPLAY</span> to distinguish between the two. </li>
+  <li>Made it so all #defined informational values are defined to 1, whereas some were previously defined to nothing.</li>
+  <li>Added the  <span class="small">EA_WINAPI_FAMILY_PARTITION</span> family of defines, for compatibility with Windows 8 and related future Microsoft platforms. These allow for portable testing of Microsoft API version availability. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.29 </span>(March 5, 2102)</p>
+<p> Changes </p>
+<ul>
+  <li>Added support for VS2011.</li>
+  <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+  <li>Added nullptr.h, which implements the C++11 nullptr in a mostly-compatible way when it's not already implemented by the compiler. </li>
+  <li>Added <span class="small">EA_HAVE_LOCALE_H</span> and <span class="small">EA_HAVE_SIGNAL_H</span> to eahave.h.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.28 </span>(January 11, 2012)</p>
+<p> Changes </p>
+<ul>
+  <li>Added initial eahave.h header file. This is an alpha release and won't be considered stable until some later EABase release. </li>
+  <li> Simplified the pragma once compiler support check.</li>
+  <li>Added explicit support for the Green Hills compiler, which uses the EDG front end. </li>
+  <li>Improved support for static_assert under EDG-based compilers.</li>
+  <li>Added explicit support for the Freebox platform (<span class="small">EA_PLATFORM_FREEBOX</span>). This is a Linux-based console-like computer that's used in Europe to augment TV functionality. It's not explicitly a gaming device but can be used as such to some degree. </li>
+  <li>EABase now uses #pragma once in all its headers to slightly improve compile speed of code that #includes it. Metrics showed a small but significant improvement. </li>
+  <li>Added <span class="small">EA_ANALYSIS_ASSUME</span>, which is simply a portable wrapper for Microsoft's __analysis_assume(). </li>
+  <li>Added <span class="small">EA_ONCE</span>, to complement <span class="small">EA_PRAGMA_ONCE_SUPPORTED</span>.</li>
+  <li>Added <span class="small">EA_DISABLE_VC_WARNING</span> / <span class="small">EA_RESTORE_VC_WARNING</span>, etc for other compilers. </li>
+  <li>Added explicit support for recognizing and identifying Android on x86. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.27 </span>(October 19, 2011)</p>
+<p> Changes </p>
+<ul>
+  <li>Revised/added the defintions of <span class="small">EA_THROW_SPEC_NEW</span>, <span class="small">EA_THROW_SPEC_NEW_NONE</span>, <span class="small">EA_THROW_SPEC_DELETE_NONE</span>.</li>
+  <li>Fixed the definition of <span class="small">EA_MAY_ALIAS_AVAILABLE</span> and <span class="small">EA_MAY_ALIAS</span> to not generate a warning under VC++. </li>
+  <li>Added support for auto-detection of wchar_t type under the Green Hills (EDG-based) compiler. </li>
+  <li>Added <span class="small">EA_CHAR8</span> and <span class="small">EA_WCHAR</span> macros to complement <span class="small">EA_CHAR16</span> and <span class="small">EA_CHAR32</span>. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.26 </span>(September 26, 2011)</p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EA_COMPILER_QNX</span>.</li>
+  <li>Added <span class="small">EA_WCHAR</span> to complement <span class="small">EA_CHAR16</span> and <span class="small">EA_CHAR32</span>.</li>
+  <li>Added <span class="small">EA_PLATFORM_NINTENDO</span>.</li>
+  <li>Added <span class="small">EA_MISALIGNED_SUPPORT_LEVEL</span>.</li>
+  <li>Added <span class="small">EA_INIT_PRIORITY_AVAILABLE</span> and <span class="small">EA_MAY_ALIAS_AVAILABLE.</span></li>
+  <li>Added <span class="small">EA_EMPTY</span>, which allows you to use the expression <span class="small">EA_EMPTY</span>; and have the compiler say nothing about it. Useful for doing things like: <br>
+      <span class="code">&nbsp; #ifdef EA_DEBUG<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#define MyDebugPrintf(x, y) printf(x, y)<br>
+&nbsp;&nbsp;#else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#define MyDebugPrintf(x, y) EA_EMPTY<br>
+&nbsp;&nbsp;#endif</span><br>
+    Otherwise without an <span class="small">EA_EMPTY</span> there are cases where a compiler warns about a lone ; statement. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.25 </span>(May 6, 2011)</p>
+<p> Bug Fixes
+</p>
+<ul>
+  <li>Fixed a bug under VC++ related to char16_t's definition and <span class="small">_HAS_CHAR16_T_LANGUAGE_SUPPORT</span>. Reported by Andy Eakins. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.24 </span>(May 4, 2011)</p>
+<p> Additions</p>
+<ul>
+  <li> Added <span class="small">EA_COMPILER_NO_NEW_THROW_SPEC</span>, <span class="small">EA_THROW_SPEC_NEW</span>, <span class="small">EA_THROW_SPEC_DELETE</span>. These aid in writing portable new/delete overrides across compilers/platforms. </li>
+  <li>Added <span class="small">EA_UNUSED</span> to provide a portable way to avoid compiler warnings related to unused variables. </li>
+  <li>Added <span class="small">EA_COMPILER_NO_VARIADIC_MACROS</span> to identify compilers that don't support marcos that can use &quot;...&quot;. </li>
+  <li>Added <span class="small">EA_OPTIMIZE_OFF / EA_OPTIMIZE_ON</span> in order to provide a portable way to disable code optimization inline. </li>
+  <li>Added <span class="small">EA_COMPILER_INTMAX_SIZE</span>, which is a preprocessor equivalent to intmax_t/uintmax_t. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.23 </span>(November 17, 2010)</p>
+Bug Fixes
+<ul>
+    <li>Fixed bug in recognition of <span class="small">__ARMCC_VERSION</span>. Reported by Sam Umbach.</li>
+  <li>Updated <span class="small">EA_LIKELY</span>/<span class="small">EA_UNLIKELY</span> to explicitly support the SN compiler, though it was already doing so through the __GNUC__ define, since SN defines __GNUC__</li>
+</ul>
+Changes
+<ul>
+    <li>Added a print EXIT(n) at the end of the unit tests on wii to support EARunner_Wii; it will indicate to the runner that the test is completed. </li>
+    <li>Changed the automatic variable alignment test to use a larger buffer.  This was causing a false assertion on pc64 debug-opt because it was packing the buffer between two other aligned values, which caused it to think that there was stack correption.</li>
+</ul>
+
+
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.22</span>(May 27, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version has been updated to support PS3 SN 330, CodeWarrior 1.3, and Android platform.</li>
+</ul>
+<p> Additions</p>
+<ul>
+  <li>Added Palm Mobile and Samsumg bada mobile platform support.</li>
+  <li>Added <span class="small">EA_PLATFORM_CONSOLE</span>, <span class="small">EA_PLATFORM_MOBILE</span>, <span class="small">EA_PLATFORM_DESKTOP</span> defines, which are high level platform descriptors. </li>
+  <li>Added <span class="small">EA_COMPILER_NO_RTTI</span>, <span class="small">EA_COMPILER_NO_STANDARD_CPP_LIBRARY</span>, <span class="small">EA_COMPILER_NO_STATIC_VARIABLE_INIT</span>, <span class="small">EA_COMPILER_NO_STATIC_FUNCTION_INIT</span>. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed  <span class="small">EA_WCHAR_SIZE</span> definition for PS3 SN compiler 330 and later.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version 2.0.21</span>(March 1, 2010)</p>
+<p> Additions</p>
+<ul>
+  <li>Added <span class="small">EA_COMPILER_ARM</span>, to identify the Arm brand compiler (armcc/armcpp). </li>
+  <li>Added <span class="small">EA_PLATFORM_WINCE</span>.</li>
+  <li>Added support for static_assert, which is a C++0x feature found in VC++ for 360, VS2010, and GCC 4.3+. A fallback implementation is present for compilers that don't support static_assert intrinsically. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed a conflict with the latest XBox 360 SDK regarding the definition of char16_t.</li>
+  <li>Fixed definition of <span class="small">EA_SSE</span>. It was being defined as 1 under any platform compiled by VC++ instead of just x86. </li>
+  <li>Fixed <span class="small">EA_PLATFORM_IPHONE</span> detection support. Provided by Jaap Suter. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version 2.0.20</span>(November 22, 2009)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version revises the definition of <span class="small">EA_NO_INLINE</span> to go back to what it was in v2.0.18. Based on feedback from Andy Eakins it was decided that it's better for <span class="small">EA_NO_INLINE</span> and other declaration attributes to always work as prefix attributes, given that the major compilers now support prefix attributes. The policy is now that all attributes have a version which acts as a prefix attribute but isn't named &quot;prefix&quot;. These will usually work with modern compiler versions, though the prefix/suffix versions will remain for cases where things don't work. This <span class="small">EA_NO_INLINE</span> change will cause some compiler errors if there is existing code that tries to use it as a suffix attribute. This possible breakage has been deemed acceptable. See eacompilertraits.h for an explanation of prefix vs. suffix attributes. </li>
+</ul>
+<p> Additions</p>
+<ul>
+  <li>Added support for the iPhone (<span class="small">EA_PLATFORM_IPHONE</span>, <span class="small">EA_PLATFORM_IPHONE_SIMULATOR</span>) and Android (<span class="small">EA_PLATFORM_ANDROID</span>) platforms.</li>
+  <li>Added support for 64 bit Mac OS X. </li>
+  <li>Added <span class="small">EA_WEAK</span>, which wraps __attribute__((weak)) and __declspec(selectany). Suggested by Andy Eakins.</li>
+  <li>Added <span class="small">EA_ALIGN</span> to match <span class="small">EA_PREFIX_ALIGN</span>/<span class="small">EA_POSTFIX_ALIGN</span>. It acts as a prefix attribute. See the 'release notes' discussion above regarding prefix attributes for some background. </li>
+  <li>Added <span class="small">EA_SEALED</span> and <span class="small">EA_ABSTRACT</span>, which match the VC++ &quot;sealed&quot; and &quot;abstract&quot; extension keywords. </li>
+  <li>Added the pseudo-platforms <span class="small">EA_PLATFORM_CYGWIN</span> and <span class="small">EA_PLATFORM_MINGW</span>.</li>
+  <li>Added support for C++0x native char16_t and and char32_t, and added the <span class="small">EA_CHAR16</span> and <span class="small">EA_CHAR32</span> portable string literal wrappers. Portable 16 bit string literals henceforth would use <span class="small">EA_CHAR16</span>(&quot;abc&quot;) and <span class="small">EA_CHAR16</span>('a') as opposed to L&quot;abc&quot; and L'a'. As of this writing, compilers which support native char16_t/char32_t include GCC 4.4 (compiling with -std=c++0x) and VS2010, though VS2010's support is not complete.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Revised the definition of <span class="small">EA_NO_INLINE</span> to go back to what it was in v2.0.18. See the 'release notes' above for more details. </li>
+</ul>
+
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.19</span>(August 11, 2009)</p>
+<p>Known Issues</p>
+<ul>
+  <li>The definition of <span class="small">EA_POSTFIX_FORCE_INLINE</span> is incorrect for the GCC and PS3 compilers. This is fixed in EABase 2.0.20. </li>
+</ul>
+<p> Additions</p>
+<ul>
+  <li>Added preliminary support for iPhone, which is a subset of Macintosh OS X.</li>
+  <li>Added support for Larrabee (<span class="small">EA_PLATFORM_LRB</span>).</li>
+  <li>Added <span class="small">EA_NO_VTABLE</span>, which wraps the VC++ __declspec(novtable) declaration. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed a possible misidentification of <span class="small">EA_PLATFORM_MAC</span>. Reported by Steve Kilthau.</li>
+</ul>
+Changes
+<ul>
+  <li>Added CodeWarrior (e.g. Wii) support to <span class="small">EA_LIKELY</span>. Suggested and initially tested by Frederic Hamel.</li>
+  <li>Added an option for bitset to use eastl_size_t instead of directly using size_t. It currently defaults to still using size_t. Suggested by Johan Andersson.</li>
+  <li>Made <span class="small">EA_PASCAL</span> be defined only on Windows, as CodeWarrior no longer supports it on Wii.</li>
+  <li>Reverted <span class="small">EA_NO_INLINE</span> from v2.0.18 (see below), since it is breaking some EATech code which aims to be backward compatible. <s> For all practical purposes <span class="small">EA_NO_INLINE</span> is thus deprecated, since its portability is limited. Use <span class="small">EA_PREFIX_NO_INLINE</span>/<span class="small">EA_PL</span> instead.</s></li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.18</span>(October 27, 2008)</p>
+<p>Release Notes</p>
+<ul>
+  <li>EA_NO_INLINE is now supported under VS2008, but this may result in failure of existing code which assumes that it is not supported and instead defined away. The resolution is to use EA_PREFIX_NO_INLINE / EA_POSTFIX_NO_INLINE. This situation is unlikely to affect most users. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added EA_PREFIX_NO_INLINE and EA_POSTFIX_NO_INLINE to allow portable usage of EA_NO_INLINE.</li>
+  <li>Added support for EA_PRAGMA_ONCE_SUPPORTED, which allows for portable usage of #pragma once. </li>
+  <li>Added EA_OVERRIDE, which allows portable usage of the 'override' keyword. Provided by Wes Potter. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed Metrowerks compiler error regarding definition of intptr_t for compiling .c files when -lang c99 is in effect.</li>
+  <li>Updated the definition of EA_NO_INLINE under VC++ to be savvy to VS2005 and later. Reported by Andy Eakins. </li>
+</ul>
+Changes
+<ul>
+  <li>Updated eabase.h to be more robust with respect to the definitions of INT8_C, etc. Some external source code was taking the liberty of defining C99 types on its own and this was causing conflicts with eabase.h. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.17 </span>(April 11, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added  EA_INIT_PRIORITY and EA_MAY_ALIAS which wrap the equivalent GCC/SN attributes for more readable and portable code. </li>
+  <li>Added EABASE_VERSION / EABASE_VERSION_N to the definition set. This allows for determining the version at compile time.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Revised EA_ALIGNED macro for the SNC compiler to work in a different way, as SNC has a bug that prevents its GCC compatibility from working in the case of declaring an aligned variable with ctor arguments. </li>
+  <li>Fixed wchar_t recognition when compiling C code on SNC on PS3. </li>
+  <li>Fixed definition of EA_LIKELY whereby it wouldn't be used under GCC. Found by David Galeano. </li>
+  <li>Updated EA_DEPRECATED to be compatible with SNC. </li>
+</ul>
+Changes
+<ul>
+  <li>Added a FAQ entry and revised the FAQ layout. </li>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+  <li>Updated EA_COMPILER_NAME and EA_COMPILER_STRING for SNC. These now makes a distinction between GCC and SNC emulating GCC. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.16</span>(December 20, 2007)</p>
+<p>Additions</p>
+<ul>
+  <li>Added SNC compiler compatibility on PS3. The lack of previous compatibility is manifested by compile errors regarding the char16_t typedef.</li>
+  <li>Added SNC compiler compatibility on PS2. The lack of previous compatibility is manifested by compile errors regarding the int8_t typedef.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.15 </span>(November 5, 2007)</p>
+<p>Bug Fixes</p>
+<ul>
+  <li>x64 definition of ssize_t fixed to be signed instead of unsigned. Reported by 
+
+
+John Leung.</li>
+</ul>
+Changes
+<ul>
+  <li>Unit test made compatible with SN PS3 compiler.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.0.1</span><span style="font-weight: 700">4</span> (April 12, 2007)<br>
+    <br>
+Release Notes</p>
+<ul>
+	<li>This is a release which catches up on the features that have been 
+	multiply requested over the last two years and which seem reasonable and in the spirit of EABase. Except for the item listed below, there are no EABase features currently up for consideration and  there aren't likely to be any changes to this package in the foreseeable future aside from adding support for new platforms and fixing any bugs that may arise. </li>
+	<li>One thing that this release leaves out but which has been on the 
+	consideration table is a set of alignment macros/inlines which implement 
+	AlignUp/AlignDown or possibly similar behaviour. The possibility of this 
+	feature is still being considered pending further input and investigation.</li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added EA_PREFIX_DEPRECATED and EA_POSTFIX_DEPRECATED to complement EA_DEPRECATED.</li>
+	<li>Added the unit tests to the .build file so the unit tests can be built 
+	via Fw2/eaconfig/nant.</li>
+	<li>Added EA_ASSUME, which maps to __assume under VC++ but maps to a no-op 
+	otherwise. This allows code to take advantage of optimization opportunities 
+	with VC++ but be harmless on other compilers such as GCC.</li>
+	<li>Added EA_PURE, which maps to attribute((pure)) on GCC but maps to a 
+	no-op otherwise. This allows code to take advantage of optimization 
+	opportunities with GCC but be harmless on other compilers such as VC++.</li>
+	<li>Added portable ssize_t typedef. GCC and Posix has long provided ssize_t 
+	to complement size_t, but VC++ and CodeWarrior have not.</li>
+  <li>Added the oft-requested EAArrayCount macro. This returns the count of items in an array. </li>
+	<li>Added an initial FAQ.html to the doc directory.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed unit test compiler warnings under GCC 3.4/Linux.</li>
+</ul>
+Changes
+<ul>
+  <li> Made it so you can now #include any of the sub-files within eabase 
+	instead of the main eabase.h header.</li>
+	<li> Updated to latest version of Frank Barchard's ifdef.cpp source. </li>
+    <li>Cleaned up the documentation files to use better HTML.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.13</span><span style="font-weight: bold;"></span> (Nov. 16, 2006)<br>
+    <br>
+  This release devoted to Nintendo DS support (EA_PLATFORM_DS).</p>
+<p>Additions</p>
+<ul>
+  <li>    Added support of Nintendo DS via EA_PLATFORM_DS.</li>
+  <li>Added automatic detection of EA_PLATFORM_REVOLUTION under the CodeWarrior compiler via the __PPCBROADWAY__ #define.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.12.1</span><span style="font-weight: bold;"></span> (May 29, 2006)<br>
+    <br>
+  Additions</p>
+<ul>
+  <li>Added a property package.EABase.includedirs.spu to initialize script.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;<br>
+</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.12</span><span style="font-weight: bold;"></span> (Apr. 10, 2006)<br>
+    <br>
+  This release devoted to Nintendo Revolution and Microsoft Win64 support.</p>
+<p>Additions</p>
+<ul>
+  <li>Added Win64 and Revolution unit test projects.</li>
+  <li>Added __STDC_CONSTANT_MACROS and __STDC_LIMIT_MACROS to allow C99 behaviour with Metrowerks.</li>
+  <li>Added definition of EA_PLATFORM_REVOLUTION.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed definition of FLT_EVAL_METHOD for Metrowerks/Revolution. Recent Metrowerks compilers defined FLT_EVAL_METHOD for all platforms and compilation modes. Similarly fixed the definition of float_t/double_t for Metrowerks v4.0+.</li>
+  <li>Fixed definion of EA_RESTRICT to properly deal with Metrowerks v4.0+.</li>
+</ul>
+Changes
+<ul>
+  <li>Changed internal #includes to be relative to EABase instead of relative to themselves. Thus eabase.h previous had a #include &quot;config/eaplatform.h&quot; butnow has #include &quot;EABase/config/eaplatform&quot;. This change is due to the fact that some compilers (e.g. Metrowerks) don't support self-relative include paths. It's not simple enough to add the EABase/config directory to the compiler directory, as that could cause conflicts with other source code packages that have similar internal header file structures.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.11</span><span style="font-weight: bold;"></span> (Feb. 15, 2006)<br>
+    <br>
+  Bug Fixes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Modified definition of bool8_t again to be an bool on Visual Studio, Metrowerks, Intel, and Borland compilers. It's now an int8_t on GNU-based compilers. This was done to be compatible with an upcoming RenderWare release.<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.10</span><span style="font-weight: bold;"></span> (Feb. 14, 2006)<br>
+    <br>
+  Additions</p>
+<ul>
+  <li>Added checks to see if some entity isn't already defined first before defining it. Thus if the user wants to provide their own version of EA_ALIGNED, they can define it in another header or in a build file. </li>
+  <li>Added EA_ALIGNED to go with EA_PREFIX_ALIGN and EA_POSTFIX_ALIGN.</li>
+  <li>Added basic unit test for EA_ALIGNED.</li>
+  <li>Added Xenon unit test project.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Modified definition of bool8_t to simply always be int8_t.</li>
+  <li>Modified definition of EA_PLATFORM_PTR_SIZE to deal with the PS3 change from 64 bit pointers to 32 bit pointers. This modification is backwards compatible.</li>
+  <li>Made minor change to #defines in Win32 unit test project.<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.9</span><span style="font-weight: bold;"></span> (Nov. 28, 2005)<br>
+    <br>
+  Additions</p>
+<ul>
+  <li>Support for Win64 and x86-64 via EA_PLATFORM_WIN64 and EA_PROCESSOR_X86_64.</li>
+  <li>Support for OSX on x86.</li>
+  <li>EA_LIKELY / EA_UNLIKELY defined.</li>
+  <li>Added a masterconfig.h file for Framework2 compatibility.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed PS3 compiler warning that can occur with the definition of FLT_EVAL_METHOD.</li>
+  <li>Fixed PSP compatibility problem that cropped up in EABase 2.0.8. </li>
+</ul>
+Changes
+<ul>
+  <li>Changed the PS3 platform identification in response to change (in SDK v040) in Sony compiler, which now defines __PPU__ instead of __PU__ to identify the primary processor.</li>
+  <li>Changed PS2 platform recognition to work with the SN compiler.</li>
+  <li>Updated test for EA_COMPILER_NO_EXCEPTIONS to work with current PS3 compiler.</li>
+  <li>Removed deprecated documents. They were essentially empty anyway.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.8</span><span style="font-weight: bold;"></span> (May 29, 2005)<br>
+    <br>
+  Additions</p>
+<ul>
+  <li>Support for GCC 3.2+ compilers, such as those for PS3 and MacOSX. This mostly amounted to changes regarding the inclusion of stdint.h and inttypes.h. </li>
+  <li>EA_RESTRICT defined, as agreed upon.</li>
+  <li>EA_ALIGN_OF implemented (this was accidentally omitted last year).</li>
+  <li>Initial PS3 support (EA_PLATFORM_PS3). Will require additional testing. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Bug in INT32_C(), etc. fixed for PS2.</li>
+  <li>EA_COMPILER_IS_C99 fixed to work for C/C++ compilers that aren't C99 but act as C99 anyway. </li>
+</ul>
+Changes
+<ul>
+  <li>EA_PLATFORM_PS3 and EA_PLATFORM_P3_SPU are now debugged and unit tested. This change applies to all files.</li>
+  <li>Documentation improved.</li>
+  <li>EA_PLATFORM_WORD_SIZE defined to match EA_PLATFORM_PTR_SIZE. As of this writing this hasn't been formally agreed upon; we may want to do before publishing.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.7</span> (April 26, 2004) <br>
+    <br>
+  Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li> PSP platform detection fix - When compiling for the PSP platform with GCC, EABase was incorrectly thinking it was the PlayStation2 IOP platform. Fixed by adding a detection for __psp__ not being defined when _R3000 is defined.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.6</span> (April 2, 2004) <br>
+    <br>
+  Additions</p>
+<ul>
+  <li>Added EABase.html. This is the first true documentation for EABase.</li>
+  <li>Added EA_WCHAR_SIZE test.</li>
+  <li>Added EA_COMPILER_NO_XXX tests.</li>
+  <li>Added XBox2 support (affected definition of int64_t, etc.)</li>
+  <li>XBox2 (EA_PLATFORM_XENON) and PS3 (placeholder EA_PLATFORM_PS3) are now supported.</li>
+  <li>Helpful documentation added regarding usage of EA_WCHAR_SIZE under compilers that support different sizes for wchar_t.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed float_t/double_t for Metrowerks.</li>
+  <li>Fixed VC++ compiler warning for when all warnings are enabled and wchar.h is #included.</li>
+  <li>Fixed missing definition of FLT_EVAL_METHOD for cases where it is absent. </li>
+  <li>Fixed Metrowerks bug with respect to detection of EA_PLATFORM_WINDOWS.</li>
+  <li>Fixed bug related to potential redifinition of internal the defines INTERNAL_STRINGIZE and INTERNAL_PRIMITIVE_STRINGIZE. </li>
+</ul>
+Changes
+<ul>
+  <li> Edited FuturePlans.html and WWAdoption.html to remove bad MSWord HTML so that any HTML editor can now work on these files.</li>
+  <li>Converted EA_PLATFORM_WORD_SIZE usage to EA_PLATFORM_PTR_SIZE.</li>
+  <li>Test of float_t and double_t fixed to conform to what C99 standard expects.</li>
+  <li>bool8_t defined as int8_t when compiling in C.</li>
+  <li>Compiler limitation defines (EA_COMPILER_NO_XXX) are now consistent and fairly complete. Significant documentation has been added to explain these.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.5</span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>Wrote unit test for all of EABase. There isn't yet a NAnt project for it, though there are VC++ and SN/VC7 projects for it. </li>
+  <li>Added c99 printf/scanf format specifiers for type-safe sized printf.</li>
+  <li>Added sized bool type: bool8_t. This is still slightly controversial but it had votes on its side, despite the arguments either way.</li>
+  <li>Added documentation to all source headers. </li>
+  <li>Added support for EA_PLATFORM_PSP.</li>
+  <li>Added support for EA_PLATFORM_WORD_SIZE.</li>
+  <li>Added alignment attributes for Metrowerks.<br>
+Metrowerks support postfix alignment; this was verified both by technical support and by a test of the compiler.</li>
+  <li>Added alignment attributes for MSVC. Yes, VC7 and later allow prefix alignments, so I added them. This was verified by tests with the compiler.</li>
+  <li>Added EA_PASCAL defines for Metrowerks, as per a todo request in the code. Metrowerks defines pascal calling convention via 'pascal' keyword. This was verified by tests with the compiler.</li>
+  <li>Due to difficulties working with wchar_t and associated char16_t and char32_t, EA_WCHAR_SIZE and EA_WCHAR_T_NON_NATIVE were added in order to allow writing code that works with wchar_t portably.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed int64_t defines for various situations that were broken.You can't go just by platform, but you can't go just by compiler either.</li>
+  <li>Fixed INTX_C() macros for VC++ to use i32, i64.</li>
+  <li>Fixed inttypes.h inclusion problem.The C99 standard specifies that sized types be defined in stdint.h but many compilers/platforms still put them in inttypes.h.</li>
+  <li>Fixed bug in intptr_t definition for platforms that didn't define it themselves. It was declared as uint64_t for both signed and unsigned versions for all platforms, including 32 bit platforms. All compilers I could find define intptr_t as int32_t on 32 bit platforms and int64_t on 64 bit platforms.</li>
+  <li>Fixed wchar_t definition bug for VC++ and for SN compiler.</li>
+  <li>Fixed two EA_ASM_STYLE bugs.</li>
+  <li>Fixed bugs in definition of EA_COMPILER_NO_STATIC_CONSTANTS. The list of compilers that did and didn't support this was wrong. All changes were verified with a test of the given compiler. </li>
+</ul>
+Changes
+<ul>
+  <li>Separated intptr_t definition from uintptr_t definition. This was because some systems and SDKs define either or both of these types independently and thus collide with our having them defined together, resulting in compilation errors.</li>
+  <li>Changed spelling of specialisation to specialization, for consistency. The old spelling is provided but deprecated.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.4</span><span style="font-weight: bold;"></span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>Added macros for declaring constants in a portable way (INT8_C, etc.)</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>include &lt;stddef.h&gt; on GNUC and MSVC compilers, rather than Playstation2, Linux, PS2 IOP, and GameCube platforms.</li>
+</ul>
+Changes
+<ul>
+  <li>Removed config files common.xml (merged into win-vc7-debug.xml) and global.xml (was not being used)</li>
+  <li>Changed EA_COMPILER_TEMPLATE_SPECIALISATION to EA_COMPILER_TEMPLATE_SPECIALIZATION (US vs. UK spellings)</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.3</span><span style="font-weight: bold;"></span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>Added back namespaced EA::result_type</li>
+  <li>Added back namespaced EA::SUCCESS and EA::FAILURE generic constants</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li> &lt;none&gt;<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.2</span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed C99 check to check for C99 version instead of what may have been a C95 check.</li>
+</ul>
+Changes
+<ul>
+  <li> EA_ALIGN(n) macro removed</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.1</span><span style="font-weight: bold;"></span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug with a mismatched parenthesis in the MAC section of eaplatform.h</li>
+</ul>
+Changes
+<ul>
+  <li> Visual changes integrated from Perforce depot.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">2.0.0</span><span style="font-weight: bold;"></span><br>
+    <br>
+Additions</p>
+<ul>
+  <li>Defines for character type (narrow / wide)</li>
+  <li>Defines for min/max types</li>
+  <li>Defines to support __export and __import</li>
+  <li>Defines for processors and supported assembler.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed #include inttypes.h to be #include stdint.h</li>
+  <li>Fixed character types so the typedefs were correct. (Previously the type and the name-identifier were swapped). Also in the change I added a special case for VC compiler so that it will compile.</li>
+  <li>Typo eabase.h tried to include compilertraits.h instead of eacompilertraits.h</li>
+  <li>Typo &quot;Linux on x85&quot; changed to &quot;Linux on x86&quot;.</li>
+  <li>Changed EA_POINTER_TO_UINT32_CAST to only be defined if __cplusplus is defined, since it uses C++ specific casting.</li>
+</ul>
+Changes
+<ul>
+  <li> Removed EA_INLINE</li>
+  <li>Renamed include guard defines to start with ea</li>
+  <li>Renamed header files to start with ea</li>
+  <li>Removed bool section</li>
+  <li>Removed __null and added #undef NULL</li>
+  <li>Modified EA_PLATFORM defines to be defined as 1</li>
+  <li>Removed NAKED and FASTCALL</li>
+  <li>Removed EA_STATIC_CONSTANT</li>
+  <li>Removed EA_INTERFACE</li>
+  <li>Removed least and fast types</li>
+  <li>Removed thread.h</li>
+  <li>Modified earesults that returns a signed int.</li>
+  <li>Updated MIN/MAX defines as per Simon Everett's post.</li>
+  <li>Removed extern &quot;C&quot; {</li>
+  <li>Removed EA_POINTER_TO_UINT32_CAST define</li>
+  <li>Removed 128 bit types</li>
+  <li>Removed a check if NULL was not defined since it is undefined right before the check.</li>
+  <li>Moved the stddef.h include above the redefinition of NULL</li>
+  <li>Removed all the EA_WRAP_ALIGN defines</li>
+  <li> Removed EA_ALIGN, ALIGN, __ALIGNED__, EA_ALIGN16, and EA_ALIGN64</li>
+  <li>Renamed __PACKED__ as EA_PACKED</li>
+  <li>Removed EA_PLATFORM definition as it was always 1</li>
+  <li>Removed EA_COMPILER definition as it was always 1<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>

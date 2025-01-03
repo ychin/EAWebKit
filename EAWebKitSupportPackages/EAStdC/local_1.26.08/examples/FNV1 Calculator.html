@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>FNV-1 (lower-case)</title>
+<style type="text/css">
+<!--
+.style1 {font-size: small}
+-->
+</style>
+</head>
+
+
+<body style="margin: 1em; background: white none repeat scroll 0%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; color: black;" onload="loaded();">
+
+<script type="text/javascript">
+var savetext = '';
+
+function mult32(a,b)
+{
+	var res1 = ( a         & 4095) * ( b         & 4095);
+	var res2 = ((a >>> 12) & 4095) * ( b         & 4095);
+	var res3 = ((a >>> 24) & 4095) * ( b         & 4095);
+	var res4 = ( a         & 4095) * ((b >>> 12) & 4095);
+	var res5 = ((a >>> 12) & 4095) * ((b >>> 12) & 4095);
+	var res7 = ( a         & 4095) * ((b >>> 24) & 4095);
+	return res1 + ((res2 + res4) << 12) + ((res3 + res5 + res7) << 24);
+}
+
+function hexify(n)
+{
+	var lookup = '0123456789abcdef';
+	var hex = '';
+	for (var i = 0; i < 8; ++i)
+	{
+		hex = lookup.charAt(n & 15) + hex;
+		n >>>= 4;
+	}
+	return hex;
+}
+
+function fnv1(str)
+{
+	var hash = 2166136261;
+	for (var i = 0; i < str.length; ++i)
+	{
+		hash = mult32(hash, 16777619);
+		hash ^= str.charCodeAt(i) & 255;
+	}
+
+	return hexify(hash);
+}
+
+function update()
+{
+	var temp = document.getElementById('in').value;
+	var hash = fnv1(temp.toLowerCase());
+	temp = savetext + '0x' + hash + ';&nbsp; // ' + temp + '<br>';
+	document.getElementById('out').innerHTML = temp;
+}
+
+function loaded()
+{
+	var obj = document.getElementById('in');
+	if (obj.value == '') obj.value = 'StringToBeHashed';
+	update();
+	obj.focus();
+	obj.select();
+}
+
+function keypressed(evt)
+{
+	var isenter = false;
+	if (window.event)
+		isenter = (window.event.keyCode == 13)
+	else if (evt)
+		isenter = (evt.which == 13);
+
+	if (isenter)
+	{
+		savetext = document.getElementById('out').innerHTML;
+		document.getElementById('in').value = '';
+	}
+
+	setTimeout(update, 10);
+}
+</script>
+
+<h2>FNV1 Calculator</h2>
+
+<input id="in" size="62" onkeydown="keypressed(event)" type="text"><br>
+<small>
+ (updates as-you-type; press Enter for a new line)
+</small>
+
+<div style="border: 1px solid gray; margin: 1em; padding: 1.5em 1em; background: silver none repeat scroll 0%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; font-family: monospace; font-size: 10pt;" id="out">0x90841109;&nbsp; // StringToBeHashed<br></div>
+
+<p class="style1">Created by Henry Goffin </p>
+
+</body>
+</html>
+
+

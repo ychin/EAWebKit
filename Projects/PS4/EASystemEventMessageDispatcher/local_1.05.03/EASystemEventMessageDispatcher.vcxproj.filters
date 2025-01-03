@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html">
+      <UniqueIdentifier>{19D303E2-3E96-BED5-B277-E2BAE4A46210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html\img">
+      <UniqueIdentifier>{700DABE3-E392-CFFB-DD19-FB49EF92BF68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\images">
+      <UniqueIdentifier>{FCB077B3-5B50-83B8-EBDF-BDD4727B7E89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts">
+      <UniqueIdentifier>{EBD83D84-3586-9BAD-7398-E0ED3BA1AB5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight">
+      <UniqueIdentifier>{64B4BEFF-B21F-0760-DEF9-0D5E85B67231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight\languages">
+      <UniqueIdentifier>{4EE6F5F4-39A7-2A56-61D1-86E244DAE313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\source">
+      <UniqueIdentifier>{554F8D2A-E8EE-0253-7C0D-6688AC8FCCDE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\style_sheet">
+      <UniqueIdentifier>{92502084-1DA1-F0D7-29E7-AAAE542CDB22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASystemEventMessageDispatcher">
+      <UniqueIdentifier>{11FBE853-7469-B106-33A7-1E8E86FF7A28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\sony">
+      <UniqueIdentifier>{62FE81E2-52FE-3952-D332-729CCB63B23C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\html\changelog.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\html\img\logo.png">
+      <Filter>doc\html\img</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\html\index.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\html\toc.js">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\images\OverviewImage.png">
+      <Filter>doc\images</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\index.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\highlight.js">
+      <Filter>doc\scripts\highlight</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\1c.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\axapta.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\dynamic.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\javascript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\rib.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\rsl.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\smalltalk.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\sql.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\static.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\vbscript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\scripts\highlight\languages\www.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\source\OverviewImage.docx">
+      <Filter>doc\source</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\doc\style_sheet\style_sheet.css">
+      <Filter>doc\style_sheet</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\EASystemEventMessageDispatcher.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\scripts\EASystemEventMessageDispatcher_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\include\EASystemEventMessageDispatcher\Messages.h">
+      <Filter>include\EASystemEventMessageDispatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\include\EASystemEventMessageDispatcher\SystemEventMessageDispatcher.h">
+      <Filter>include\EASystemEventMessageDispatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\include\EASystemEventMessageDispatcher\version.h">
+      <Filter>include\EASystemEventMessageDispatcher</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASystemEventMessageDispatcher\local_1.05.03\source\sony\SystemEventMessageDispatcher.cpp">
+      <Filter>source\sony</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

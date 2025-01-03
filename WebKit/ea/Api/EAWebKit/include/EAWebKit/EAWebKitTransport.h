@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <EAWebKit/EAWebKitConfig.h>
 #include <EAWebKit/EAWebKit.h>
-#include <EAWebKit/EAWebKitSTLWrapper.h>
+#include <EAWebKit/EAWebkitSTLWrapper.h>
 #include <EAWebKit/EAWebKitFileSystem.h>
 
 

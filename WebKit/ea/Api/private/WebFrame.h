@@ -50,11 +50,11 @@ namespace WebCore
 
 #include <EAWebKit/EAWebKitSystem.h>
 #include <EAWebKit/EAWebKitConfig.h>
-#include <EAWebkit/EAWebkitView.h>
-#include <EAWebkit/EAWebkitJavascriptValue.h>
+#include <EAWebKit/EAWebKitView.h>
+#include <EAWebKit/EAWebkitJavascriptValue.h>
 
-#include <eastl/vector.h>
-#include <eastl/string.h>
+#include <EASTL/vector.h>
+#include <EASTL/string.h>
 #include "URL.h"
 #include "IntRect.h"
 #include "IntSize.h"

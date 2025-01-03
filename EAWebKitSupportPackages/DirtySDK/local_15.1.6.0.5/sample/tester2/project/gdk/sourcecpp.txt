@@ -1,0 +1,6 @@
+sample/tester2/source/gdk/T2Host.cpp
+sample/tester2/source/gdk/SampleCore.cpp
+sample/tester2/source/gdk/samplecode/GraphicsMemory.cpp
+sample/tester2/source/gdk/samplecode/DeviceResources.cpp
+sample/tester2/source/gdk/samplecode/LinearAllocator.cpp
+sample/tester2/source/xboxone/t2new.cpp

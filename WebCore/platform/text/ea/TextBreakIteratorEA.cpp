@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Lars Knoll <lars@trolltech.com>
- * Copyright (C) 2011, 2012, 2015 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015, 2017 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,15 +21,16 @@
  
 
 #include "config.h"
+#include <string>
 #include "TextBreakIterator.h"
 #include "TextEncoding.h"
 #include "TextBoundaries.h"
-#include <wtf/atomics.h>
+#include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitTextInterface.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebKitString.h>
 
@@ -141,7 +142,8 @@ TextBreakIterator* acquireLineBreakIterator(StringView string, const AtomicStrin
         
     if (priorContextLength > 0)
     {
-        const UChar* stringUChar = string.upconvertedCharacters().get();
+		StringView::UpconvertedCharacters stringU = string.upconvertedCharacters();
+        const UChar* stringUChar = stringU.get();
         int stringLength = std::char_traits<UChar>::length(stringUChar);
         int totalLength = stringLength + priorContextLength;
         UChar* totalString = new UChar[totalLength];

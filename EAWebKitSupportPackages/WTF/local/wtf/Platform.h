@@ -37,7 +37,7 @@
 //+EAWebKitChange
 //1/8/2014
 #if defined(BUILDING_EA__)
-#include <platformEA.h>
+#include <PlatformEA.h>
 #endif
 //-EAWebKitChange
 
@@ -122,7 +122,7 @@
     || defined(__powerpc__)    \
     || defined(__powerpc)      \
     || defined(__POWERPC__)    \
-    || defined(CS_UNDEFINED_STRING)         \
+    || defined(_M_PPC)         \
     || defined(__PPC))         \
     && defined(__BYTE_ORDER__) \
     && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
@@ -742,7 +742,8 @@
 #if !defined(ENABLE_JIT) \
     && (CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64) || CPU(MIPS)) \
     && !CPU(APPLE_ARMV7K) \
-    && !defined(EA_PLATFORM_CONSOLE)
+    && !defined(EA_PLATFORM_CONSOLE) \
+    && !defined(EA_PLATFORM_STADIA)
 #define ENABLE_JIT 1
 #endif
 //-EAWebKitChange

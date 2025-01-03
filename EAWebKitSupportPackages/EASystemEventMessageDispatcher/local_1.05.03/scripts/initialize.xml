@@ -1,0 +1,69 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="package.EASystemEventMessageDispatcher.includedirs">
+		${package.EASystemEventMessageDispatcher.dir}/include
+	</property>
+
+	<property name="EASystemEventMessageDispatcher.Debug" value="${EASystemEventMessageDispatcher.Debug??false}"/>
+	<property name="EASystemEventMessageDispatcher.IncludeCompanionLibs" value="${EASystemEventMessageDispatcher.IncludeCompanionLibs??true}"/>
+
+	<choose>
+		<do if="${config-system} == pc or ${config-system} == 'pc64'">
+		  <property name="package.EASystemEventMessageDispatcher.includedirs">
+			${property.value}
+			${package.EASystemEventMessageDispatcher.dir}/include/pc
+			</property>
+		</do>
+		<do>
+		  <property name="package.EASystemEventMessageDispatcher.includedirs">
+			${property.value}
+			${package.EASystemEventMessageDispatcher.dir}/include/${config-system}
+			</property>
+		</do>
+	</choose>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EASystemEventMessageDispatcher.libs">
+			<includes name="${package.EASystemEventMessageDispatcher.builddir}/${config}/lib/${lib-prefix}EASystemEventMessageDispatcher${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<property name="EASystemEventMessageDispatcherBuildType" value="Library"/>
+	<property name="EASystemEventMessageDispatcherBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+	<property name="EASystemEventMessageDispatcherBuildType" value="WinRTCppLibrary" if="@{OptionSetExists('WinRTCppLibrary')}"/>
+	<property name="EASystemEventMessageDispatcherBuildType" value="WinRTRuntimeComponent" if="@{OptionSetExists('WinRTCppLibrary')} and ${Dll??false}"/>
+
+	<property name="EASEMDTestBuildtype" value="Program" />
+	<property name="EASEMDTestBuildtype" value="WinRTCppProgram" if="@{OptionSetExists('WinRTCppProgram')}" />
+
+	<publicdata packagename="EASystemEventMessageDispatcher" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="IEASystemEventMessageDispatcher">
+				<includedirs>
+					${package.EASystemEventMessageDispatcher.dir}/include
+				</includedirs>
+			</module>
+			<module name="EASystemEventMessageDispatcher" buildtype="${EASystemEventMessageDispatcherBuildType}">
+				<includedirs>
+					${package.EASystemEventMessageDispatcher.includedirs}
+				</includedirs>
+				<libs-external>
+				  <do if="${config-system} == 'kettle'">
+					<includes name="${package.kettlesdk.libdir}\libSceSystemService_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceUserService_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceSysmodule_stub_weak.a"/>
+					<!-- these libraries are only required if you plan to communicate with a companion app -->
+					<do if="${EASystemEventMessageDispatcher.IncludeCompanionLibs}">
+						<includes name="${package.kettlesdk.libdir}\libSceCompanionHttpd_stub_weak.a"/>
+						<includes name="${package.kettlesdk.libdir}\libSceCompanionUtil_stub_weak.a"/>
+					</do>
+				  </do>
+				</libs-external>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EASEMDTest" buildtype="${EASEMDTestBuildtype}"/>
+		</tests>
+	</publicdata>
+</project>

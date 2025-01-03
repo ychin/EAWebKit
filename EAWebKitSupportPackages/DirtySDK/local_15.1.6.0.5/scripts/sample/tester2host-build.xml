@@ -1,0 +1,193 @@
+<project>
+    <!-- Define platform source location: use dirtyplat is a base and just override for the special cases -->
+    <property name="tester2-source" value="${dirtyplat}"/>
+    <property name="tester2-source" value="unix" if="${config-system} == 'iphone' or ${config-system} == 'osx'"/>
+
+    <property name="package.T2Host.titleid" value="4E2A4DAD"/>
+    <property name="package.T2Host.PrimaryServiceConfigId" value="609a0100-276a-4f4a-b180-8aa04e2a4dad"/>
+
+    <optionset name="t2host-shader-options">
+        <option name="psslc.embed" value="true"/>
+    </optionset>
+
+    <Program name="T2Host">
+        <frompartial value="DSProgram" unless="${config-system} == 'pc' or ${config-system} == 'pc64'"/>
+        <frompartial value="WinDSProgram" if="${config-system} == 'pc' or ${config-system} == 'pc64'"/>
+
+        <includedirs>
+            ${package.dir}/sample/tester2/source
+
+            <do if="${config-system} == 'pc' or ${config-system} == 'pc64'">
+                ${package.dir}/sample/tester2/source/pc/resource
+            </do>
+        </includedirs>
+
+        <headerfiles basedir="${package.dir}">
+            <includes name="sample/tester2/source/*.h"/>
+            <includes name="sample/tester2/source/pc/resource/*.h" if="${config-system} == 'pc' or ${config-system} == 'pc64'"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="${package.dir}/sample/tester2/project/${tester2-source}/source.txt" if="@{FileExists('${package.dir}/sample/tester2/project/${tester2-source}/source.txt')}" optionset="CProgramExtra"/>
+            <includes fromfile="${package.dir}/sample/tester2/project/source.txt" optionset="CProgramExtra"/>
+
+            <!-- Add a special optionset only in the case that it is needed -->
+            <includes fromfile="${package.dir}/sample/tester2/project/${tester2-source}/sourcecpp.txt" if="@{FileExists('${package.dir}/sample/tester2/project/${tester2-source}/sourcecpp.txt')}"/>
+        </sourcefiles>
+
+        <resourcefiles basedir="${package.dir}">
+            <includes name="sample/tester2/source/pc/resource/T2Host.rc" if="${config-system} == 'pc' or ${config-system} == 'pc64'"/>
+        </resourcefiles>
+
+        <shaderfiles basedir="${package.dir}">
+            <includes name="sample/tester2/source/ps5/shaders/*.pssl"  optionset="t2host-shader-options" if="${config-system} == 'ps5'" />
+        </shaderfiles>
+
+        <libraries append="true">
+            <do if="${config-system} == 'ps5'">
+                <!-- needed by EAIO and it does not export it itself -->
+                <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceAppContent_stub_weak.a"     asis="true"/>
+                <!-- needed by EAController and it does not export it itself -->
+                <includes name="${package.ps5sdk.libdir}/${lib-prefix}ScePad_stub_weak.a"            asis="true"/>
+                <!-- needed internally by t2 -->
+                <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceErrorDialog_stub_weak.a"    asis="true"/>
+            </do>
+        </libraries>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+                DirtySDK/common
+                DirtySDK/voipaux
+
+                <do if="${config-system} == 'capilano' or ${config-system} == 'xbsx' or ${config-system} == 'kettle' or ${config-system} == 'nx' or ${config-system} == 'ps5' or ${config-system} == 'stadia'">
+                    EAStdC
+                    coreallocator
+                    EAAssert
+                    EABase
+                    EAMessage
+                    EASTL
+                    EASystemEventMessageDispatcher
+                    EAThread
+                    EAControllerUserPairing
+                </do>
+
+            </auto>
+        </dependencies>
+
+        <config>
+            <defines>
+                <do if="${config-system} == capilano">
+                    _XM_AVX_INTRINSICS_
+                    MIN_EXPECTED_XDK_VER=9386
+                    MAX_EXPECTED_XDK_VER=9386
+                </do>
+
+                <do if="${gdk.enabled??false}">
+                    T2HOST_SCID="&quot;${package.T2Host.PrimaryServiceConfigId}&quot;"
+                </do>
+            </defines>
+
+            <warningsuppression>
+                <do if="${config-compiler} == 'vc'">
+                    -wd4054 <!-- 'type cast' : from function pointer 'int32_t (__cdecl *)(void *)' to data pointer 'void *' -->
+                    -wd4310 <!-- cast truncates constant value -->
+                    -wd4774 <!-- format string expected in argument 2 is not a string literal -->
+                </do>
+
+                <do if="${config-system} == 'capilano'">
+                    -wd4371 <!-- layout of class may have changed from a previous version of the compiler due to better packing of member 'type::member' -->
+                </do>
+
+                <do if="${config-system} == 'capilano' or ${config-system} == 'xbsx'">
+                    -wd4265 <!-- class has virtual functions, but destructor is not virtual -->
+                </do>
+
+                <do if="(${config-system} == 'unix' or ${config-system} == 'unix64') and ${config-compiler} == 'gcc'">
+                    -Wno-unused-but-set-variable
+                    -Wno-missing-braces
+                </do>
+            </warningsuppression>
+        </config>
+
+        <sdkreferences if="${config-system} == 'capilano' and !${gdk.enabled??false}">
+            Xbox Services API, Version=8.0
+        </sdkreferences>
+
+        <script order="before" if="${config-system} == 'capilano' and !${gdk.enabled??false}">
+            <optionset name="config-options-appxmanifestoptions">
+                <option name="Xbox_Live_Config">
+                    <![CDATA[
+                    <mx:Extension Category="xbox.live">
+                        <mx:XboxLive TitleId="${package.T2Host.titleid}" PrimaryServiceConfigId="${package.T2Host.PrimaryServiceConfigId}"/>
+                    </mx:Extension>
+
+                    <mx:Extension Category="xbox.multiplayer">
+                        <mx:XboxMultiplayer CanSuppressPartyChat="true" />
+                    </mx:Extension>
+                    ]]>
+                </option>
+                <option name="extension_options">
+                    ${option.value}
+                    Xbox_Live_Config
+                </option>
+                <option name="capabilities">
+                    ${option.value}
+                    kinectAudio
+                    kinectGamechat
+                </option>
+            </optionset>
+        </script>
+
+        <script order="before" if="${gdk.enabled??false}">
+            <optionset name="config-options-gameconfigoptions">
+                <option name="title.id" value="${package.T2Host.titleid}"/>
+                <option name="title.dbgport" value="3232"/>
+            </optionset>
+        </script>
+
+        <buildsteps>
+            <packaging deployassets="true">
+                <assetfiles basedir="${package.dir}/sample/tester2/source/nx/data" if="${config-system} == 'nx'">
+                    <includes name="**"/>
+                </assetfiles>
+                <assetfiles basedir="${package.dir}/sample/tester2/source/xboxone" if="${config-system} == 'capilano' and !${gdk.enabled??false}">
+                    <includes name="*.hlsl"/>
+                </assetfiles>
+                <assetfiles basedir="${package.dir}/sample/tester2/source/gdk" if="${gdk.enabled??false}">
+                    <includes name="*.cso"/>
+                </assetfiles>
+            </packaging>
+            <run>
+                <!-- set the workingdir to make sure we can load the prx -->
+                <workingdir if="${config-system} == 'kettle'">
+                    @{GetModuleOutputDir('bin','DirtySDK')}
+                </workingdir>
+            </run>
+        </buildsteps>
+
+        <visualstudio>
+            <msbuildoptions>
+                <option name="GgpApplication" value="T2Host" if="${config-system} == 'stadia'"/>
+            </msbuildoptions>
+        </visualstudio>
+    </Program>
+
+    <do if="${config-system} == 'nx'">
+        <!-- overrriding default nmeta file settings -->
+        <optionset name="runtime.T2Host.nmetaoptions">
+            <option name="core.name" value="T2Host"/>
+            <option name="core.applicationId" value="0x010090800cf18000"/>
+            <option name="application.startupUserAccount" value="RequiredWithNetworkServiceAccountAvailable"/>
+        </optionset>
+    </do>
+
+    <do if="${config-system} == 'capilano' and !${gdk.enabled??false}">
+        <!-- pull in dirtysdk networkmanifest and add our own -->
+        <echo message="setting T2Host network manifest files"/>
+        <property name="runtime.T2Host.networking-manifest-files">
+            ${package.DirtySDK.networking-manifest-files}
+            ${package.dir}/scripts/sample/t2host-networkmanifest.xml
+        </property>
+    </do>
+</project>

@@ -38,7 +38,7 @@
 #include <Page.h>
 #include <PageGroup.h>
 #include <PlatformCookieJar.h>
-#include <webpage.h>
+#include <WebPage.h>
 #include <wtf/MathExtras.h>
 
 using namespace WebCore;

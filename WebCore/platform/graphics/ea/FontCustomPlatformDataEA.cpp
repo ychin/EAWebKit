@@ -24,7 +24,7 @@
 #include "FontPlatformData.h"
 #include "SharedBuffer.h"
 #include <EAWebKit/EAWebKit.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include "WOFFFileFormat.h"
 
 namespace WebCore {

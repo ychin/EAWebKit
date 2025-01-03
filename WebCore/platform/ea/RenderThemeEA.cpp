@@ -58,7 +58,7 @@
 #include "UserAgentStyleSheets.h"
 #include "UserAgentStyleSheetsAndScriptsEA.h"
 #include <EAWebKit/EAWebKit.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitAssert.h>
 #include "PaintInfo.h"
 #include "MediaControlElements.h"
@@ -1150,7 +1150,7 @@ double RenderThemeEA::caretBlinkInterval() const
 
 #if ENABLE(VIDEO)
 // To modify the slider location. 
-LayoutPoint RenderThemeEA::volumeSliderOffsetFromMuteButton(const RenderBox& muteButtonBox, const LayoutSize& size) const const
+LayoutPoint RenderThemeEA::volumeSliderOffsetFromMuteButton(const RenderBox& muteButtonBox, const LayoutSize& size) const
 {
     int y = -size.height();
     FloatPoint absPoint = muteButtonBox.localToAbsolute(FloatPoint(muteButtonBox.offsetLeft(), y), IsFixed | UseTransforms);

@@ -62,7 +62,11 @@
 #undef HAVE_FPCLASS
 
 /* Define to 1 if you have the `fprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_FPRINTF
+#else
     #define HAVE_FPRINTF 1
+#endif
 
 /* Define to 1 if you have the `fp_class' function. */
 #undef HAVE_FP_CLASS
@@ -134,7 +138,11 @@
 #undef HAVE_NETINET_IN_H
 
 /* Define to 1 if you have the `printf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_PRINTF
+#else
     #define HAVE_PRINTF 1
+#endif
 
 /* Define if <pthread.h> is there */
 #undef HAVE_PTHREAD_H
@@ -152,13 +160,25 @@
 #undef HAVE_SIGNAL_H
 
 /* Define to 1 if you have the `snprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_SNPRINTF
+#else
     #define HAVE_SNPRINTF 1
+#endif
 
 /* Define to 1 if you have the `sprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_SPRINTF
+#else
     #define HAVE_SPRINTF 1
+#endif
 
 /* Define to 1 if you have the `sscanf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_SSCANF
+#else
     #define HAVE_SSCANF 1
+#endif
 
 /* Define to 1 if you have the `stat' function. */
 #undef HAVE_STAT
@@ -235,13 +255,25 @@
 #endif
 
 /* Define to 1 if you have the `vfprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_VFPRINTF
+#else
     #define HAVE_VFPRINTF 1
+#endif
 
 /* Define to 1 if you have the `vsnprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_VSNPRINTF
+#else
     #define HAVE_VSNPRINTF 1
+#endif
 
 /* Define to 1 if you have the `vsprintf' function. */
+#if defined(EA_PLATFORM_REVOLUTION) || defined(EA_PLATFORM_CAFE)
+    #undef HAVE_VSPRINTF
+#else
     #define HAVE_VSPRINTF 1
+#endif
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H

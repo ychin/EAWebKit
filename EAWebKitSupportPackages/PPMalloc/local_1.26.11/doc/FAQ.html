@@ -1,0 +1,900 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>PPMalloc FAQ</title>
+  <meta content="Frequently Asked Questions" name="description">
+  <style type="text/css">
+    .SmallBody{
+        font-size: 10pt
+    }
+    
+    body 
+    {
+	    font-family: Palatino Linotype, Book Antiqua, Times New Roman;
+	    font-size: 11pt;
+    }
+
+    h1
+    {
+	    font-family: Verdana;
+	    display: block;
+	    background-color: #FFF0B0;
+	    border: solid 2px black;
+	    font-size: 16pt;
+	    font-weight: bold;
+	    padding: 6px;
+    }
+
+    h2 
+    {
+	    font-size: 14pt;
+    	font-family: Verdana;
+    	border-bottom: 2px solid black;
+    }
+
+    h3
+    {
+    	font-family: Verdana;
+    	font-size: 13pt;
+    	font-weight: bold;
+    }
+
+    .code-example 
+    {
+    	display: block;
+    	background-color: #e0e0f0;
+    	margin-left: 3em;
+    	margin-right: 3em;
+	    margin-top: 1em;
+	    margin-bottom: 1em;
+	    padding: 8px;
+	    border: solid 2px #a0a0d0;
+	    font-family: monospace;
+	    font-size: 10pt;
+	    white-space: pre;
+    }
+
+    .code-example-span 
+    {
+    	font-family: monospace;
+    	font-size: 10pt;
+    	white-space: pre;
+    }
+
+    .code-example-comment
+    {
+    	background-color: #e0e0f0; 
+    	padding: 0px 0px; 
+    	font-family: monospace; 
+    	font-size: 10pt; 
+    	white-space: pre; 
+	    color: #999999; 
+	    margin: auto auto; 
+    }
+
+
+    .faq-question
+    {
+    	background-color: #D0E0D0;
+    	font-size: 12pt;
+	    font-weight: bold;
+	    margin-bottom: 0.5em;
+        margin-top: 0em;
+	    padding-left:8px;
+	    padding-right:8px;
+	    padding-top:2px;
+	    padding-bottom:2px
+    }
+
+    .faq-answer
+    {
+    	display: block;
+    	margin: 4pt 1em 0.5em 1em;
+    }
+    .style1
+    {
+        font-size: 10px; 
+        margin-bottom: 0.5em; 
+        margin-top: 0em; 
+        padding-left:8px; 
+        padding-right:8px; 
+        padding-top:2px; 
+        padding-bottom:2px; 
+        background-color: #D0E0D0;
+    }
+  </style>
+</head>
+
+
+<body>
+
+<h1>PPMalloc FAQ</h1>
+<p><span style="font-weight: bold;"></span><a href="#What_is_PPMalloc">What 
+    is PPMalloc?</a><br>
+  <a href="#Why_is_it_called_PPMalloc">Why is it called PPMalloc?</a><br>
+  <a href="#What_is_the_legal_status_of_PPMalloc">What is the legal status of 
+  PPMalloc?</a><br>
+  <a href="#What_platforms_is_PPMalloc_useful_for">What platforms is PPMalloc 
+  useful for?</a><br>
+  <a href="#Why_create_PPMalloc">Why create PPMalloc; aren't there other allocators 
+  already?</a><br>
+  <a href="#How_efficient_is_PPMalloc">How efficient is PPMalloc?</a><br>
+  <a href="#Where_do_I_get_examples">Where do I get examples of how to use PPMalloc?</a><br>
+  <a href="#I_found_a_bug">I found a bug in the PPMalloc package; what do I 
+  do about it?</a><br>
+  <a href="#What_is_the_complete_set">What is the complete set of compile-time 
+  options&nbsp; (#defines) for PPMalloc?</a><br>
+  <a href="#How_can_it_be">How can block overhead be as little as 4 bytes?</a><br>
+  <a href="#tiny_block_sizes">Why doesn't GeneralAllocator have a special optimization 
+  for small or tiny block sizes?</a><br>
+  <a href="#min_and_max_allocation_sizes">What are the min and max allocation 
+  sizes possible with GeneralAllocator?</a><br>
+  <a href="#kAllocationFlagHigh_doesnt_seem_to_work">GeneralAllocator::kAllocationFlagHigh 
+  doesn't seem to work. What's wrong?</a><br>
+  <a href="#GeneralAllocator_is_initialized">How do I tell if GeneralAllocator 
+  is initialized or how much core it has?</a><br>
+  <a href="#disable_small_block_cache">How do I temporarily disable the small 
+  block cache to improve some kinds of fragmentation?</a><br>
+  <a href="#optimization_settings">What optimization settings are required for 
+  various PPMalloc modules to perform best?</a><br>
+  <a href="#allocate_memory_on_startup">I want to allocate memory on startup 
+  (e.g. in global variables), but there are order of initialization issues.</a><br>
+  <a href="#override_operator_new_and_delete">How do I override operator new 
+  and delete with GeneralAllocator?</a><br>
+  <a href="#override_operator_new_and_delete">How do I override malloc and free 
+  with GeneralAllocator?</a><br>
+  <a href="#all_available_memory_on_startup">I want GeneralAllocator to automatically 
+    allocate all available memory on startup but it doesn't seem to be able to 
+  do that.</a><br>
+  <a href="#shutdown_non_free">GeneralAllocator in its Shutdown is not freeing 
+  the block of memory I gave it on Init.</a><br>
+  <a href="#SetDefaultDebugDataFlag">I tell GeneralAllocatorDebug to use some 
+  debug option with SetDefaultDebugDataFlag(s) and it doesn't work.</a><br>
+  <a href="#long_to_shut_down">Why does GeneralAllocatorDebug seem to take long 
+  to shut down when exiting my app?</a><br>
+  <a href="#managed_DLL">How do I use GeneralAllocator in a managed DLL?</a><br>
+  <a href="#multiprocessor-savvy_allocator">For multiprocessing consoles, do 
+  I want a multiprocessor-savvy allocator such as Hoard or SmartHeap?</a><br>
+  <a href="#mapped_memory">How do I force the usage of mapped memory on platforms 
+  that have it?</a><br>
+  <a href="#alignment_offset">Why must MallocAligned have an alignment offset 
+  of a multiple of 8 and not something smaller?</a><br>
+  <a href="#allocator-wide_minimum_alignment">Why doesn't GeneralAllocator let 
+  you specify an allocator-wide minimum alignment?</a><br>
+  <a href="#swap">How do I swap two allocators?</a><br>
+  <a href="#unexpected_ways">GeneralAllocator allocates memory in unexpected 
+  ways.</a><br>
+  <a href="#high_memory_implemented">How is high memory implemented in GeneralAllocator?</a><br>
+  <a href="#free_heap_space">How do I tell the amount of free heap space from 
+  GeneralAllocator? There's no simple accessor.</a><br>
+  <a href="#assert_or_crash">I get an assert or crash in GeneralAllocator. What 
+  do I do?</a><br>
+  <a href="#large_pages">How do I take advantage of large pages in Windows or 
+  XBox 360?</a><br>
+  <a href="#debug_memory_leaks"> How can I debug memory leaks?</a><br>
+  <a href="#heap_corruption">How do I debug heap corruption problems?</a><br>
+  <a href="#mutex_user_hooks">Why is the GeneralAllocator mutex unlocked when 
+  calling user hooks?</a><br>
+  <a href="#page_protection">I've heard about using page protection to detect 
+    memory problems. How do I do that?<br>
+  </a><a href="#hardware_mmu">Why use a heap manager on XBox 360, PS3 and PC 
+    when they have a hardware MMU?</a><br>
+  <a href="#deterministic">Is GeneralAllocator deterministic?</a><br>
+  <a href="#global_malloc">How do I prevent users from calling global malloc 
+  and new?</a><br>
+  <a href="#gpEAGeneralAllocator">I am getting a linker error regarding gpEAGeneralAllocator.</a><br>
+  <a href="#task_manager">The Windows task manager is showing different memory 
+  stats than GeneralAllocatorDebug.</a><br>
+  <a href="#ptmalloc">Why might I use PPMalloc as opposed to ptmalloc?</a><br>
+  <a href="#HeapAgent">How does PPMalloc compare to HeapAgent, BoundsChecker, Purify?<br>
+  How much overhead does GeneralAllocator Malloc have compared to built-in malloc? </a><br>
+  <a href="#OverrideMalloc">How do I override the malloc and free functions, as this isn't directly supported by C++ as with new/delete?</a><br>
+  <a href="#SetupGeneralAllocator">What's the best way to setup GeneralAllocator for use as the main app heap?<br>
+</a><a href="#CrashDump360">I'm  getting incomplete XBox 360 crash dumps when using PPMalloc.<br>
+</a><a href="#MinimallyAligned">I want MallocAligned to ensure the result is minimally aligned to the requested alignment and no more.</a><br>
+<a href="#MemoryCheck">How do I test the system's memory? I suspect I have bad RAM.</a><br>
+</p>
+<hr>
+<h3>Detail</h3>
+<p class="faq-question"><a name="What_is_PPMalloc"></a>What is PPMalloc?</p>
+<p class="faq-answer">PPMalloc is a suite of memory allocators. At the core is GeneralAllocator, which is a fully generalized allocator which can replace malloc/free but does a lot more. Other specialized allocators are provided for specialized uses and include SmallObjectAllocator, StackAllocator, FixedAllocator, NonLocalAllocator, etc. The algorithm behind GeneralAllocator is derived from the well-studied dlmalloc allocator. The implementation is significantly improved over dlmalloc.</p>
+<p class="faq-question"><a name="Why_is_it_called_PPMalloc"></a>Why is it called PPMalloc?</p>
+<p class="faq-answer">It is simply following the naming tradition of dlmalloc, lkmalloc, ptmalloc, and other variants. You can look these up on the internet if you wish. The PP prefix stands for Plenty Powerful.</p>
+<p class="faq-question"><a name="What_is_the_legal_status_of_PPMalloc"></a>What is the legal status of PPMalloc?</p>
+<p class="faq-answer"> PPMalloc is usable for all uses within Electronic Arts, both internally and in shipping products for all platforms. All source code was written by a single EA engineer and none of the source code comes from an external source. The primary algorithm of GeneralAllocator is based on the public domain dlmalloc algorithm and it has been confirmed with EA legal that there are no legality issues with this. </p>
+<p class="faq-question"><a name="What_platforms_is_PPMalloc_useful_for"></a>What platforms is PPMalloc useful for?</p>
+<p class="faq-answer">PPMalloc is designed to work on all Electronic Arts platforms for both internal and shipping runtime code. The runtime optimized code will perform very well on all platforms, from handheld devices and embedded systems up to large server systems of multiple gigabytes. PPMalloc has been tested on both 32 bit and 64 bit systems. </p>
+<p class="faq-answer">The current set of platforms supported by PPMalloc include: PS2, PSP, PS3, GameCube, Revolution, XBox, XBox 360 (a.k.a. Xenon, XBox2), Win32, Win64, WinCE, Linux, MacOSX, Solaris, and BSD Unix.</p>
+<p class="faq-question"><a name="Why_create_PPMalloc"></a>Why create PPMalloc; aren't there other allocators already?</p>
+<p class="faq-answer">Quite simply, PPMalloc outperforms all other observed allocators within EA and in general has more functionality as well. PPMalloc outperforms dlmalloc, so even projects using dlmalloc will see performance improvements with PPMalloc. PPMalloc is particularly useful for its debugging features, which provide pointer validation, named blocks, per-block call stack tracing, detailed heap reporting, detailed heap validation, heap recording and playback, allocation hooks, arbitrary tagged data, flexible guard fills, detailed leak reporting, and more.</p>
+<p class="faq-question"><a name="How_efficient_is_PPMalloc"></a>How efficient is PPMalloc?</p>
+<p class="faq-answer">Speed-wise, PPMalloc's GeneralAllocator is similar to dlmalloc but slightly faster, assuming you use them configured equivalently. This algorithm is well-studied and provides some of the fastest performance seen in generalized allocators. PPMalloc has other more specialized allocators such as FixedAllocator and StackAllocator which provide fixed-size block allocation and pointer-increment allocation respectively. These later allocators work much like other similar systems you may have seen.</p>
+<p class="faq-answer">Memory-wise, PPMalloc's GeneralAllocator is nearly identical to dlmalloc in its efficiency. Due to interesting tricks done with internal block management, there is a nonimal overhead of only four bytes per allocation. This is about as low as it gets for a generalized allocator. PPMalloc is a strongly coalescing allocator; all free blocks are immediately merged with surrounding blocks in order to reduce fragmentation. FixedAllocator has zero overhead per an individual allocation but wastes memory due to unused blocks in its pool. StackAllocator has zero overhead per individual allocation. HandleAllocator has the same overhead as GeneralAllocator but has heap compaction functionality in order to eliminate fragmentation. </p>
+<p class="faq-question"><a name="Where_do_I_get_examples"></a>Where do I get examples of how to use PPMalloc modules such as GeneralAllocator?</p>
+<p class="faq-answer">Example code can be found in these documentation files, the project 'scrap' directory, and most significantly, the unit test code. The simplest example of all is this:</p>
+<pre class="code-example">EA::Allocator::GeneralAllocator allocator;
+<span style="font-family: monospace;">allocator.Malloc(20);</span></pre>
+<p class="faq-question"><a name="I_found_a_bug"></a>I found a bug in the PPMalloc package; what do I do about it?</p>
+<p class="faq-answer">  It would be best if you reported it to the package owner. You can find out about the package at the EA Package Server at <a href="http://packages.eac.ad.ea.com/">http://packages.eac.ad.ea.com/</a></p>
+<p class="faq-question"><a name="What_is_the_complete_set"></a>What is the complete set of compile-time options&nbsp; (#defines) for PPMalloc?</p>
+<p>These options are defined for each module in the header file for that module. Examples of such defines for GeneralAllocator include (but aren't limited to) PPM_NULL_POINTER_FREE_ENABLED, PPM_HOOKS_SUPPORTED, PPM_AUTO_HEAP_VALIDATION_SUPPORTED, and PPM_NEW_CORE_SIZE_DEFAULT.</p>
+<p class="faq-question"> <a name="How_can_it_be"></a>How can it be that the system overhead for an allocated block 
+in GeneralAllocator can be as little as 4 bytes when an allocated Chunk looks like this (and thus seems to have 
+an overhead of 8 bytes)?:</p>
+<pre class="code-example">struct Chunk
+{
+    uint32_t mnPriorSize;
+    uint32_t mnSize;
+    char&nbsp;mUserData[];
+};</pre>
+<p>The reason is that allocated chunks use the mnPriorSize field of the next chunk in memory for user data. It turns out that the mnPriorSize field is only needed when applied to free chunks, so allocated chunks are free to use this field for user data. If all user allocations were an even multiple of 8 plus 4 (i.e. 4, 12, 20, 28, etc.), then allocations would pack very tightly indeed and would always have exactly and only 4 bytes of overhead. Alignment requirements and the user requests of odd-sized blocks (e.g. 13 bytes) can raise the nominal 4 byte overhead above 4.</p>
+<p class="faq-question">Why doesn't GeneralAllocator have a special optimization for small or <a name="tiny_block_sizes"></a>tiny block sizes?</p>
+<p>Some generalized heap allocators have a special optimization for small or tiny block sizes. What they often do is reserve a fixed block of memory for allocations of 4, 8, 12 and 16 byte allocations and allocation requests within this size range come from this block and have zero overhead (unlike GeneralAllocator's 4 or 8 byte overhead).</p>
+<p>Small block support with GeneralAllocator would be outside the domain of GeneralAllocator, would bloat the implementation, and would take away user freedom to implement a small block allocation scheme that best suites their needs. GeneralAllocator implements a single general purpose heap with a rich set of functionality for that heap. A small block allocator within GeneralAllocator would make it no longer be a single generalized heap and would make the heap functionality much more difficult to support.</p>
+<p>The solution is to create a shim between the user and GeneralAllocator (which just about all projects already do) and call your own custom small block allocator from the shim. This gives the user the freedom of using their own small block allocator and allows the easy enabling and disabling of that functionality at compile-time or run-time. The examples directory has an example of such a small object allocator.</p>
+<p class="faq-question">What are the <a name="min_and_max_allocation_sizes"></a>min and max allocation sizes possible with GeneralAllocator?</p>
+<p class="faq-answer">The minimum allocation size is zero bytes.</p>
+<p class="faq-answer">The maximum allocation size is about 2GB - 2K on both 32 bit and 64 bit systems. However, there is an option to have the maximum be about 2^63 - 2K on 64 bit systems, at the cost of higher per-block overhead (8 bytes per block).</p>
+<p class="faq-question">GeneralAllocator::<a name="kAllocationFlagHigh_doesnt_seem_to_work"></a>kAllocationFlagHigh doesn't seem to work. I allocate a block with <span style="font-family: monospace;">Malloc(16, GeneralAllocator::kAllocationFlagHigh);</span> and the returned block isn't high.</p>
+<p class="faq-answer"> With PPMalloc's GeneralAllocator, you can request that a block be allocated low or high in the heap. Blocks requested to be high in the heap are meant to be more permanent while those located low are more dynamic. The idea is that you get better heap packing with that design. </p>
+<p class="faq-answer">With PPMalloc, this functionality is enabled by making sure that PPM_HIGH_SUPPORTED is defined to 1. With console platforms this value defaults to 1, so you probably don't have to do anything for them. Once high allocation is enabled via this define, you need to enable it at runtime with a call to SetOption(GeneralAllocator::kOptionEnableHighAllocation, 1). The reason this is required is that there is a (albeit small) runtime cost to this functionality. From there you simply pass in the kAllocationFlagHigh flag to Malloc.</p>
+<p class="faq-question">How do I tell if <a name="GeneralAllocator_is_initialized"></a>GeneralAllocator is initialized or how much core it has? </p>
+<p class="faq-answer">In the name of simplicity, there currently is no function to tell if GeneralAllocator has been initialized (and thus has core). But here is a function that does this for you:</p>
+  <pre class="code-example">size_t GetCoreSize(GeneralAllocator* pGA)
+ <font face="Arial" size="2"><span class="256003001-08092004"><font face="Courier New" size="1">{</font></span></font>
+ &nbsp;&nbsp; size_t size = 0;
+ &nbsp;&nbsp; const void* const pContext = pGA-&gt;ReportBegin(NULL, GeneralAllocator::kBlockTypeCore);
+
+ &nbsp;&nbsp; for(const GeneralAllocator::BlockInfo* pBlockInfo = pGA-&gt;ReportNext(pContext); 
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;pBlockInfo; pBlockInfo = pGA-&gt;ReportNext(pContext))
+ &nbsp;&nbsp;&nbsp;{
+     &nbsp;&nbsp; size += pBlockInfo-&gt;mnBlockSize;
+ &nbsp;&nbsp; }
+
+    pGA-&gt;ReportEnd(pContext);
+ &nbsp;&nbsp; return size;
+ }   </pre>
+  <p class="faq-question">How do I temporarily <a name="disable_small_block_cache"></a>disable the small block cache to improve some kinds of fragmentation?</p>
+<p class="faq-answer">The small block cache (a.k.a. fast bin cache) improves speed and in some cases improves fragmentation. However, there are some allocation patterns whereby the small block cache worsens fragmentation. Memory allocation patterns can be very complex to analyze, and so there is no simple way to provide a simplified predictor for this situation. You can however enable and disable the small block cache with the kOptionMaxFastBinRequestSize function, as so:</p>
+<pre class="code-example">SetOption(GeneralAllocator::kOptionMaxFastBinRequestSize, 0);&nbsp; // Disables it
+<font size="-1">SetOption(GeneralAllocator::kOptionMaxFastBinRequestSize, 64); // Enables it</font></pre>
+<p class="faq-answer">You may want to try enabling and disabling the cache at certain times during runtime. Additionally, following sound practices regarding memory allocation practices will help alleviate the situation as well.</p>
+<p class="faq-question">What <a name="optimization_settings"></a>optimization settings are required for various PPMalloc modules to perform best?</p>
+<p class="faq-answer">Some
+    of the PPMalloc modules require function inlining to be enabled to
+    perform at their best. These modules are GeneralAllocator,
+    FixedAllocator, and StackAllocator. With other modules, inlining
+    doesn't significantly matter. The inlined functionality of the above
+    three modules is chosen such that the inlined functions are almost
+    always very small one to three line functions whose inlining not only
+    improves the speed of the function but also adds little or no size to
+    it due to the smallness of the operation. Thus there is almost no
+reason not to enable inlining for these modules in an optimized build.</p>
+<p class="faq-question">I want to be able to <a name="allocate_memory_on_startup"></a>allocate memory on startup (e.g. in global variables), but there are order of initialization issues.</p>
+<p class="faq-answer">If you want to create an instance of allocators on startup and have them initialize before other global objects (which may need these allocators), you need to tell the compiler to alter the initialization order. This can be usually be done by altering the order of object files passed to the linker, but can also be done manually in the source code with many compilers.</p>
+<p class="faq-answer">With GCC 3.x or later, it is done at the object level with:<br>
+  <small><span style="font-family: monospace;"> &nbsp;&nbsp;&nbsp; __attribute__ ((init_priority (n)))</span><br>
+  </small> where n is a value between 101 and 65535 (65535 is default) and lower numbers mean earlier initialization. <br>
+  An example would be:<br>
+  <small><span style="font-family: monospace;"> &nbsp;&nbsp; GeneralAllocator&nbsp; gEAGeneralAllocator(<span style="font-style: italic;">arguments</span>) __attribute__ ((init_priority (1000)));</span><br style="font-family: monospace;">
+  <span style="font-family: monospace;"> &nbsp;&nbsp; GeneralAllocator* gpEAGeneralAllocator = &amp;gEAGeneralAllocator; // Doesn't need init_priority attribute.</span></small><br style="font-family: monospace;">
+Unfortunately, reports are that not all variations of GCC 3.x support this properly.</p>
+<p class="faq-answer">With GCC 2.x (e.g. the PS2 and GameCube compilers), the init_priority attribute is broken and cannot be used to solve this problem. In this case you have no choice but to rearrange the link order or to do an on-demand initialization of the allocator.</p>
+<p class="faq-answer">With VC++, it is done at the source file level by adding either of the following to the top of the .cpp file:<br>
+  <small><span style="font-family: monospace;">&nbsp;&nbsp; #pragma init_seg(compiler)</span><br style="font-family: monospace;">
+  <span style="font-family: monospace;">&nbsp;&nbsp; #pragma init_seg(lib)<br>
+  </span></small>An example would be:<span style="font-family: monospace;"></span><br>
+  <span style="font-family: monospace;"></span><span style="font-family: monospace;"> <small><span style="font-family: monospace;"></span></small></span><span style="font-family: monospace;"><span style="font-family: monospace;"><small><span style="font-family: monospace;">&nbsp;&nbsp; #pragma init_seg(lib)<br>
+  </span></small></span></span><span style="font-family: monospace;"><small><span style="font-family: monospace;"> &nbsp;&nbsp; GeneralAllocator&nbsp; gEAGeneralAllocator(<span style="font-style: italic;">arguments</span>);</span><br style="font-family: monospace;">
+  <span style="font-family: monospace;"> &nbsp;&nbsp; GeneralAllocator* gpEAGeneralAllocator = &amp;gEAGeneralAllocator;</span></small></span></p>
+<p class="faq-question">How do I <a name="override_operator_new_and_delete"></a>override operator new and delete with GeneralAllocator? How about for malloc and free?</p>
+<p class="faq-answer">For overriding new and delete, see EANewDelete.cpp. However, the standard set of functions to override are:</p>
+<pre class="code-example">void* operator new(size_t)<br>void* operator new(size_t, std::nothrow_t&amp;)<br>void* operator new[](size_t)<br>void* operator new[](size_t, std::nothrow_t&amp;)<br>void&nbsp;operator delete(void*)<br>void&nbsp;operator delete(void*, std::nothrow_t&amp;)<br>void&nbsp;operator delete[](void*)<br>void&nbsp;operator delete[](void*, std::nothrow_t&amp;)</pre>
+<p class="faq-answer">  Additionally, when compiling some VC++ code (you especially run into this with MFC), you will find that Microsoft does this in debug builds:<br>
+<small><span style="font-family: courier new;">&nbsp;&nbsp;&nbsp; #define new new(__FILE__, __LINE__)</span></small></p>
+<p class="faq-answer">So if you have code that uses new, it gets silently transformed into a different function call. To make sure you aren't allocating memory from one heap (i.e. MS) and free it with another (i.e. your heap), you need to make sure that you implement a file/line version yourself so that those redefines result in your heap being used. Here is such an example:</p>
+<pre class="code-example">void* operator new&nbsp;(size_t n, const char* pFile, int line);<br>void* operator new[]&nbsp;(size_t n, const char* pFile, int line);<br>void&nbsp;operator delete&nbsp;(void*&nbsp;p, const char* pFile, int line);<br>void&nbsp;operator delete[](void*&nbsp;p, const char* pFile, int line);
+</pre>
+<div style="margin-left: 40px; font-family: courier new;"></div>
+<p class="faq-answer">  The C++ language doesn't allow you to override malloc and free (as opposed to new and delete) at link time in any portable or straightforward way. To override malloc and free requires tricks played with the linker which are system-specific. Application usage of malloc and free can of course be overridden at compile time by #defining malloc and free to be something else that you provide. This technique would work for any source code that you are compiling but would not work for code that comes from some external library and is thus already compiled to use malloc and free directly.</p>
+<p class="faq-answer">GCC lets you override malloc and related functions via the --wrap linker option, currently documented at <a href="http://sourceware.org/binutils/docs-2.16/ld/Options.html#index-_002d_002dwrap-235"><font size="2"> http://sourceware.org/binutils/docs-2.16/ld/Options.html#index-_002d_002dwrap-235</font></a>. To use it you define your function prefixed with &quot;__wrap_&quot; (e.g. __wrap_malloc) and declare an extern version of the function prefixed with &quot;__real_&quot; (e.g. __real_malloc). You then supply a linker argument of the form &quot;--wrap,&lt;func&gt;&quot; (e.g. --wrap,malloc) for each function you want to wrap. Typically you would want to wrap malloc, calloc, realloc, memalign, and free (using the following linker arguments: &quot;--wrap,malloc,--wrap,calloc,--wrap,realloc,--wrap,free&quot;). Here is some example code: </p>
+<pre class="code-example">#include &lt;stdlib.h&gt;
+
+extern &quot;C&quot; {
+   void* __real_malloc(size_t n);
+
+   void* __wrap_malloc(int n)
+   {
+       return __real_malloc(n);
+   }
+}
+
+int main(int, char**)
+{
+   free(malloc(123));
+   return 0;
+}</pre>
+<p class="faq-question">  I want GeneralAllocator to automatically allocate <a name="all_available_memory_on_startup"></a>all available memory on startup but it doesn't seem to be able to do that.</p>
+<p class="faq-answer">GeneralAllocator does not automatically try to make decisions about how it is to be used. Such decisions might be fine for one team but not for another. However, GeneralAllocator does let you initialize it with a hint of how much memory to start with and you can set this hint to be a very large number if you wish. Also, if GeneralAllocator needs memory but has none, it will attempt to obtain memory from the system (if you don't have this feature disabled).</p>
+<p class="faq-question">GeneralAllocator in its Shutdown is <a name="shutdown_non_free"></a>not freeing the block of memory I gave it on Init.</p>
+<p class="faq-answer">The AddCore function (and the Init function) gives you two arguments: bShouldFreeCore and bShouldTrimCore. bShouldFreeCore lets the allocator free the core if during use it becomes unused. bTrimCore lets the allocator free part of the core if it becomes unused. If you set bShouldFreeCore to false, then the allocator will never free the core, including on its shutdown. The reason for this is that very often the reason you set bShouldFreeCore to false is that the core simply cannot be freed (e.g. static memory) or the allocator can't know how to free the core. It may be worth considering adding an extra option to AddCore which allows freeing of the core only on Shutdown, but in the meantime manual freeing of user-supplied core has worked fine for people.</p>
+<p class="faq-question">I tell GeneralAllocatorDebug to use some debug option with <a name="SetDefaultDebugDataFlag"></a>SetDefaultDebugDataFlag(s) and it doesn't work.</p>
+<p class="faq-answer">The
+  most common cause of this is that you are using the option id and not
+  the option flag. As noted in the function documentation, if you want to
+  enable kDebugDataIdCallStack, you need to pass in (1 &lt;&lt; kDebugDataIdCallStack) as the flag and not kDebugDataIdCallStack by itself. Another cause of this problem is specific to kDebugDataIdCallStack and happens when call stack tracing is simply not supported for the current platform. </p>
+<p class="faq-question">Why does GeneralAllocatorDebug seem to take<a name="long_to_shut_down"></a> long to shut down when exiting my app?</p>
+<p class="faq-answer">GeneralAllocatorDebug implements delayed freeing of blocks and depending on the settings, there may be thousands or tens of thousands of such blocks that need to be freed on shutdown. Validation checks are run on these blocks as they are freed and depending on other settings these validation checks can in sum take a relatively long time. Additionally, automatic heap validation can kick in frequently during the freeing of these blocks.. Normally all of this is a good thing, as GeneralAllocator and GeneralAllocatorDebug are very strongly validating and do a good job of finding heap problems. </p>
+<p class="faq-answer">If you want to reduce or disable this slowness, you can reduce the delayed free settings, reduce the guard fill settings, reduce the PPM_DEBUG level to 1, and reduce the automatic heap validation level and/or frequency.</p>
+<p class="faq-question">How do I use GeneralAllocator in a <a name="managed_DLL"></a>managed DLL?</p>
+<p class="faq-answer">There are only issues here if you want to declare a GeneralAllocator object as a global variable. The problem is that the managed C++ DLL startup code doesn't initialize global variables automatically. We don't have a single comprehensive answer to print here at this time (though a little research should rectify this), but you can read about the situation by reading documents such as this: <a href="http://support.microsoft.com/default.aspx?scid=kb;en-us;814472">http://support.microsoft.com/default.aspx?scid=kb;en-us;814472</a></p>
+<p class="faq-question">For multiprocessing consoles, do I want a <a name="multiprocessor-savvy_allocator"></a>multiprocessor-savvy allocator such as Hoard or SmartHeap.</p>
+<p class="faq-answer">You probably don't want a multiprocessor-savvy allocator such as Hoard or Smart Heap. The reason is that these allocators are optimized for the case where memory is very frequently being allocated from multiple threads on multiple processors at the same time. An example of such as case might be a heavily stressed commercial web server. The downside to these allocators is that they are slower than conventional allocators and waste much more memory that conventional allocators. A well-written game application would seek to minimize the amount of dynamic memory allocation and would seek to reduce the allocation volume coming from multiple threads. Additionally, multiprocessor-savvy allocators don't generally start becoming beneficial unless the machine has at least four processors. </p>
+<p class="faq-question">How do I force the usage of <a name="mapped_memory"></a>mapped memory on platforms that have it?</p>
+<p class="faq-answer">As of 5/2005, the platforms that support mapped memory are Windows, Xenon (a.k.a. XBox2), and most Unix variants. The PS3 supports a form of mapped memory which is not entirely understood at this early stage in development. </p>
+<p class="faq-answer">To force the usage of mapped memory, you can use the GeneralAllocator kAllocationFlagMMap allocation flag. Alternatively, you can fiddle with the GeneralAllocator option flags related to mapped memory:</p>
+<p class="faq-answer">&nbsp;&nbsp;&nbsp; kOptionMMapThreshold<br>
+&nbsp;&nbsp;&nbsp; kOptionMMapMaxAllowed<br>
+&nbsp;&nbsp;&nbsp; kOptionMMapTopDown</p>
+<p class="faq-answer">See the code documentation for up-to-date details on all of the above features.</p>
+<p class="faq-question">Why must MallocAligned have an <a name="alignment_offset"></a>alignment offset of a multiple of 8 and not something smaller?</p>
+<p class="faq-answer">It is not possible to have aligned memory returned on multiples other than 8 without adding unusual hacks to the system that would either be slow, burn memory, or be unreliable. Such a hack, for example would be to allocate a bunch of extra memory and fill it with a magic number that isn't likely to be duplicated and use that to tell that you have a unusually-aligned object. Just about any generalized heap (which doesn't implement aligned allocations via wasted memory) with a minimum alignment of 8 would have this same situation, and data types such as uint64_t and double just about require that generalized allocations be of a minimum alignment of 8. </p>
+<p class="faq-answer">There are the following resolutions:</p>
+<ul>
+  <li> The user can allocate 8 extra instead of 4 extra.</li>
+  <li>The user can allocate just 4 extra but store the pointer at the end of the block instead of the beginning. </li>
+  <li>If this was a debug-only thing, you could use the conventional allocation tagging mechanism.</li>
+</ul>
+<p class="faq-question">Why doesn't GeneralAllocator let you specify an <a name="allocator-wide_minimum_alignment"></a>allocator-wide minimum alignment?</p>
+<p class="faq-answer">(Despite the following discussion, PPMalloc now has the PPM_MIN_ALIGN define which controls minimum alignment at compile time). </p>
+<p class="faq-answer">It can be imagined that it might be useful to set the allocator to always return memory with 32 byte alignment, as this would make all allocations friendly to cache line behaviour on platform X. However, GeneralAllocator does not support this behaviour on the grounds of efficiency and portability. Specifically:</p>
+<ul>
+  <li class="faq-answer">Aligned memory significantly increases heap memory use and fragmentation and is slower to allocate.</li>
+  <li class="faq-answer">Code that becomes dependent on allocators implicitly aligning memory to a given boundary will be silently broken when the code is moved to a system that doesn't supply such alignment or supplies a different alignment.</li>
+</ul>
+<p class="faq-answer">Consider that the EA_ALIGN_OF (or GCC's __alignof__) operator can be used to help code detect alignment of a structure in an automatic way for you in most cases. Consider also that you can make a custom operator new that takes alignment, like this:</p>
+<pre class="code-example">#include &lt;new&gt;<br>
+void* operator new(size_t size, size_t align)<br>   { return gAllocator.MallocAligned(size, align); }<br>
+void* operator new[](size_t size, size_t align)<br>   { return gAllocator.MallocAligned(size, align); }</pre>
+<p>  Then users can do this:<br>
+<small><span style="font-family: courier new;">&nbsp;&nbsp;&nbsp; Thing* pThing = new(16) Thing;</span></small></p>
+<p class="faq-question">How do I <a name="swap"></a>swap two allocators?</p>
+<p class="faq-answer">You can swap two allocators via <small><span style="font-family: courier new;">std::swap</span></small> or via any typical equivalent, as the allocators are designed to support conventional C++ object manipulation constructs. For example:</p>
+<pre class="code-example">StackAllocator sa1;
+<span style="font-family: courier new;">StackAllocator sa2;</span>
+<span style="font-family: courier new;">std::swap(sa1, sa2);</span></pre>
+<p class="faq-question">GeneralAllocator allocates memory in <a name="unexpected_ways"></a>unexpected ways.<br>
+</p>
+<p class="faq-answer">If you create a GeneralAllocator instance and allocate a few blocks of memory and then do a memory dump, the memory dump might not look how you initially expected it to look. This can be especially true if you are doing aligned allocations and are doing frees of this memory, and if any of this is being done with GeneralAllocatorDebug as opposed to just GeneralAllocator. The reasons for this are many, and we could spend quite a few pages of text here explaining in detail what is going on, but suffice it to say that there are no known bugs in GeneralAllocator with respect to this and the reasons for unexpected memory layouts can be summarized as:</p>
+<ul>
+  <li class="faq-answer">GeneralAllocator creates free blocks between aligned allocations whenever possible.</li>
+  <li class="faq-answer">GeneralAllocator keeps a cache of small blocks that have been recently freed.</li>
+  <li class="faq-answer">GeneralAllocatorDebug can keep a delayed free list of blocks.</li>
+  <li class="faq-answer">GeneralAllocatorDebug stores debug information within allocated blocks or in extra privately allocated blocks.</li>
+</ul>
+<p class="faq-answer">Another result of this is that sometimes users attempt to manually calculate memory overhead by subtracting the returned pointers of two successive allocations and incorrectly conclude that the overhead is more than it should be.</p>
+<p class="faq-question">How is <a name="high_memory_implemented"></a>high memory implemented in GeneralAllocator?</p>
+<p class="faq-answer">For
+  a heap that is a single large core block (e.g. 32MB), all memory that
+  is below a given designated address is low memory and all memory that
+  is above it is high memory. This value of this address changes at
+  runtime as the user allocates memory from low and high memory. For a
+  32MB heap it starts out at the 16MB point, and as the user allocates a
+  lot of low memory, the dividing point (mpHighFence) moves upward. Then
+  if the user starts allocating high memory, the dividing point moves
+  downward, but is always in between the top of low memory and the bottom
+of high memory.</p>
+<p class="faq-answer">The only complication comes in the case where there are multiple core blocks. In this case, the middle of the first core block is the dividing point and high memory is only memory between that middle point and the top of that core block. Low memory is all low memory in that core block and all memory from any other core blocks. If you exhaust the space from the first core block, the dividing point is moved to a position within the next core block with free space. As soon as that happens then all memory that was considered "high" in the original core block is now considered low and only memory above the dividing point in the new core block is considered high. If the user frees a core block with the dividing point in it, a new dividing point is found within another core block. </p>
+<p class="faq-answer">Memory that straddles the dividing point (i.e. start of block is before it but end of block is after it) is considered to be low memory. The only case this can happen is if all memory in between the low area and the high area has been exhausted and there are no other core blocks.</p>
+<p class="faq-question">How do I tell the amount of <a name="free_heap_space"></a>free heap space from GeneralAllocator? There's no simple accessor.</p>
+<p class="faq-answer">Aside from the GeneralAllocator::GetLargestFreeBlock function, and GeneralAllocatorDebug's Metrics functions, there isn't a single function to get the amount of free space. The reason for this is primarily three-fold:</p>
+<ul>
+  <li class="faq-answer">It's currently not possible to get the free space without walking the heap (e.g. via a report), which is a relatively slow operation. I seem to recall concluding that it wouldn't be a practical idea to have the heap try to continuously update a free memory stat, but that may have been mostly due to the two following reasons (or maybe something additional)...</li>
+  <li class="faq-answer">Due to delayed frees and block caching, the amount of free memory that a report would yield would be different from the amount actually available to a malloc request. In an extreme case, the heap can say it has zero free memory but in fact you can malloc quite a bit from it. This isn't so extreme, as one of the EA teams has shipped intentionally using this usage pattern.</li>
+  <li class="faq-answer">Get the raw amount of free space is useful for printing a statistic on a screen but can't tell you if your next allocation will succeed or fail. </li>
+</ul>
+<p class="faq-answer">However, you can get a decent practical estimate for the amount of free space by getting the amount of allocated memory and subtracting it from the size of the allocator's heap:</p>
+<p class="faq-answer">&nbsp;&nbsp;&nbsp; freesize = heapsize - allocator-&gt;GetMetrics(GeneralAllocatorDebug::kMetricTypeAll).mnAllocationVolume;</p>
+<p class="faq-answer">It might be useful to put this functionality into GeneralAllocator and document it as being only an estimate, as things like delayed frees (if you have them enabled) can make the free space look smaller than it is. </p>
+<p class="faq-answer">Also, aside from the above solutions there is the GetLargestFreeBlock function, which is another memory estimate designed to be very fast but has only so much use.</p>
+<p class="faq-question">I get an <a name="assert_or_crash"></a>assert or crash in GeneralAllocator. What do I do?</p>
+<p class="faq-answer">Most of the time asserts or crashes in GeneralAllocator are due to the user over-running or otherwise corrupting the heap. These asserts or crashes that are due to user-caused heap corruption are often seen in the GeneralAllocator::ClearFastBins function and sometimes occur in release builds and not debug builds. However, the asserts or crashes can occur elsewhere as well. If you are seeing crashes in release but not debug builds, it may be due to the fact that GeneralAllocator packs memory a little more tightly in release builds and just a single byte overrun can cause problems. You can test this by modifying the PPM_DEBUG_PRESERVE_PRIOR value (see the documentation). If an assert occurs while the user is freeing a pointer, the chances are that the pointer has already been freed previously. You can use GeneralAllocatorDebug's kOptionEnablePtrValidation to specifically detect double-frees as they are attempted.</p>
+<p class="faq-answer">If you are getting a crash in GeneralAllocator, the chances are at least 98% that it is due to user code corrupting the heap. Note that just because some previous memory manager that you used didn't crash doesn't mean your code was good. GeneralAllocator packs memory very efficiently, but is concomitantly more sensitive to user errors. That being said, there is always the possibility that some as-yet undetected problem with GeneralAllocator exists. There have been two significant GeneralAllocator bugs found in 2005 and both were cases where the heap was completely exhausted and the user requested more memory but GeneralAllocator but didn't deal with the situation properly (i.e. it didn't simply return a NULL pointer to the user, whereas it should have done so).</p>
+<p class="faq-answer">See also the entry entitled <a href="#heap_corruption">How do I debug heap corruption problems?</a></p>
+<p class="faq-question">  How do I take advantage of <a name="large_pages"></a>large pages in Windows or XBox 360?</p>
+<p class="faq-answer">Large pages is a feature of XBox 360, Win64, and Win32 (Vista and later). A large page is a (usually) 64K page as opposed to a 4K page. Large pages allow memory accesses to be faster (due to lower system overhead) and should be taken advantage of in larger applications when possible. The way to do this with GeneralAllocator is to supply GeneralAllocator with core memory (e.g. AddCore) that uses large pages allocated via VirtualAlloc.</p>
+<p class="faq-answer">On XBox360, large pages are 64K and you can request them via VirtualAlloc by ORing MEM_LARGE_PAGES to the VirtualAlloc flAllocationType parameter. This will round up your allocation size to a multiple of the page size and give you the requested type of page. </p>
+<p class="faq-answer">On Windows platforms, large pages aren't necessarily 64K and you need to call GetLargePageSize to determine the min large page size. Also beware than on Windows large page requests may fail due to system resources being exhausted, and so you should have a fallback plan.</p>
+<p class="faq-answer">Large page functionality is not available on Sony or Nintendo gaming platforms. </p>
+<p class="faq-answer">GeneralAllocator currently doesn't attempt to allocate large pages, as XBox 360 users normally supply core memory manually to GeneralAllocator instances. With respect to Windows platforms, the operating system that support large pages aren't available as of this writing.</p>
+<p class="faq-question">How can I <a name="debug_memory_leaks"></a>debug memory leaks?</p>
+<p class="faq-answer">There are two primary tools in tracking memory leaks:</p>
+<ul>
+  <li class="faq-answer">Allocation naming. This is whereby you give a name to all blocks, as well as file/line info. GeneralAllocatorDebug (GAD) provides such functionality, and wrapper libraries usually make this functionality directly available. You can get the name of a block at runtime via the GetDebugData function. Additionally, the GeneralAllocator (GA) TraceAllocatedMemory function will automatically display the names (and files/lines) of all allocated blocks. Also, the user can manually walk through all free blocks with the GAD memory reporting functions such as ReportHeap.</li>
+  <li class="faq-answer">Allocation call stacks. This is whereby allocation call stacks are attached to allocations by GAD. You can tell GAD to attach call stack information to all allocations or just to individual allocations. You can read this information at runtime as above with allocation names.</li>
+</ul>
+<p class="faq-answer">Additional techniques for tracking down leaks:
+</p>
+<ul>
+  <li class="faq-answer">kDebugDataIdGroup. See GAD for documentation.</li>
+  <li class="faq-answer">Use GAD pointer validation to detect double-frees (the opposite of a memory leak).</li>
+  <li class="faq-answer">Users will often assign independent fixed-block memory pools (e.g. like PPMalloc FixedAllocator) to systems in order to reduce fragmentation and increase cache friendliness. However, it's often useful in a debug build to have these instead use GA/GAD so that memory tracking can be possible where it wasn't previously. Users are often surprised that GA runs about as fast as these fixed block allocators in many real-world situations.</li>
+  <li class="faq-answer">Users can also write custom trackers on a system-by-system basis.</li>
+</ul>
+<p class="faq-answer">If GeneralAllocator reports a memory leak, it is 99% likely that it is in fact a leak and not a problem with the allocator itself. However, improper init/shutdown of the allocator can cause something to look like a leak when it isn't. This can happen, for example, when you shutdown the allocator before you are done using the memory you allocated from it.</p>
+<p class="faq-question"> How do I debug <a name="heap_corruption"></a>heap corruption problems?</p>
+<p class="faq-answer">  90% of heap corruption is due to the following simple causes:</p>
+<ul>
+  <li class="faq-answer">Writing beyond the end of blocks.</li>
+  <li class="faq-answer">Writing to a block after it has been freed.</li>
+  <li class="faq-answer">Double-freeing memory.</li>
+</ul>
+<p class="faq-answer">Other causes of heap corruption include (but are not limited to) the following:</p>
+<ul>
+  <li class="faq-answer">Background DMA writes to invalid memory.</li>
+  <li class="faq-answer">Two source files seeing a different declaration for a struct.</li>
+  <li class="faq-answer">Something that is not a valid pointer is used as a pointer.</li>
+  <li class="faq-answer">Code misgeneration by the compiler.</li>
+</ul>
+<p class="faq-answer">The first thing you want to do is use the ValidateHeap function and possibly the AutoHeapValidation feature. Additionally there is the delayed free feature and the pointer validation feature (kOptionEnablePtrValidation) to help find corruption. Make sure your PPM_DEBUG level is high enough. Another solution for some platforms is to create a <a href="#page_protection">page protected</a> heap.</p>
+<p class="faq-answer">Most of the time asserts or crashes in GeneralAllocator are due to the user over-running or otherwise corrupting the heap. These asserts or crashes that are due to user-caused heap corruption are often seen in the GeneralAllocator::ClearFastBins function and sometimes occur in release builds and not debug builds. However, the asserts or crashes can occur elsewhere as well. If you are seeing crashes in release but not debug builds, it may be due to the fact that GeneralAllocator packs memory a little more tightly in release builds and just a single byte overrun can cause problems. You can test this by modifying the PPM_DEBUG_PRESERVE_PRIOR value (see the documentation). If an assert occurs while the user is freeing a pointer, the chances are that the pointer has already been freed previously. You can use GeneralAllocatorDebug's kOptionEnablePtrValidation to specifically detect double-frees as they are attempted.</p>
+<p class="faq-answer">If you are getting a crash in GeneralAllocator, the chances are at least 98% that it is due to user code corrupting the heap. Note that just because some previous memory manager that you used didn't crash doesn't mean your code was good. GeneralAllocator packs memory very efficiently, but is concomitantly more sensitive to user errors. That being said, there is always the possibility that some as-yet undetected problem with GeneralAllocator exists.</p>
+<p class="faq-answer">Here is some example code that might be useful:</p>
+<pre class="code-example">allocator.SetDefaultDebugDataFlag(EA::Allocator::GeneralAllocatorDebug::kDebugDataIdGuard);
+allocator.SetGuardSize(3.f, 128, 1024);
+allocator.SetOption(EA::Allocator::GeneralAllocatorDebug::kOptionEnablePtrValidation, 1);
+allocator.SetAutoHeapValidation(EA::Allocator::GeneralAllocator::kHeapValidationLevelDetail, 16);
+allocator.SetDelayedFreePolicy(EA::Allocator::GeneralAllocatorDebug::kDelayedFreePolicyCount, 1000);</pre>
+<p class="faq-answer">The numbers above can be changed to use more aggressive numbers, though the return on investment gets flatter.</p>
+<p class="faq-answer">If you can run on a PC or have a lot of free memory, you can try using page protected allocations via EAStompAllocator (PPMalloc\dev\examples\EAStompAllocator.h/cpp).</p>
+<p class="faq-question">Why is the GeneralAllocator <a name="mutex_user_hooks"></a>mutex unlocked when calling user hooks?</p>
+<p class="faq-answer">The reason is that doing so is unsafe because it can create deadlocks that the user may not be able to avoid. So GeneralAllocator puts the onus on the user to make the decision on locking, and gives the user the Lock function to do it right. If GeneralAllocator were to lock the mutex, the user would have no recourse in a deadlock situation, as the user cannot safely unlock the mutex on behalf of GeneralAllocator.</p>
+<p class="faq-answer">Consider this situation:<br>
+&nbsp; &nbsp; &nbsp;User A calls Malloc, which locks the mutex and calls the hook function.<br>
+&nbsp; &nbsp; &nbsp;User B calls system X, which locks its own mutex before calling GeneralAllocator to do something.<br>
+&nbsp; &nbsp; &nbsp;The hook function calls system X, which locks its own mutex before calling GeneralAllocator to do something.</p>
+<p class="faq-answer">In the above situation we have a deadlock because User A has the allocator mutex locked while user B has the X mutex locked. And user a needs the X mutex while user B needs the allocator mutex. </p>
+<p class="faq-answer">The only way for GeneralAllocator to deal with this in a safe way is to not lock the mutex or to possibly have a user-level option to not lock mutexes on hook callbacks and let the user beware.</p>
+<p class="faq-question">I've heard about using <a name="page_protection"></a>page protection to detect memory problems. How do I do that? </p>
+<p class="faq-answer">This technique works on machine architectures that support page-level memory allocation and mapping. The technique is to not use a general purpose allocator such as GeneralAllocator but instead to directly allocate pages for each user allocation and to align the returned pointer so that the end of the user's requested size is at the end of the page. The page after that is set to be non-read/write and thus any reads or writes the user attempts beyond the requested size is immediately trapped with an exception. </p>
+<p class="faq-answer">We provide an example of this technique supplied by Kevin Perry in the examples directory present in the PPMalloc package; see examples/EAStompAllocator.h.cpp).</p>
+<p class="faq-answer">Note that this technique is great for debugging but is perhaps not something you can ship with, as it is a little slow, chews up a lot of address space, and disables other allocator functionality that allocators such as GeneralAllocator have. </p>
+<p class="faq-answer">Current machines that support this functionality are XBox360 (a.k.a. Xenon)/PowerPC, XBox/x86, Win32/x86, Win64/x86-64, Win64-Itanium. Sony and Nintendo-derived platforms such as PS2, PS3, GameCube, and Revolution do not support this functionality.</p>
+<p class="faq-question">Why use a heap manager on XBox 360, PS3 and PC when they have a <a name="hardware_mmu"></a>hardware MMU?</p>
+<p class="faq-answer">Yes and no. The system memory manager has 4 GB of address space to map, but it still has only n MB of physical memory to map to it. And while XBox, XBox 360, and PS3 have memory mapping, they don't have virtual memory (whereby memory is swapped to a hard drive when physical memory is exhausted). Thus, mapped memory that the system supplies must come from a store of free physical memory, and it must be allocated in page-sized blocks. Additionally, PS3 and XBox 360 run significantly faster (~10-15%) if you allocate mapped memory with 64 K pages as opposed to 4K pages, so any allocations that are mapped allocations will want to use 64K pages, though that potentially burns a lot more unused memory.</p>
+<p class="faq-answer">But the real issue is that you need to either do all all your app's allocations with mapped memory or you need to reserve some memory for a conventional space-efficient heap and reserve some memory for mapped allocations. If you choose to do all your app's allocations with mapped memory then you can waste a lot of memory, especially if you try to use those 64K pages. If you choose to do all your app's allocations with a conventional heap, you save a lot of space and run fast (because that heap itself was allocated with 64K pages). Chances are that you want a little of both. If you can figure out an ideal amount of memory to dedicate to the main regular heap on startup, then the rest of physical memory can be allocated as mapped memory. And PPMalloc's GeneralAllocator supports this as per above. GeneralAllocator does not have a feature where by if mappable memory is exhausted, it can try to free some of its regular heap memory back to the system. Actually, it turns out that GeneralAllocator does have this feature, but it won't succeed if your regular heap memory is highly sliced up by allocations; so I'm not sure you could rely on it.</p>
+<p class="faq-question">Is GeneralAllocator <a name="deterministic"></a>deterministic?</p>
+<p class="faq-answer">This would require a definition of deterministic, 
+        and more specifically, deterministic with respect to what? It seems to me 
+  that there two primary aspects of determinism at hand here:</p>
+<ul>
+  <li class="faq-answer">Structural determinism (given identical usage, do its internal data structures stay the same). </li>
+  <li class="faq-answer">Temporal determinism (fancy way of saying if it executes in the constant time). </li>
+</ul>
+<p class="faq-answer">With respect to structural determinism, PPMalloc is deterministic if you supply it with consistent core. On a console, you generally obtain an N MB block of memory and hand it over to PPMalloc and tell it to use that. This will result in deterministic behaviour. You can also do this with desktop and server platforms such as Win32 and Linux, though people tend not to do this in the shipping version of such applications. With these desktop platforms, people often let PPMalloc get its 'core' memory from the system as it needs it and as the system provides it. This is non-deterministic, particularly on Windows.</p>
+<p class="faq-answer">With respect to temporal determinism, there are two kinds of determinism: </p>
+<ul>
+  <li class="faq-answer">Will a pattern of allocations take identical time between runs? </li>
+  <li class="faq-answer">Will any allocation take the same time as any other allocation? </li>
+</ul>
+<p class="faq-answer">PPMalloc is deterministic with respect to the first item, but not the second item. If you do ten calls to Malloc, the amount of time each takes can and will differ, sometimes by an order of magnitude. If you are using Win32 and letting it obtain core automatically from the OS, then the time can vary by two or more orders of magnitude in the case that core has been exhausted and new core needs to be obtained from the system. This latter case is rare and shouldn't happen in a well-tuned game, but it is a theoretical possibility. Making a general heap that is fast, space-efficient, and yet temporally deterministic is a difficult exercise. You tend to get only two out of these three features. A strictly bin-based allocator will be fast and more temporally deterministic, but it wastes memory. </p>
+<p class="faq-question">How do I prevent users from using <a name="global_malloc"></a>global malloc and new?</p>
+<p class="faq-answer">The two primary approaches to this are:</p>
+<ul>
+  <li class="faq-answer"> Provide override versions of malloc and new.</li>
+  <li class="faq-answer">Overwrite the code in the existing versions on startup to do something else. </li>
+</ul>
+<p class="faq-answer">The first option is the easiest but VC++ doesn't make it easy to override malloc.</p>
+<p class="faq-answer">The second version can override malloc easily but some platforms (e.g. XBox 360) disallow writing to code and provide no memory unprotection mechanism that can get around it. You can write to code in a DLL on disk before loading the DLL, but this fails for malloc on XBox 360 because Microsoft doesn't provide a C runtime library in a DLL. A modification of the executable before running it would likely work, though the implementation of this is currently beyond the scope of this FAQ.</p>
+<p class="faq-question">I am getting a linker error regarding <a name="gpEAGeneralAllocator"></a>gpEAGeneralAllocator.</p>
+<p class="faq-answer">You would get a link error if you are compiling code that references such a pointer. A couple of the specialized PPMalloc allocators (e.g. StackAllocator) references such a variable. This variable is something that the application defines and initializes, as only the application knows what it wants the value to be set to. It is basically a standard name for the global GeneralAllocator instance. If you don't compile files which use gpEAGeneralAllocator, then you wouldn't have to define such a variable. </p>
+<p class="faq-question">The Windows <a name="task_manager"></a>task manager is showing different memory stats than GeneralAllocatorDebug.</p>
+<p class="faq-answer">GeneralAllocator merely uses the lower level Windows allocation function 
+          to get its core memory: VirtualAlloc. So any discrepancies are going to 
+          have a logical explanation. GeneralAllocator is not doing anything unusual. 
+          In practice, there is no easy way that GeneralAllocator could provide/report 
+          the memory usage numbers reported by the task manager, as there are many 
+          more things that allocate memory than just the main application's heap, 
+  such as: </p>
+<ul>
+  <li class="faq-answer">Application and DLL code. </li>
+  <li class="faq-answer">Application and DLL stack space. </li>
+  <li class="faq-answer">Application and DLL global variables / static heap. </li>
+  <li class="faq-answer">DLL heaps, if the DLLs are using other means of dynamic memory allocation. </li>
+  <li class="faq-answer">Graphics drivers allocations. </li>
+</ul>
+<p class="faq-answer">Almost certainly the above are a major part of discrepancies between Windows task manager values and GeneralAllocator values.</p>
+<p class="faq-question">Why might I use PPMalloc as opposed to <a name="ptmalloc"></a>ptmalloc?</p>
+<p class="faq-answer">ptmalloc is a variant of dlmalloc which has some built-in multithreading knowledge.</p>
+<ul>
+  <li class="faq-answer">ptmalloc's primary advantage (probably it's only advantage) relative to PPMalloc is that if you are very heavily allocating concurrently from the same heap by multiple threads then it will be faster because it doesn't block. But for the common case (and espcially for the common game software case), ptmalloc is slower because it has this overhead. </li>
+  <li class="faq-answer">ptmalloc is written for both GCC and Unix and doesn't work elsewhere without porting work on your side. And the porting work is non-trivial because it has a Unix mindset of sbrk-based memory extension instead of mapped memory like other platforms. </li>
+  <li class="faq-answer">ptmalloc is difficult to trace/debug. </li>
+  <li class="faq-answer">PPMalloc wastes less memory than ptmalloc, due to ptmalloc's per thread heap info. </li>
+  <li class="faq-answer">PPMalloc has a plethora of debugging functionality, whereas ptmalloc has almost none. This alone is enough of a reason by itself. </li>
+  <li class="faq-answer">PPMalloc has additional features (outside of debugging) that ptmalloc doesn't have. </li>
+  <li class="faq-answer">PPMalloc supports many platforms, including all relevant gaming platforms, desktop platforms, and server platforms. </li>
+  <li class="faq-answer">PPMalloc GeneralAllocator -- which is similar in scope to ptmalloc and dlmalloc -- fragments memory less than either of them. </li>
+  <li class="faq-answer">PPMalloc is in use around EA and has shipped with many games and has tools and knowledge developed around it. </li>
+  <li class="faq-answer">ptmalloc has no support, whereas PPMalloc is supported and maintained by EATech. And when a new gaming platform arrives, PPMalloc is ported to it for you. </li>
+  <li class="faq-answer">There are few tests for ptmalloc, and thus it is somewhat perilous to modify it and feed confident. PPMalloc has a rigorous suite of unit tests. </li>
+  <li class="faq-answer">PPMalloc is a suite of specialized allocators with a consistent design and not just a generalized heap:
+      <ul>
+        <li>fixed-size allocator </li>
+        <li>stack allocator (a.k.a. linear allocator) </li>
+        <li>handle allocator </li>
+        <li>general allocator (roughly equivalent to ptmalloc) </li>
+        <li>small object allocator </li>
+        <li>non-local allocator</li>
+        <li>heap recorder </li>
+      </ul>
+  </li>
+</ul>
+<p class="faq-question">How does PPMalloc compare to <a name="HeapAgent" id="HeapAgent"></a>HeapAgent, BoundsChecker, Purify?</p>
+<p class="faq-answer">PPMalloc: </p>
+<table border="0" width="100%" cellspacing="1">
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Free and usable without limitations. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Is always present. Works with the codebase as you develop it. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Better supported than anything else. You get to email the actual author and get source code. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Provides just about all the conventional heap validation options that others have, plus some additional. This includes active bad memory write detection when using the page protected allocator (though it's not as flexible as with Purify). Actually, PPMalloc's heap validation is more rigorous than that provided by HeapAgent or BoundsChecker. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Works on all conceivable platforms and compilers and doesn't break when the compiler or OS changes.</td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Doesn't detect overruns as they occur (detects them when the heap or pointer is validated). The page protected allocator can provide some of this detection, though at some cost and limitations. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Debug functionality works only on PPMalloc heaps. Can't use it on the Windows provided heap, for example. </td>
+  </tr>
+</table>
+<p class="faq-answer">HeapAgent: </p>
+<table border="0" width="100%" cellspacing="1">
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Has a GUI app to go with the heap validation functionality. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Probably better than BoundsChecker at heap validation, but does only heap validation. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Can't work with a user-implemented heap. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Is tied to compiler revisions. Change you compiler and your HeapAgent may break. </td>
+  </tr>
+</table>
+<p class="faq-answer">BoundsChecker: </p>
+<table border="0" width="100%" cellspacing="1">
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Does Windows API validation, profiling, and coverage testing as well as doing memory validation. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Can't work with a user-implemented heap. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Is tied to compiler revisions. Change you compiler and your HeapAgent may break. </td>
+  </tr>
+</table>
+<p class="faq-answer">Purify: </p>
+<table border="0" width="100%" cellspacing="1">
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Works the best of all solutions&hellip; if you can get it to work. It instruments the binary code, unlike other solutions which patch malloc calls. Purify is rather like Valgrind (Linux tool). So it sees your bad memory writes as they occur. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Non-intrusive. You can just point it at an app in its /bin directory. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Has a working downloadable demo.</td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">+</td>
+    <td>Can detect memory leaks as they occur instead of just when the app is exiting. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Cost is prohibitive for team-wide use. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Very flaky. We gave up on it after not being able to get it to work with large projects and trying technical support. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Very slow. Works only on small projects. It is unusable on large PC games such as Sims 2 and SimCity 4. </td>
+  </tr>
+  <tr>
+    <td width="33">&nbsp;</td>
+    <td width="19" align="center">&#8722;</td>
+    <td>Can't fully work with a user-implemented heap. </td>
+  </tr>
+</table>
+<p class="faq-answer">PPMalloc's debug heap functionality is actually fairly similar to HeapAgent and BoundsChecker. They don't do much more than PPMalloc. Purify is another story, as it is more powerful than any of the others. In practice you are most likely to be able to solve whatever problems you are having by simply cranking up the PPMalloc debug options. You will definitely solve them if they are repeatable. See other FAQ entries for information on the options.</p>
+<p class="faq-answer">Also there are the EACallstack and ExceptionHandler packages which provide additional debug functionality that may be useful. One of the things EACallstack has (in addition to its primary functionality) is the CallstackRecorder, which can be used to record and match refcount mismatches and resulting leaks.</p>
+<p class="faq-question">How much overhead does GeneralAllocator Malloc have compared to built-in malloc?<a name="MallocOverhead"></a></p>
+<p class="faq-answer">Here is a comparison between the Microsoft C Runtime Library malloc and PPMalloc GeneralAllocator. An application was run which does nothing but allocate memory of a given size until it fails.</p>
+<p class="faq-answer">Number of allocations that could be done. </p>
+<blockquote>
+<table border="1" cellspacing="0">
+  <tr>
+    <td><div align="right">size</div></td>
+    <td><strong>CRT Debug </strong></td>
+    <td><strong>CRT Release </strong></td>
+    <td><strong>PPMalloc Debug</strong></td>
+    <td><strong>PPMalloc Release</strong></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">0</div></td>
+    <td class=xl28 x:num="7783292"><div align="right">7,783,292</div></td>
+    <td class=xl28 x:num="15578941"><div align="right">15,578,941</div></td>
+    <td class=xl28 x:num="31096762"><div align="right">31,096,762</div></td>
+    <td class=xl29 x:num="31151737"><div align="right">31,151,737</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">4</div></td>
+    <td class=xl28 x:num="7783292"><div align="right">7,783,292</div></td>
+    <td class=xl28 x:num="15578941"><div align="right">15,578,941</div></td>
+    <td class=xl28 x:num="31096762"><div align="right">31,096,762</div></td>
+    <td class=xl29 x:num="31151737"><div align="right">31,151,737</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">8</div></td>
+    <td class=xl28 x:num="7783292"><div align="right">7,783,292</div></td>
+    <td class=xl28 x:num="15578941"><div align="right">15,578,941</div></td>
+    <td class=xl28 x:num="20731155"><div align="right">20,731,155</div></td>
+    <td class=xl29 x:num="31151737"><div align="right">31,151,737</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">16</div></td>
+    <td class=xl28 x:num="6225129"><div align="right">6,225,129</div></td>
+    <td class=xl28 x:num="15578941"><div align="right">15,578,941</div></td>
+    <td class=xl28 x:num="15548365"><div align="right">15,548,365</div></td>
+    <td class=xl29 x:num="20767806"><div align="right">20,767,806</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">32</div></td>
+    <td class=xl28 x:num="5188860"><div align="right">5,188,860</div></td>
+    <td class=xl28 x:num="10383434"><div align="right">10,383,434</div></td>
+    <td class=xl28 x:num="10365576"><div align="right">10,365,576</div></td>
+    <td class=xl29 x:num="12460687"><div align="right">12,460,687</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">64</div></td>
+    <td class=xl28 x:num="3891646"><div align="right">3,891,646</div></td>
+    <td class=xl28 x:num="6230066"><div align="right">6,230,066</div></td>
+    <td class=xl28 x:num="6219334"><div align="right">6,219,334</div></td>
+    <td class=xl29 x:num="6922601"><div align="right">6,922,601</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">128</div></td>
+    <td class=xl28 x:num="2594427"><div align="right">2,594,427</div></td>
+    <td class=xl28 x:num="3461148"><div align="right">3,461,148</div></td>
+    <td class=xl28 x:num="3455191"><div align="right">3,455,191</div></td>
+    <td class=xl29 x:num="3664894"><div align="right">3,664,894</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">256</div></td>
+    <td class=xl28 x:num="1556655"><div align="right">1,556,655</div></td>
+    <td class=xl28 x:num="1832783"><div align="right">1,832,783</div></td>
+    <td class=xl28 x:num="1829197"><div align="right">1,829,197</div></td>
+    <td class=xl29 x:num="1887957"><div align="right">1,887,957</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">512</div></td>
+    <td class=xl28 x:num="864805"><div align="right">864,805</div></td>
+    <td class=xl28 x:num="944164"><div align="right">944,164</div></td>
+    <td class=xl28 x:num="942298"><div align="right">942,298</div></td>
+    <td class=xl29 x:num="958490"><div align="right">958,490</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl30 align=right x:num><div align="right">1024</div></td>
+    <td class=xl31 x:num="457836"><div align="right">457,836</div></td>
+    <td class=xl31 x:num="479236"><div align="right">479,236</div></td>
+    <td class=xl31 x:num="478384"><div align="right">478,384</div></td>
+    <td class=xl32 x:num="482943"><div align="right">482,943</div></td>
+  </tr>
+</table>
+</blockquote>
+<p class="faq-answer">Volume of memory that could be allocated. </p>
+<blockquote>
+<table border="1" cellspacing="0">
+  <tr>
+    <td><div align="right">size</div></td>
+    <td><strong>CRT Debug </strong></td>
+    <td><strong>CRT Release </strong></td>
+    <td><strong>PPMalloc Debug</strong></td>
+    <td><strong>PPMalloc Release</strong></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">0</div></td>
+    <td class=xl28 x:num x:fmla="=A22*B6"><div align="right">0</div></td>
+    <td class=xl28 x:num x:fmla="=B22*C6"><div align="right">0</div></td>
+    <td class=xl28 x:num x:fmla="=C22*D6"><div align="right">0</div></td>
+    <td class=xl29 x:num x:fmla="=D22*E6"><div align="right">0</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">4</div></td>
+    <td class=xl28 x:num="31133168" x:fmla="=A23*B7"><div align="right">31,133,168</div></td>
+    <td class=xl28 x:num="62315764" x:fmla="=A23*C7"><div align="right">62,315,764</div></td>
+    <td class=xl28 x:num="124387048" x:fmla="=A23*D7"><div align="right">124,387,048</div></td>
+    <td class=xl29 x:num="124606948" x:fmla="=A23*E7"><div align="right">124,606,948</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">8</div></td>
+    <td class=xl28 x:num="62266336" x:fmla="=A24*B8"><div align="right">62,266,336</div></td>
+    <td class=xl28 x:num="124631528" x:fmla="=A24*C8"><div align="right">124,631,528</div></td>
+    <td class=xl28 x:num="165849240" x:fmla="=A24*D8"><div align="right">165,849,240</div></td>
+    <td class=xl29 x:num="249213896" x:fmla="=A24*E8"><div align="right">249,213,896</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">16</div></td>
+    <td class=xl28 x:num="99602064" x:fmla="=A25*B9"><div align="right">99,602,064</div></td>
+    <td class=xl28 x:num="249263056" x:fmla="=A25*C9"><div align="right">249,263,056</div></td>
+    <td class=xl28 x:num="248773840" x:fmla="=A25*D9"><div align="right">248,773,840</div></td>
+    <td class=xl29 x:num="332284896" x:fmla="=A25*E9"><div align="right">332,284,896</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">32</div></td>
+    <td class=xl28 x:num="166043520" x:fmla="=A26*B10"><div align="right">166,043,520</div></td>
+    <td class=xl28 x:num="332269888" x:fmla="=A26*C10"><div align="right">332,269,888</div></td>
+    <td class=xl28 x:num="331698432" x:fmla="=A26*D10"><div align="right">331,698,432</div></td>
+    <td class=xl29 x:num="398741984" x:fmla="=A26*E10"><div align="right">398,741,984</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">64</div></td>
+    <td class=xl28 x:num="249065344" x:fmla="=A27*B11"><div align="right">249,065,344</div></td>
+    <td class=xl28 x:num="398724224" x:fmla="=A27*C11"><div align="right">398,724,224</div></td>
+    <td class=xl28 x:num="398037376" x:fmla="=A27*D11"><div align="right">398,037,376</div></td>
+    <td class=xl29 x:num="443046464" x:fmla="=A27*E11"><div align="right">443,046,464</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">128</div></td>
+    <td class=xl28 x:num="332086656" x:fmla="=A28*B12"><div align="right">332,086,656</div></td>
+    <td class=xl28 x:num="443026944" x:fmla="=A28*C12"><div align="right">443,026,944</div></td>
+    <td class=xl28 x:num="442264448" x:fmla="=A28*D12"><div align="right">442,264,448</div></td>
+    <td class=xl29 x:num="469106432" x:fmla="=A28*E12"><div align="right">469,106,432</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">256</div></td>
+    <td class=xl28 x:num="398503680" x:fmla="=A29*B13"><div align="right">398,503,680</div></td>
+    <td class=xl28 x:num="469192448" x:fmla="=A29*C13"><div align="right">469,192,448</div></td>
+    <td class=xl28 x:num="468274432" x:fmla="=A29*D13"><div align="right">468,274,432</div></td>
+    <td class=xl29 x:num="483316992" x:fmla="=A29*E13"><div align="right">483,316,992</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl27 align=right x:num><div align="right">512</div></td>
+    <td class=xl28 x:num="442780160" x:fmla="=A30*B14"><div align="right">442,780,160</div></td>
+    <td class=xl28 x:num="483411968" x:fmla="=A30*C14"><div align="right">483,411,968</div></td>
+    <td class=xl28 x:num="482456576" x:fmla="=A30*D14"><div align="right">482,456,576</div></td>
+    <td class=xl29 x:num="490746880" x:fmla="=A30*E14"><div align="right">490,746,880</div></td>
+  </tr>
+  <tr height=17>
+    <td height=17 class=xl30 align=right x:num><div align="right">1024</div></td>
+    <td class=xl31 x:num="468824064" x:fmla="=A31*B15"><div align="right">468,824,064</div></td>
+    <td class=xl31 x:num="490737664" x:fmla="=A31*C15"><div align="right">490,737,664</div></td>
+    <td class=xl31 x:num="489865216" x:fmla="=A31*D15"><div align="right">489,865,216</div></td>
+    <td class=xl32 x:num="494533632" x:fmla="=A31*E15"><div align="right">494,533,632</div></td>
+  </tr>
+</table>
+</blockquote>
+<p>&nbsp;</p>
+<p class="faq-question"><a name="OverrideMalloc"></a>How do I override the malloc and free functions, as this isn't directly supported by C++ as with new/delete?</p>
+<p class="faq-answer">To do this on GCC-based applications you need to use the --wrap compile option to tell the compiler that you want to wrap malloc and free with your own implementation. With VC++-based applications you should be able to just provide your own malloc and free functions and the linker will ignore the standard library versions. </p>
+<p class="faq-question"><a name="SetupGeneralAllocator"></a>What's the best way to setup GeneralAllocator for use as the main app heap?</p>
+<p class="faq-answer">For console platforms, a good pattern is to do the following:</p>
+<ul>
+  <li class="faq-answer">Init the allocator on startup with a huge single block of memory. Allocate this with XPhysicalAlloc on XBox 360 and malloc or a system memory function on PS3.</li>
+  <li class="faq-answer">For XBox 360 allocate any XPhysicalAlloc or VirtualAlloc memory with the PPM_16MB_PAGE_SIZE flag, so the memory will be faster. There is a similar option for PS3.</li>
+  <li class="faq-answer">Use a specialized small block allocator instead of GeneralAllocator for memory allocations below ~8K. PPMalloc comes with a couple small block allocators you can use. </li>
+  <li class="faq-answer">Use GeneralAllocator to fund your small block heap, but consider using high memory for the small block memory and make them be aligned allocations (e.g. 32K of 32K aligned). Combine this high memory usage with the endFit and bestFit flags so the high blocks get forced into the highest spot in high memory. </li>
+</ul>
+<p class="faq-answer">For PC or server platforms (e.g. Windows, MacOS, Unix), it's usually best to not init GeneralAllocator with any core memory and to just let it allocate the core memory itself. It may be useful to set some of the options, but you may find you don't need to set any options. However, if you know that your app will be using at least N megabytes at runtime then it's probably a good idea to seed the allocator with that minimum N amount of memory. On Windows you would allocate that memory with VirtualAlloc; on Unix systems you can allocate it with sbrk or simply malloc.</p>
+<p class="faq-question"><a name="CrashDump360" id="CrashDump360"></a>I'm getting incomplete XBox 360 crash dumps when using PPMalloc.</p>
+<p class="faq-answer">This is due to the fact that the XBox 360 ignores physical memory when generating crash dumps. And by default PPMalloc GeneralAllocator allocates physical memory under XBox 360 (EA_PLATFORM_XENON). There are good reasons for it to allocate physical memory, so the default is there for a reason. A workaround for this problem is to allocate memory yourself for GeneralAllocator via VirtualAlloc (as opposed to XPhysicalAlloc). The downside is that this memory can't be used where the 360 requires physical memory. </p>
+<p class="faq-question"><a name="MinimallyAligned"></a>I want MallocAligned to ensure the result is minimally aligned to the requested alignment and no more.</p>
+<p class="faq-answer">This kind of functionality is useful for debugging, whereby such a feature can help guard against mistaken alignment assumptions in code. GeneralAllocator doesn't have a means for the user to specify that the returned pointer is aligned to the user value (e.g. 32) and not coincidentally by more (e.g. 64). This is a feature that could probably be implemented but would take some effort to achieve a fully satisfactory implementation. However, if the user is willing to put up with some memory waste for this debug feature then this functionality can be built on top of a PPMalloc heap or any heap which has an aligned allocation function. See examples/MinimalAlignmentAllocator.h/cpp for an implementation provided by Dave Cope. </p>
+<p class="faq-question"><a name="MemoryCheck" id="MemoryCheck"></a> How do I test the system's memory? I suspect I have bad RAM.</p>
+<p class="faq-answer">On desktop platforms (Windows and Linux) it's best to run <a href="http://www.memtest.org/">Memtest86+</a>. On Macintosh you can run the <a href="http://www.memtestosx.org/joomla/index.php">Mac equivalent of Memtest</a>. On PS3, the system provides a diagnostic feature which users can run. On XBox 360, you can build and run the MemoryTest app that Kevin Perry wrote and maintains on EA's internalPerforce server at //EAOS_SB/kperry/memorytest/. We don't currently have answers for other platforms.</p>
+<p></p>
+<hr style="width: 100%; height: 2px;">End of document<br>
+
+
+
+
+<br>
+
+
+
+<p>
+</p>
+
+
+
+
+<p><br>
+
+
+</p>
+
+
+
+
+<p><br>
+
+
+</p>
+
+
+
+<p><br>
+
+
+</p>
+
+
+
+<p><br>
+
+
+</p>
+
+
+
+<p><br>
+
+
+</p>
+
+
+
+
+
+
+
+
+</body>
+</html>

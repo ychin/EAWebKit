@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>EAText -- Understanding Character Sets</title>
+  <meta name="author" content="Paul Pedriana">
+  <meta content="Extended description of character sets."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+</head>
+<body style="background-image: url(about:blank);">
+<div>
+  <h1>Understanding
+  Character Sets</h1>
+  <h3>What is a Character Set?</h3>
+  <p>A character set is set of assignments
+    of integers to characters. It is very common for us to think of the
+    number 65 as referring to the letter 'A', but that&nbsp;isn't always
+    the case. This concept is the most important thing
+    to understand here and not understanding it is the biggest source of
+    confusion about character sets. Also, by "character" we generally mean
+"displayed glyph" and not the C++ "char" data type.</p>
+  <h3>What is a Code Page?</h3>
+  <p>A code page is for all
+    practical purposes the same thing as a character set.</p>
+  <h3>What is an Encoding?</h3>
+  <p>An encoding is a way to
+    represent character set values on a computer as a string of bytes. With
+    ASCII encoding, encoded bytes are the same as character set bytes. But
+    with encodings such as MBCS and UTF8, 1 character != 1 byte. </p>
+  <h3>SBCS, MBCS, DBCS</h3>
+  <p>SBCS means "Single Byte Character System"; each character is
+    represented by one byte. MBCS
+    means "Multi Byte Character System"; some characters are represented by
+    one byte, while others are represented by two or more bytes. DBCS means
+"Double Byte Character System" and is a kind of MBCS where characters
+    are represented by at most two bytes. UTF8 (see below) is a kind of
+    MBCS as well. </p>
+  <h3>ASCII</h3>
+  <p>ASCII is a simple SBCS character set
+    whose name stands for "America Standard Code for Information
+    Interchange". It has been around since the 1950s, but the last
+    important version of it is the 1968 revision (ANSI X.3.4-1968). ASCII
+    includes 128 characters with values of 0-127 (see the chart below).
+    ASCII is useful for displaying English, but that's about it.</p>
+  <h3>Extended ASCII</h3>
+  <p>Extended ASCII is an SBCS character set that most properly
+    describes the 1983 ANSI revision (ANSI_X3.110-1983) of ASCII. It
+    includes ASCII plus another 127 characters from 128 to 255 (see the
+    chart below). Extended ASCII is useful for displaying English
+    and&nbsp;most Western European languages. It is the same as ISO 8859-1
+    (below) but
+    has some extra control characters.</p>
+  <h3>ISO 8859-1 (Latin 1)</h3>
+  <p>ISO 8859-1 is an&nbsp;SBCS character set similar to Extended
+    ASCII. It is geared towards
+    displaying characters useful for most&nbsp;Western European languages
+    and not towards displaying&nbsp;symbolic characters. It is the
+    character set that most&nbsp;unsophisticated
+    web pages on the Internet use. There is an ISO 8859-2, -3, etc.
+    but they are of little concern in the world of Unicode. </p>
+  <h3>Unicode</h3>
+  <p>Unicode is a "universal" character set that is effectively a
+    superset of all other conventional character sets. As the Unicode web
+    site says, "Unicode provides a unique number for every character, no
+    matter what the platform, no matter what the program, no matter what
+    the language." While the Unicode standard stands alone, it is for all
+    practical purposes the same as ISO 10646; the two groups intentionally
+    define these to be the same. The Unicode standard puts all characters
+    into a 16 bit space, though room is left open for implementing more. An
+    example of a font that may be on your Windows computer that has a very
+    large percentage of glyphs from the Unicode character set is the 20MB
+"Arial Unicode" TrueType font. See http://www.unicode.org for more.</p>
+  <h3>UCS2, UCS4</h3>
+  <p>UCS means "Universal Character Set". UCS2 simply means that you
+    are using two bytes (uint16_t) to store a Unicode character. UCS2 is
+    how Microsoft implements Unicode in Windows. Most Unix variants
+    implement Unicode via UCS4, which means that 4 bytes (uint32_t) are
+    used
+    per character. Since the Unicode standard puts all characters into a 16
+    bit character space,&nbsp;UCS4 is
+    overkill for Unicode. </p>
+  <h3>UTF8</h3>
+  <p>UTF means "Unicode Transformation Format". UTF8 is an MBCS encoding of
+    Unicode that is designed to be a superset of ASCII. The idea behind
+    UTF8 is that string processing and parsing code that works with ASCII
+    will work with UTF8 without modification. If you have an ASCII string,
+    if could just as well be a UTF8 string. UTF8 adds the ability to store
+    Unicode values as multi-byte sequences that involve byte values greater
+    than 127. Thus, with UTF8, 1 byte sometimes equals 1 character set
+    value and sometimes it doesn't. But either way, all UTF8 sequences map
+    directly to Unicode characters; UTF8 is Unicode. Many web
+    pages (especially Asian web pages) are implemented with UTF8 instead of
+    ISO 8859-1.</p>
+  <h3>UTF16</h3>
+  <p>UTF16 is an encoding
+    of Unicode that uses two bytes per character for nearly all
+    characters. It leaves room at the very top to act like UTF8 and
+    implement a multi-byte encoding for some characters. But hardly anybody
+    uses those characters and thus UTF16 is for most uses the same thing as
+    UCS2. </p>
+  <h3>FAQs</h3>
+  <p>Q: Why is UTF8 used so often instead of
+    UCS2? Windows NT/XP uses 16 bit characters&nbsp;("WCHAR") natively,
+    right?<br>
+    A: It's all about compatibility. There is a very large amount of
+    existing code that implements one byte (Uint8) per character and it
+    would be prohibitive to port it all to Uint16. The fact that Windows XP
+    runs with UCS2 and has UCS2 APIs isn't
+    enough to make it practical for many to use it. Windows 98 doesn't use
+    UCS2, Unix and Macintosh don't use UCS2, and most third party tools
+    you'll need to use don't use UCS2. So unfortunately, as great as UCS2
+    is, it is impractical for many or most projects to use it.<br>
+    <br>
+    Q: Is Unicode really enough to hold all characters with 16 bits, or is
+    it going to need to be revised some day to 32 bits?<br>
+    A: Unless we start communicating with beings from another planet, 16
+    bits will be enough. However, some scholars of classic Asian script
+    have argued that there are many additional ancient Asian characters
+    that have not been recognized by the Unicode standard.<br>
+    <br>
+    Q: What do I have to know in order to program with strings that are
+    UTF8-encoded?<br>
+    A: For all values &lt; 127, UTF8 strings are the same as ASCII, so any
+    code that you have that looks for control characters or characters such
+    as &lt;&gt;:?0^, etc. will work fine. However, you must remember that
+    for values &gt; 128, one byte doesn't necessarily correspond to one
+    glyph value. You will need a decoding function to decipher a UTF8
+    string.<br>
+    <br>
+    Q: What' does the strlen() of a UTF8 string mean? Is it the number of
+    bytes or the number of&nbsp;characters
+    ("glyphs")?<br>
+    A: It is the number of bytes. If you want to know how many characters
+    (a.k.a. code points) a
+    string has, you will
+    need to apply a decoding function.<br>
+    <br>
+    Q: How do I convert characters between various character sets and
+    encodings?<br>
+    A: There are various encoding and decoding functions to convert between
+    any recognized character set and encoding to any other. Unix-based
+    platforms use the iconv API,
+    while Windows uses the MultiByteToWideChar API. The Maxis Core
+    framework has the ConvertEncoding function.</p>
+  <h3>ASCII Chart (English)</h3>
+  <blockquote>
+    <h3><img style="width: 595px; height: 297px;"
+ alt="ASCII.png" src="images/ASCII.png">&nbsp;</h3>
+  </blockquote>
+  <h3><span style="font-weight: bold;">Extended ASCII Chart
+  (Western Europe -- English, German, French, etc.)</span></h3>
+  <blockquote>
+    <h3><img style="width: 595px; height: 561px;"
+ alt="Extended ASCII.png" src="images/Extended%20ASCII.png"> </h3>
+  </blockquote>
+  <h3><span style="font-weight: bold;">ISO 8859-1 (Western
+    Europe -- English, German, French, etc.)</span></h3>
+  <blockquote>
+    <h3><img style="width: 595px; height: 561px;" alt="ISO 8859-1.png"
+ src="images/ISO%208859-1.png">&nbsp;</h3>
+  </blockquote>
+  <h3>Windows Code Page 1252
+  (Western Europe -- English, German, French, etc.)</h3>
+</div>
+<div>
+  <blockquote>
+    <p><img style="width: 596px; height: 562px;"
+ src="images/1252.gif" alt=""></p>
+  </blockquote>
+  <div>
+    <h3><span style="font-weight: bold;">Unicode Chart (All Languages)</span></h3>
+    <p>The Unicode character set is too big to display here, but charts for the entire character set can be found at: <a
+ href="http://www.unicode.org/charts/">http://www.unicode.org/charts/</a>. Microsoft has a very expansive font called "Arial Unicode MS" that includes much of the Unicode character set. You can use this font and the Windows "Character Map" applet to navigate the Unicode character set. Lastly, the Framework documentation consists of a large Excel spreadsheet that includes every Unicode character, one per cell.</p>
+  </div>
+  <div>
+    <blockquote>
+      <p><img alt="CharacterMap app" src="images/Unicode%20Character%20Map.png"
+ style="border: 0px solid ; width: 447px; height: 503px;" hspace="0"></p>
+    </blockquote>
+    <h3></h3>
+  </div>
+  <hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</div>
+</body>
+</html>

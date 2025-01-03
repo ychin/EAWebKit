@@ -1,0 +1,53 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>Frostbite Game Framework Foundation</contactName>
+  <contactEmail>Frostbite.Team.GameFramework.Foundation@ea.com</contactEmail>
+  <componentName>Game Framework - Foundation</componentName>
+  <summary>EACallstack</summary>
+  <description>
+		EACallstack implements a cross-platform runtime callstack, address, and 
+		symbol interpreter. It supports .map, .pdb, and .elf symbol files.
+	</description>
+  <homePageUrl>http://easites.ea.com/EATech/Core/UTF/Pages/default.aspx</homePageUrl>
+  <changes>See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/EACallstack-2.03.04/EACallstack/2.03.04/doc/Changes.html">changelog</a>.</changes>
+  <status>Official</status>
+  <statusComment />
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <tags>eatech, core</tags>
+  <licenseDetails>
+	<license>EA Proprietary (Internal Use Only)</license>
+  </licenseDetails>
+  <sourceLocation>//packages/EACallstack/2.03.04</sourceLocation>
+  <driftVersion>2.03.04</driftVersion>
+  <versionName>2.03.04</versionName>
+  <relationship>
+	<builds>
+	  <build defines="package.testenvironment.include_symbols=true" name="solution" supported="true" />
+	  <build defines="package.testenvironment.include_symbols=true" name="nant" supported="true" targets="build test-build example-build" />
+	  <build defines="package.testenvironment.include_symbols=true" name="test" supported="true" targets="test-run-fast" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc pc-vc-dll pc-vc-dll-tool" name="pc" test="Supported" />
+	  <platform build="Supported" configs="pc64-vc pc64-vc-dll pc64-vc-dll-tool" name="pc64" test="Supported" />
+	  <platform build="Supported" name="unix" test="Supported" />
+	  <platform build="Supported" name="unix64" test="Supported" />
+	  <platform build="Supported" name="osx" test="Supported" />
+	  <platform build="Supported" name="iphone" test="Supported" />
+	  <platform build="Supported" name="iphonesim" test="NotSupported" />
+	  <platform build="Supported" name="android" test="Supported" />
+	  <platform build="Supported" name="capilano" test="Supported" />
+	  <platform build="Supported" name="kettle" test="Supported" />
+	  <platform build="Supported" name="nx" test="Supported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

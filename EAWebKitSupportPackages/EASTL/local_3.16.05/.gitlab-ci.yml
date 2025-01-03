@@ -1,0 +1,4 @@
+include:
+  - project: 'foundation/foundation-ci-files'
+    ref: master
+    file: '/templates/all.gitlab-ci.yml'

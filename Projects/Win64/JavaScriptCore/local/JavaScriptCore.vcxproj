@@ -1,16 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+=======
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>>>>>>> mirror
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>pc64-vc-dev-debug</Configuration>
+    <Configuration>pc64-vc-debug</Configuration>
     <Platform>x64</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="pc64-vc-dev-debug|x64">
-      <Configuration>pc64-vc-dev-debug</Configuration>
+    <ProjectConfiguration Include="pc64-vc-debug|x64">
+      <Configuration>pc64-vc-debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="pc64-vc-dev-opt|x64">
-      <Configuration>pc64-vc-dev-opt</Configuration>
+    <ProjectConfiguration Include="pc64-vc-opt|x64">
+      <Configuration>pc64-vc-opt</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,28 +22,42 @@
     <ProjectGuid>{545B2B54-2E05-D685-49DA-280D6D6A90D1}</ProjectGuid>
     <Keyword>x64Proj</Keyword>
     <ProjectName>JavaScriptCore</ProjectName>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <UCRTContentRoot>C:\Program Files (x86)\Windows Kits\10\</UCRTContentRoot>
     <UniversalCRTSdkDir>C:\Program Files (x86)\Windows Kits\10\</UniversalCRTSdkDir>
     <WindowsSdkDir_10>C:\Program Files (x86)\Windows Kits\10\</WindowsSdkDir_10>
     <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
     <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
+=======
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+>>>>>>> mirror
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
@@ -47,36 +65,37 @@
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
     <Masm>
       <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
       <WarningLevel>2</WarningLevel>
     </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\API";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\assembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bindings";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\builtins";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecode";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecompiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\disassembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ftl";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\heap";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector\agents";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\interpreter";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llint";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llvm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\parser";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\profiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\runtime";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\tools";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\wasm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\yarr";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include";"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>/vmg -bigobj /FS /fp:except- -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\API";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\assembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bindings";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\builtins";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecode";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecompiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\disassembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ftl";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\heap";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector\agents";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\interpreter";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llint";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llvm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\parser";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\profiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\runtime";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\tools";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\wasm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\yarr";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu"</AdditionalIncludeDirectories>
+      <AdditionalOptions>/vmg -bigobj /FS /Zf /fp:except- -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4530; 4996; 4275; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4530; 4996; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <FloatingPointModel>Precise</FloatingPointModel>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX;UNICODE;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX;UNICODE;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_UNICODE;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_DEBUG;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;FORCE_NON_JIT=1;JS_NO_EXPORT;NOMINMAX;UNICODE;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\JavaScriptCore.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-debug\lib\JavaScriptCore.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -85,61 +104,63 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-debug\lib\JavaScriptCore.lib</OutputFile>
+      <OutputFile>pc64-vc-debug\lib/JavaScriptCore.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-debug\lib" mkdir "pc64-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-debug\build\JavaScriptCore" mkdir "pc64-vc-dev-debug\build\JavaScriptCore" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-debug\build\JavaScriptCore\jit" mkdir "pc64-vc-dev-debug\build\JavaScriptCore\jit" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug" mkdir "pc64-vc-dev-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug" &amp; SET ERRORLEVEL=0
-@if not exist pc64-vc-dev-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug mkdir pc64-vc-dev-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug &amp; SET ERRORLEVEL=0 
+      <Command>@if not exist "pc64-vc-debug\lib" mkdir "pc64-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\JavaScriptCore" mkdir "pc64-vc-debug\build\JavaScriptCore" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\JavaScriptCore\jit" mkdir "pc64-vc-debug\build\JavaScriptCore\jit" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug" mkdir "pc64-vc-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug" &amp; SET ERRORLEVEL=0
+@if not exist pc64-vc-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug mkdir pc64-vc-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug &amp; SET ERRORLEVEL=0 
 
-@if not exist pc64-vc-dev-debug\build\JavaScriptCore\jit mkdir pc64-vc-dev-debug\build\JavaScriptCore\jit &amp; SET ERRORLEVEL=0</Command>
+@if not exist pc64-vc-debug\build\JavaScriptCore\jit mkdir pc64-vc-debug\build\JavaScriptCore\jit &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
-    <OutDir>pc64-vc-dev-debug\lib\</OutDir>
-    <IntDir>pc64-vc-dev-debug\build\JavaScriptCore\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
+    <OutDir>pc64-vc-debug\lib\</OutDir>
+    <IntDir>pc64-vc-debug\build\JavaScriptCore\v\</IntDir>
+    <TLogLocation>pc64-vc-debug\build\JavaScriptCore\v.tlog\</TLogLocation>
     <TargetName>JavaScriptCore</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
     <Masm>
       <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
       <WarningLevel>2</WarningLevel>
     </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\API";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\assembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bindings";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\builtins";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecode";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecompiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\disassembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ftl";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\heap";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector\agents";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\interpreter";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llint";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llvm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\parser";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\profiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\runtime";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\tools";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\wasm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\yarr";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include";"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>/vmg -Zo -d2SSAOptimizer- -bigobj /FS /fp:except- -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\API";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ForwardingHeaders\JavaScriptCore";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\assembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bindings";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\builtins";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecode";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\bytecompiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\disassembler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\ftl";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\heap";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\inspector\agents";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\interpreter";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llint";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\llvm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\parser";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\profiler";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\runtime";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\tools";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\wasm";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\yarr";"..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu"</AdditionalIncludeDirectories>
+      <AdditionalOptions>/vmg -Zo -d2SSAOptimizer- -bigobj /FS /Zf /fp:except- -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4530; 4996; 4275; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4530; 4996; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <FloatingPointModel>Precise</FloatingPointModel>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX;UNICODE;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX;UNICODE;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_UNICODE;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_JavaScriptCore;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;FORCE_NON_JIT=1;JS_NO_EXPORT;NDEBUG;NOMINMAX;UNICODE;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\JavaScriptCore.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-opt\lib\JavaScriptCore.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -148,44 +169,43 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-opt\lib\JavaScriptCore.lib</OutputFile>
+      <OutputFile>pc64-vc-opt\lib/JavaScriptCore.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-opt\lib" mkdir "pc64-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-opt\build\JavaScriptCore" mkdir "pc64-vc-dev-opt\build\JavaScriptCore" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-opt\build\JavaScriptCore\jit" mkdir "pc64-vc-dev-opt\build\JavaScriptCore\jit" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt" mkdir "pc64-vc-dev-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt" &amp; SET ERRORLEVEL=0
-@if not exist pc64-vc-dev-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt mkdir pc64-vc-dev-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt &amp; SET ERRORLEVEL=0 
+      <Command>@if not exist "pc64-vc-opt\lib" mkdir "pc64-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\JavaScriptCore" mkdir "pc64-vc-opt\build\JavaScriptCore" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\JavaScriptCore\jit" mkdir "pc64-vc-opt\build\JavaScriptCore\jit" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt" mkdir "pc64-vc-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt" &amp; SET ERRORLEVEL=0
+@if not exist pc64-vc-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt mkdir pc64-vc-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt &amp; SET ERRORLEVEL=0 
 
-@if not exist pc64-vc-dev-opt\build\JavaScriptCore\jit mkdir pc64-vc-dev-opt\build\JavaScriptCore\jit &amp; SET ERRORLEVEL=0</Command>
+@if not exist pc64-vc-opt\build\JavaScriptCore\jit mkdir pc64-vc-opt\build\JavaScriptCore\jit &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
-    <OutDir>pc64-vc-dev-opt\lib\</OutDir>
-    <IntDir>pc64-vc-dev-opt\build\JavaScriptCore\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
+    <OutDir>pc64-vc-opt\lib\</OutDir>
+    <IntDir>pc64-vc-opt\build\JavaScriptCore\v\</IntDir>
+    <TLogLocation>pc64-vc-opt\build\JavaScriptCore\v.tlog\</TLogLocation>
     <TargetName>JavaScriptCore</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup Label="ProjectReferences">
-    <ProjectReference Include="..\..\EABaseEAWebKit\local-2.06.05-01\EABaseEAWebKit.vcxproj">
-      <Project>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</Project>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\EASTLEAWebKit\local-1.15.03-01\EASTLEAWebKit.vcxproj">
-      <Project>{78409D29-B35B-AA23-A876-C2A40BC812AD}</Project>
+    <ProjectReference Include="..\..\EASTL\local_3.16.05\EASTL.vcxproj">
+      <Project>{F741D66C-94C2-1776-A80D-5FE6FCCC8890}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -193,7 +213,6 @@
     <ProjectReference Include="..\..\WTF\local\WTF.vcxproj">
       <Project>{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -451,6 +470,99 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger\DebuggerPrimitives.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger\DebuggerScope.cpp" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\debugger\DebuggerScope.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-debug\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ArrayPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\RegExpObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\TracingDtrace.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\osx64\dev-opt\inspector\InspectorProtocolObjects.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc\dev-debug\ArrayConstructor.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc\dev-debug\ArrayIteratorPrototype.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc\dev-debug\BooleanPrototype.lut.h" />
@@ -551,16 +663,16 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InjectedScriptSource.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorAlternateBackendDispatchers.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorBackendDispatchers.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorBackendDispatchers.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorFrontendDispatchers.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorFrontendDispatchers.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorInstrumentationObject.lut.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorProtocolObjects.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\InspectorProtocolObjects.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\IntlCollatorConstructor.lut.h" />
@@ -570,7 +682,7 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\IntlNumberFormatConstructor.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\IntlNumberFormatPrototype.lut.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\JSCBuiltins.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\JSCBuiltins.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\JSDataViewPrototype.lut.h" />
@@ -584,8 +696,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\LLIntAssembly.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\LLIntDesiredOffsets.h" />
     <Masm Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\LowLevelInterpreterWin.asm">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">pc64-vc-dev-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug\LowLevelInterpreterWin.asm.obj</ObjectFileName>
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">TRUE</ExcludedFromBuild>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">pc64-vc-debug\build\JavaScriptCore\DerivedSources\pc64\dev-debug\LowLevelInterpreterWin.asm.obj</ObjectFileName>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">TRUE</ExcludedFromBuild>
     </Masm>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\NumberConstructor.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-debug\NumberPrototype.lut.h" />
@@ -612,16 +724,16 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InjectedScriptSource.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorAlternateBackendDispatchers.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorBackendDispatchers.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorBackendDispatchers.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorFrontendDispatchers.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorFrontendDispatchers.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorInstrumentationObject.lut.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorProtocolObjects.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\InspectorProtocolObjects.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\IntlCollatorConstructor.lut.h" />
@@ -631,7 +743,7 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\IntlNumberFormatConstructor.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\IntlNumberFormatPrototype.lut.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\JSCBuiltins.cpp">
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\JSCBuiltins.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\JSDataViewPrototype.lut.h" />
@@ -645,8 +757,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\LLIntAssembly.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\LLIntDesiredOffsets.h" />
     <Masm Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\LowLevelInterpreterWin.asm">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">pc64-vc-dev-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt\LowLevelInterpreterWin.asm.obj</ObjectFileName>
-      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">TRUE</ExcludedFromBuild>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">pc64-vc-opt\build\JavaScriptCore\DerivedSources\pc64\dev-opt\LowLevelInterpreterWin.asm.obj</ObjectFileName>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">TRUE</ExcludedFromBuild>
     </Masm>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\NumberConstructor.lut.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\NumberPrototype.lut.h" />
@@ -663,186 +775,276 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\inspector\InspectorBackendDispatchers.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\inspector\InspectorFrontendDispatchers.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\pc64\dev-opt\inspector\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\ArrayConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\ArrayIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\BooleanPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\Bytecodes.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\DateConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\DatePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\ErrorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InjectedScriptSource.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InspectorAlternateBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InspectorInstrumentationObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlCollatorConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlCollatorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlNumberFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\IntlNumberFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSCBuiltins.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSDataViewPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSGlobalObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSONObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSPromiseConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSPromisePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\JSReplayInputs.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\KeywordLookup.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\Lexer.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\LLIntAssembly.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\LLIntDesiredOffsets.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\NumberConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\NumberPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\ObjectConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\ReflectObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\RegExpConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\RegExpJitTables.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\RegExpPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\StringConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\StringIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\SymbolConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\SymbolPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\udis86_itab.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\inspector\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\inspector\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-debug\inspector\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\ArrayConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\ArrayIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\BooleanPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\Bytecodes.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\DateConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\DatePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\ErrorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InjectedScriptSource.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InspectorAlternateBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InspectorInstrumentationObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlCollatorConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlCollatorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlNumberFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\IntlNumberFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSCBuiltins.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSDataViewPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSGlobalObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSONObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSPromiseConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSPromisePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\JSReplayInputs.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\KeywordLookup.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\Lexer.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\LLIntAssembly.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\LLIntDesiredOffsets.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\NumberConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\NumberPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\ObjectConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\ReflectObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\RegExpConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\RegExpJitTables.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\RegExpPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\StringConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\StringIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\SymbolConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\SymbolPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\udis86_itab.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\inspector\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\inspector\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\ps4\dev-opt\inspector\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\ArrayConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\ArrayIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\BooleanPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\Bytecodes.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\DateConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\DatePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\ErrorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InjectedScriptSource.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InspectorAlternateBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InspectorInstrumentationObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlCollatorConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlCollatorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlNumberFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\IntlNumberFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSCBuiltins.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSDataViewPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSGlobalObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSONObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSPromiseConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSPromisePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\JSReplayInputs.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\KeywordLookup.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\Lexer.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\LLIntAssembly.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\LLIntDesiredOffsets.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\NumberConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\NumberPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\ObjectConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\ReflectObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\RegExpConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\RegExpJitTables.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\RegExpPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\StringConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\StringIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\SymbolConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\SymbolPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\udis86_itab.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\inspector\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\inspector\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-debug\inspector\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\ArrayConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\ArrayIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\BooleanPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\Bytecodes.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\DateConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\DatePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\ErrorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InjectedScriptSource.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InspectorAlternateBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InspectorInstrumentationObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\InspectorProtocolObjects.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlCollatorConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlCollatorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlNumberFormatConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\IntlNumberFormatPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSCBuiltins.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSDataViewPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSGlobalObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSONObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSPromiseConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSPromisePrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\JSReplayInputs.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\KeywordLookup.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\Lexer.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\LLIntAssembly.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\LLIntDesiredOffsets.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\NumberConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\NumberPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\ObjectConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\ReflectObject.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\RegExpConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\RegExpJitTables.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\RegExpPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\StringConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\StringIteratorPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\SymbolConstructor.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\SymbolPrototype.lut.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\udis86_itab.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\inspector\InspectorBackendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\inspector\InspectorFrontendDispatchers.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xboxone\dev-opt\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-debug\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\sony\dev-opt\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-debug\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\stadia\dev-opt\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-debug\inspector\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\ArrayConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\ArrayIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\BooleanPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\Bytecodes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\DateConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\DatePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\ErrorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InjectedScriptSource.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InspectorAlternateBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InspectorInstrumentationObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\InspectorProtocolObjects.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlCollatorConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlCollatorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlDateTimeFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlDateTimeFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlNumberFormatConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\IntlNumberFormatPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSCBuiltins.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSDataViewPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSGlobalObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSONObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSPromiseConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSPromisePrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\JSReplayInputs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\KeywordLookup.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\Lexer.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\LLIntAssembly.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\LLIntDesiredOffsets.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\NumberConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\NumberPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\ObjectConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\ReflectObject.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\RegExpConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\RegExpJitTables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\RegExpPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\StringConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\StringIteratorPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\SymbolConstructor.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\SymbolPrototype.lut.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\udis86_itab.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\inspector\InspectorBackendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\inspector\InspectorFrontendDispatchers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\DerivedSources\xbox\dev-opt\inspector\InspectorProtocolObjects.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg\DFGAbstractHeap.cpp" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg\DFGAbstractHeap.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\dfg\DFGAbstractInterpreter.h" />
@@ -1521,8 +1723,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit\JITStubsARM.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit\JITStubsARMv7.h" />
     <Masm Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit\JITStubsMSVC64.asm">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">pc64-vc-dev-debug\build\JavaScriptCore\jit\JITStubsMSVC64.asm.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">pc64-vc-dev-opt\build\JavaScriptCore\jit\JITStubsMSVC64.asm.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">pc64-vc-debug\build\JavaScriptCore\jit\JITStubsMSVC64.asm.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">pc64-vc-opt\build\JavaScriptCore\jit\JITStubsMSVC64.asm.obj</ObjectFileName>
     </Masm>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit\JITStubsX86.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\jit\JITStubsX86_64.h" />
@@ -2177,6 +2379,7 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\JavaScriptCore\local\JavaScriptCore\yarr\YarrSyntaxChecker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+<<<<<<< HEAD
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />-->
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />-->
   <ImportGroup Label="ExtensionTargets">
@@ -2189,3 +2392,11 @@
     </VisualStudio>
   </ProjectExtensions>
 </Project>
+=======
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>
+>>>>>>> mirror

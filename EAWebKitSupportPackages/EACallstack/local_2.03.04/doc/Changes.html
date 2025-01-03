@@ -1,0 +1,978 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EACallstack Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between package versions.">
+  <style type="text/css">
+	.small {
+		font-size: smaller
+    }
+	.code {
+		font-family: "Courier New", Courier, mono;
+		font-size: 9pt;
+	}
+  </style>
+</head>
+
+
+<body>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.04</span></p>
+<p>Changes</p>
+<ul>
+    <li>Added the fast callstack resolution path to unix.</li>
+    <li>Added EACALLSTACK_FRAME_POINTERS_ENABLED so we can turn on the fast path at the masterconfig level.</li>
+    <li>Fixed an issue where on stadia(probably more platforms) the string returned by backtrace_symbols wasn't being properly parsed.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.03</span></p>
+<p>Changes</p>
+<ul>
+    <li>Converted a futex variable from a global to a static variable. This change made it possible to resolve an addres while a test process was shutting down (i.e. after main) and needed to resolve the address of a memory leak which is only known after main.</li>
+    <li>Added additional test for an ELF header type. This change will allow proper detection of .prx files which are relocated on ps4/ps5.</li>
+    <li>Improved AutoDatabaseAdd. AutoDatabaseAdd is now able to find more databases. Previously for a given module name it would try to append .map
+ (and sometimes .pdb) to it. The new behavior also consideres changing the extension instead of always appending to it.  It also tries using the module name itself so that modules that contain symbol db's will be found. e.g. a .prx file may contain debug info.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.02</span></p>
+<p>Changes</p>
+<ul>
+    <li>Fix for Windows GetModuleHandleByAddress() && GetModuleBaseAddressByAddress() since windows VirtualQuery() succeeds on invalid memory address and  designates free virtual addresses as MEM_FREE in the MBI.State field</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.01</span></p>
+<p>Changes</p>
+<ul>
+    <li>Allow EA::Callstack::ModuleInfo to take an ICoreAllocator</li>
+    <li>Added Proper support for /proc/self/maps for Android ABI < 21</li>
+    <li>Remove ARM32 Thumb Bit on backtraces</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.03.00</span></p>
+<p>Changes</p>
+<ul>
+    <li>Implemented Module Support for Linux,Mac,Sony,Android</li>
+    <li>Module function now report proper size and base address of the loaded modules</li>
+    <li>Implemented GetCallstack() with context for all platforms but Linux(not possible with gcc LSB runtime)</li>
+    <li>Consolidated functionality within Module and Callstack code</li>
+    <li>Lots of Code Cleanup && TLC</li>
+    <li>Optimized ELF file parsing</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.02.01</span></p>
+<p>Changes</p>
+<ul>
+  <li>Updated test module to compile with bulkbuild files.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.02.00</span></p>
+<p>Changes</p>
+<ul>
+    <li>Callstack Consolidation</li>
+    <li>Callstack generation fixes due to inlining</li>
+    <li>dladdr fixes for unix based platforms</li>
+    <li>Get/Set Stack family of functions removed, use the EA::Thread functions as for platforms that do not provide the facility to do so the stack limit and base is set in EA::Thread's start routine automatically as only EA::Thread knows about those values</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.07</span></p>
+<p>Changes</p>
+<ul>
+    <li>Removed the dependency on PPMalloc</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.06</span></p>
+<p>Changes</p>
+<ul>
+  <li>Updated to support the GDK.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.05</span><span style="font-weight: bold;">July 24, 2019</span> </p>
+<p>Changes</p>
+<ul>
+  <li>Increased maximum number of enumerable modules from 256 to 1024 on Windows.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.04</span><span style="font-weight: bold;">May 30, 2019</span> </p>
+<p>Changes</p>
+<ul>
+  <li>Removed PS3 and Xenon code.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.03</span><span style="font-weight: bold;">January 30, 2019</span> </p>
+<p>Changes</p>
+<ul>
+  <li>Updated code to use generic EA_PLATFORM_SONY where possible.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.02</span><span style="font-weight: bold;">August 21, 2018</span> </p>
+<p>Changes</p>
+<ul>
+  <li>Fixes a compile issue on android regarding usage of __float128 in demangling code.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.01</span><span style="font-weight: bold;">April 18th, 2018</span> </p>
+<p>Changes</p>
+<ul>
+  <li>Removed use of _dyld_get_all_image_infos which is no longer avilable in osx 10.13 (send-back from Sims 4).</li>
+  <li>Removed use of deprecated Sony PS4 API sceKernelGetModuleList.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.01.00</span><span style="font-weight: bold;">September 25th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Removed PS3 SPUContext structure as that platform is deprecated.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.06</span><span style="font-weight: bold;">August 7th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Added a fix from FIFA (Chris Burns) to fix path names which mix path separators (like on kettle) which can break EAIO when loading modules by path.</li>
+	<li>Fixed Kettle's relocated section check for DWARF files which could prevent properly looking up symbol information via runtime address.</li>
+	<li>Fixed a bug where GetAddressRepFromSet could fail when iterating over multiple database files and the first file does not contain address information which another database later will. This resulted in the order of iteration being important for address lookups (which should never be a requirement).</li>
+	<li>Switches AddressRepEntry address offsets to be unsigned values to ensure when reading they are always positive, since address offsets are never negative.</li>
+	<li>Fixed a problem interpreting "address" results from orbis-bin.exe for ps4 .elf files. </li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.05</span><span style="font-weight: bold;">April 16th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Improves the check used for building cxa_demangle which can conditionally use the __float128 type if the compiler supports it</li>
+	<li>Fixed a warning for unused functions which could be generated if you build on the Kettle SDK prior to 4.000</li>
+	<li>We no longer check if we are running on a dev kit before using sceDbgLib if we are building on KettleSDK 4.500 or higher since the lib is available on dev and test kits now.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.04</span><span style="font-weight: bold;">April 7th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Adds support for using orbis-bin when performing offline symbol lookups on PS4 since orbis-bin supports ELF files built with ASLR.</li>
+	<li>Provides a fix for Kettle SDK 4.500 which has formally removed the __float128 type which has always been unsupported on the platform, however its removal broken EACallstack code</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.03</span><span style="font-weight: bold;">March 17th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Fixed a problem where symbols would be stripped from our tests runs causing them to fail.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.02</span><span style="font-weight: bold;">January 13th, 2017</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Fixed a synchronization bug which could occur on Windows platforms if multiple threads attempt to call EA::Callstack::UnmangleSymbol() at the same time.</li>
+	<li>PS4 will now avoid calling sceDbgxxx functions on test kits which will result in a crash due to the library not being permitted on the test kits. Although they may allowed in future SDKs. See https://ps4.scedev.net/support/issue/90467/_Determine_if_assist_mode_at_runtime#n1376513 for more details.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.01</span><span style="font-weight: bold;">October 21st, 2016</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Minor fix for resetting database (PDB) base address after it has already first been initialized.</li>
+	<li>Kettle deprecated sceKernelGetModuleInfo in 4.00.00 sdk. Now sceDbgGetModuleInfo is used  instead. We are backwards compatible for older versions of sdk.</li>
+	<li>Updated Build and Initialize scripts to remove warnings generated by Framework 3</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 2.00.00 </span><span style="font-weight: bold;">April 7th, 2016</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Fix for GetModuleFromAddress and GetModuleHandleFromAddress on apple. Return code was incorrectly interpeted.</li>
+	<li>Removed Gen3 support</li>
+	<li>Fixed allocator usage for internal containers which could make allocations from unpredictable allocators during callstack generation. (Non-ideal in the case of exception handling)</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.05</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Removing Dasm functionality for x86.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.04</span> </p>
+<p>Changes</p>
+<ul>
+	<li>Minor fix vs2015 update 1 warning.</li>
+    <li>Fixed EACallstack to search the entire PDB TOC to determine where the .text section is since the empirical based search was not sufficient.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.03</span> (September 25th, 2015)</p>
+<p>Changes</p>
+<ul>
+	<li> Minor fix for apple map file early out of reading map file.</li>
+	<li> Significant fixes required to support DWARF4 for kettle. This is a DWARF3 to DWARF4 minimum transition. DWARF3 still supported.</li>
+	<li> Adding namespace function resolution for DWARF4 by post-passing over the child parent hierarchy in the linear comp unit.</li>
+	<li> Fix for GetModuleBaseAddress on android. Issues related to parsing proc maps using sscanf. </li>
+    <li> Converted initialize.xml to structured-XML which fixes warnings generated by Framework.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.02</span> (May 4th, 2015)</p>
+<p>Changes</p>
+<ul>
+	<li>Updated to libdisasm version r829. Source and license http://sourceforge.net/p/bastard/code/HEAD/tree/trunk/libdisasm/LICENSE </li>
+    <li>Fixed Windows macro usage which could cause warnings.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.01</span> (March 12, 2015)</p>
+<p>Changes</p>
+<ul>
+	<li>Better support for DRM tampered pdbs and map files by chasing DRM generated Labels</li>
+	<li>Better support for DRM tampered pdbs by manually demangling symbol names rather than having the ms pdb functions do this automatically. (EACallstack)</li>
+	<li>Add stripping of DRM generated map files so that UnDecorateSymbolName can return the proper name.</li>
+	<li>Fixed compilation issues when compiling with VS2015.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.22.00</span> (January 27th, 2015)</p>
+<p>Changes</p>
+<ul>
+	<li>Fixed crash caused by injection of __chkstk in Load() function which causes stackoverflow crash in ExceptionHandler code that uses custom callstack declare this variable as static.</li>
+	<li>Fix for memory leak that consumes GB of memory when passing in >1000 addresses.</li>
+	<li>Expanded support for kettle by resolving the elf DWARF3 format support issues.</li>
+	<li>Removed PS3 support for .elf by removing DWARF2 formation support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.21.00</span> (September 5th 2014)</p>
+<p>Changes</p>
+<ul>
+	<li>Added kettle ASLR map file support.</li>
+    <li>Added a public version.h header.</li>
+	<li>Fix map file low memory file offsets cache issue (off by one)</li>
+	<li>Fix demangle issues with double underscores "__Z". fixed for apple platforms (iOS, mac)</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.20.01</span> (June, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added build compatibility with WinPRT (Windows phone). Some of the functionality isn't available, but it should compile now. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.20.00</span> (Feb 11, 2014)</p>
+<p>Changes</p>
+<ul>
+  <li>Added Linux support for GetModuleBaseAddress. Contributed by Daniel Bekins.</li>
+  <li>Defined kBaseAddressUnspecified, and set it to 0xffff... instead of 0. This allows us to work around some limitations users have run into regarding base addresses that they really wanted to be 0.</li>
+  <li>Increased kMaxNumModules and added moduleName for Apple</li>
+  <li>Added GetModuleBaseAddressByHandle return value for Apple</li>
+  <li>Adding test module name (dyld.dylib) for Apple platforms</li>
+  <li>Replaced VMMap with _dyld_get_all_image_infos</li>
+  <li>Removed references to deprecated platforms</li>
+  <li>Converted memcmp to EAStdC Memcmp</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.19.00</span> (December 5, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Added Capilano and Kettle support.</li>
+  <li>Fixes for possible scanf %s overflows.</li>
+  <li>Fixed minor build file issue in EACallstack and removed some unnecessary attributes in both EACallstack and EAStdC.</li>
+  <li>Yemoved the old manual ARM unwinding code, as it's no longer needed. </li>
+  <li>Made it so that the Apple platform handler prevents the possibility of itself being recursively called. Force this package and dependencies to build with debugsymbols enabled.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.18.01</span> (October 15, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a bug in AddDatabaseFileEx in which a second call for the same database could mistakely overwrite the base address with 0. Reported by Patrick Laflamme.</li>
+  <li>Added a wchar_t version of GetModuleBaseAddres.</li>
+  <li>Fixed a bug in the module functions (e.g. GetModuleBaseAddress) on PS3 in which it wouldn't recognize the main executable as a module name.</li>
+  <li>Added a named error return value for the module functions: kBaseAddressInvalid. Users should migrate to this, as it will need to change from 0 to -1 in the future. </li>
+  <li>Added ModuleInfo operator== comparison function. </li>
+  <li>Added functions GetModuleInfoByAddress, GetModuleInfoByHandle, GetModuleInfoByName and ModuleInfo operator== comparison. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.18.00</span> (August 6th, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li> Fixed the handling of max address in MapFileMSVC for the case of low memory usage.</li>
+  <li>Added  uint64_t        IAddressRepLookup::GetBaseAddress() const, for all IAddressRepLookup subclasses (e.g. MapFile).</li>
+  <li> Added AddressRepLookupSet functions:
+    <blockquote>
+      <p><span class="code">/// Same as AddDatabaseFile excepts adds two bool arguments.<br>
+        /// If bDBPreviouslyPresent, bBaseAddressAlreadySet both return as true then <br>
+        /// this call had no effect, but the return value will still be true.<br>
+        /// The return value indicates whether the given is registered upon return.<br>
+        bool AddDatabaseFileEx(const wchar_t* pDatabaseFilePath, uint64_t baseAddress, <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool bDelayLoad, EA::Allocator::ICoreAllocator* pCoreAllocator,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool&amp; bDBPreviouslyPresent, bool&amp; bBaseAddressAlreadySet);<br>
+        <br>
+      </span><span class="code">/// GetDatabaseFileCount<br>
+  ///<br>
+  /// See IAddresssRepLookupSet::GetDatabaseFileCount<br>
+  ///<br>
+  size_t GetDatabaseFileCount() const<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ return mAddressRepLookupSet.GetDatabaseFileCount(); } </span></p>
+      <p class="code">/// GetDatabaseFile<br>
+      ///<br>
+      /// See IAddresssRepLookupSet::GetDatabaseFile<br>
+      ///<br>
+      IAddressRepLookup* GetDatabaseFile(size_t index)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ return mAddressRepLookupSet.GetDatabaseFile(index); } </p>
+    </blockquote>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.17.02</span> (March 27th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added sony platform heap declarations.</li>
+  <li>Use EAMain as entry point for unit tests</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.17.01</span> (January 7th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a problem with Apple callstack reading of another thread whereby it would not report the top-most callstack entry. Reported and tested by Michael Wong.</li>
+  <li>Enabled support for .map files generated by SN/Sony for newer compilers/platforms. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.17.00</span> (December 10th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added WiiU support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.16.01</span> (November 5, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a bug in the case of a 32 bit  app chopping 64 bit addresses to 32 bits. This would normally be seen only by PC tools (e.g. Symmogrifier) and not a runtime app reading its own addresses. Reported by Jonathan Cooper. </li>
+  <li>Fixed a __cxa_demangle name collision situation with new Android NDKs that are now providing __cxa_demangle. Reported by Ben Sze.</li>
+  <li>Fixed a bug in GetCallstack for Apple platforms for the case of reading the callstack of a different thread than the current one. The bug was that the first entry of the callstack wasn't being reported. Reported by Michael Wong. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.16.00</span> (August 7, 2012)</p>
+<p>Changes</p>
+<ul>
+    <li>Added support for Apple (iOS, OS X)</li>
+    <li>Added DLL builds for both PC & PC64</li>
+    <li>Added the test suite to run on PC64</li>
+    <li>Disabled warnings that were being outputted by VS 2012.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.15.00</span> (July 3, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Made it so that Apple map files whose file name ends with .txt instead of .map are detected.</li>
+  <li>Callstack traversal code (such as GetCallstack()) has been moved out of EACallstack and into EAThread if you use EAThread 1.18.00 or later. This change permits code lower-down in the dependency chain to acquire callstacks without depending on the relatively high level EACallstack package. The EACallstack package still retains the symbol database traversal functionality.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.14.00</span> (June 4, 2012)</p>
+<p>Major changes</p>
+<ul>
+  <li>Majorly upgraded support for Apple compilers/platforms.</li>
+  <li>Added  support for reading Green Hills compiler .map files and .elf/.rpx/.dnm files. The latter give better output and execute much faster. Notes regarding .elf/rpx/.dnm support:
+    <ul>
+      <li>.elf/rpx/.dnm support is available only while executing from a PC, and not by a Green Hills app on itself. You are stuck using just .map files (with less rich information) if you want a Green Hills-generated app to translate its own symbols.</li>
+      <li>Green Hills ELF debug info is actually not in the .elf or .rpx file but rather in the .dnm file. You need to either set the Symmogrifier -db argument to the .dnm file path, or the associated .dnm file must be in the same directory as the .elf/.rpx. </li>
+      <li>The <span class="small">CAFE_SDK_ROOT</span> environment variable must be set to the cafe sdk directory (with ghs directory under that), or the user must have a ghs install in the C:\ghs directory, or the ghs gaddr2line.exe applet must be in the Symmogrifier working directory. Symmogrifier uses that utility to do symbol lookups, as it's the only way Green Hills provides to understand their proprietary .dnm format. </li>
+    </ul>
+  </li>
+  <li>Improved Unix support, though the completion of all Unix functionality will be implemented in an upcoming release.</li>
+  <li>Improved GetStackBase and GetStackLimit so they now return actual results and not guesses for all currently supported platforms. </li>
+</ul>
+<p>Minor changes </p>
+<ul>
+  <li>Added the GetStackCurrent function, to complement the existing GetStackBase, GetStackLimit functions.</li>
+  <li>Moved Apple-related callstack reading code to an Apple-specific .h/.cpp file.</li>
+  <li>Improved the robustness of the GetCallstack function for Apple platforms.</li>
+  <li>Fixed a typo in ContextX86, added mFpscr to ContextARM.</li>
+  <li>Added GetLookupsAreLocal/SetLookupsAreLocal, which allow for improved symbol information on desktop platforms in some cases. </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Made the .map file tests entirely data-driven.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Deprecated the (void* pAddress) functions in favor of (uint64_t address) functions. The latter are a functional superset of the former which allows for portable cross-target address-to-symbol translations, in particular reading 64 bit symbols from a 32 bit process.</p>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.13.01</span> (May 7th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed EACallstack builds under unix64/clang. This requires handling wchar_t fixed strings differently than char16_t/char32_t as well as expanding the test from just GCC to GCC/clang in the stack pointer grabbing code.</li>
+  <li>Made Microsoft platform more generic</li>
+  <li>Addressed a few warnings generated by Coverity analysis. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.13.00</span> (February 28, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+  <li>Fixed SetStackBase for PS3, which previously would always yield a 0 value. </li>
+  <li>Added some DWARF code to initialize local variables to non-default values. </li>
+  <li>Added some OS X-specific support to EAAddressRep. </li>
+  <li>Converted buffer[N] = {} usage to buffer[N]; buffer[0] = 0. This significantly improves efficiency and diagnostic analysis.</li>
+  <li>Find the module base address via the address of a known function rather than disabling ASLR on OSX.</li>
+  <li>Fixed a code generation bug on iPhone where the stack pointer was being trashed while trying to retrieve its value.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.06</span> (November 21, 2011)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a bug in reading VC++ .map files related to relocated DLL addresses.</li>
+  <li>Fixed crash bug in DasmARM.</li>
+  <li>Improved OS X support.</li>
+  <li>Added initial iOS support. </li>
+  <li>Added support for Apple map files. Implemented by Gavin Rouse.</li>
+  <li>Added support for reading SPU symbols via spawning the Sony addr2line app in Windows builds when present. </li>
+  <li>Deprecated the names StackBottom and StackTop in favor of the more conventional StackBase and StackLimit.</li>
+  <li>Updated EACallstack to use EA::Thread::ThreadLocalStorage instead of <span class="small">EA_THREAD_LOCAL</span>. Suggested by Bob Summerwill.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.05</span> (August 19, 2011)</p>
+<p>Release notes </p>
+<ul>
+  <li> Fixed a bug in the Win64 version of the Context struct which caused struct members to be not identically sized and aligned with Microsoft's <span class="small">CONTEXT</span> struct. This bug caused the ExceptionHandler package to fail to retrieve exception call stacks.</li>
+  <li>Fixed a bug in the ContextARM struct, which was declaring general purpose registers as 64 bit, whereas they are actually 32 bit. And fixed floating point register declarations.</li>
+  <li>Updated to support EAStdC 1.05.05 and later, which changed the Vcprintf WriteFunction signature.</li>
+  <li>Added ARM disassembly support. As of this release the Thumb opcode support is complete, but the Thumb32 and ARM opcode support is not complete.</li>
+  <li>Revised the build to avoid having .cpp files #include other .cpp files. It was getting a little too messy.</li>
+  <li>Revised the build so that disassembler code is built only by platforms that care about it. Thus ARM targets no longer compile the PowerPC disassembler by default. </li>
+  <li>Worked on - but didn't complete - ARM runtime callstack unwinding support. The initial version of this support is targeted for September 2011. </li>
+  <li>Fixed an iOS (Apple) compile error.</li>
+  <li>Fixed a possible Win64 crash.</li>
+  <li>Did some unit test cleanup.</li>
+  <li>Added initial Palm support. </li>
+  <li>Added the SetStackBottom and GetStackTop functions. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.04</span> (November 17, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li> Revised EAAddressRep.cpp to be compatible with older versions of EAIO. Previously it was using an newer EAIO Path function, and it was revised to use an older equivalent.</li>
+  <li> Added CTR support.</li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Revised the main callstack test function a bit to be more useful to developers.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Fixed a bug in the Win64 version of GetInstructionPointer; it was returning the instruction pointer of code within GetInstructionPointer as opposed to returning the instruction pointer of caller code.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Made it so that GetCallstack under GCC optimized builds sets the first address to the caller of GetCallstack as opposed to code within GetCallstack. It works like the former on other platforms and is how the function is intended to work. This doesn't so much fix usability as it makes it so that it behaves the same across platforms/compilers.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Unit tests now pass on Windows, PS3 (GCC and SN), XBox 360, and Unix. EACallstack is usable on other platforms (e.g. Wii) but fully unit test success may not be guaranteed.</p>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.03</span> (August 10, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>Fixed bug in MapFile for file name matching and a bug related to base address specification. </li>
+  <li>Fixed bug in MapFile GCC support related to PRX base addresses.</li>
+  <li>Fixed bug in MapFile GCC support related to misreading the .map file data in some cases. </li>
+  <li>Enabled <span class="small">EACALLSTACK_MSVC_MAPFILE_ENABLED</span> by default on XBox 360. </li>
+  <li>Enabled <span class="small">EACALLSTACK_SN_MAPFILE_ENABLED</span> by default on PS3. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.02</span> (May 31, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version provides updates for mobile platforms and for the CodeWarrior (1.3) and PS3 SN (330) compilers.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.01</span> (December 10, 2009)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Worked around change in latest Windows SDK headers.</li>
+  <li>Removed bogus assertion failure in PDBFileCustom. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.12.00</span> (November 22, 2009)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This release introduces to major features:
+    <ul>
+      <li>PS3 Dump File support</li>
+      <li>PRX/RSO (PS3/Wii DLL) support.</li>
+    </ul>
+  </li>
+  <li>The major features missing from this release but targeted for an upcoming release are:
+    <ul>
+      <li>File/line lookups when running natively on XBox 360. </li>
+      <li>GCC/SN name demangling. Symmogrifier (EACallstack command line tool) supports this now. </li>
+      <li>ELF file lookups for SN-linked modules (GCC linker is supported now). This would also greatly speed up offline (running on PC) lookups. </li>
+    </ul>
+  </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Implemented PS3DumpFile, which is a PS3 core dump file analyzer which automatically decompiles PS3 core dumps and traces pertinent information. Primarily this information includes crash and deadlock causes. Supports PPU, SPU, and RSX. See <a href="PS3DumpFile.html">PS3DumpFile.html</a>.</li>
+  <li>Added Wii RSO (DLL) module support via RSOModuleInfoManager, which is useful for doing symbol lookups of code residing in RSOs. Recall that Wii RSOs are like Windows DLLs but are less seamlessly implemented and need help in order to be used. Also added somewhat extensive FAQ information for how to do Wii callstack lookups for RSO modules. See <a href="FAQ.html">FAQ.html</a>. </li>
+  <li>Added PS3 PRX (DLL) module support. This includes information on how to do PS3 callstack lookups for PRX modules. See <a href="FAQ.html">FAQ.html</a>. </li>
+  <li>Added GetModuleBaseAddressByAddress(const void* pCodeAddress) function. This complements the existing GetModuleBaseAddressByHandle(ModuleHandle moduleHandle) and GetModuleBaseAddress(const char* pModuleName).</li>
+  <li>Added GetModuleInfo(ModuleInfo* pModuleInfoArray, size_t moduleArrayCapacity), which iterates the current application's modules (e.g. DLLs, PS3 PRXs, Wii RSOs) and their basic information.</li>
+  <li>Added ModuleHandle GetModuleHandleFromAddress(const void* pAddress);</li>
+  <li>Implemented GetModuleFromAddress for Wii and PS3.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a PS3 strict aliasing warning from GetCallstackSPU.</li>
+  <li>Fixed PDBFileCustom bug for VS2005 PDB files whereby it would fail due to misreading the global symbol location. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Symbol readers are now rigorous in their input address range testing.</li>
+  <li>Modified <span class="small">EA_XBDM_ENABLED</span> slightly. Now it keys off of being equal to 0 or 1 instead of being undefined or defined. A result of this is that you may need to globally define <span class="small">EA_XBDM_ENABLED</span> to 1 in a release build if you want it to work there. For Framework2/Nant users, the EACallstack.build file supports using <span class="small">EA_XBDM_ENABLED</span>=[0|1] in the masterconfig.xml file. Suggested by Kevin Perry. </li>
+  <li>Added the following configurable options and made it so they are enabled only on desktop platforms or the native platform for the option:
+    <ul class="small">
+      <li>EACALLSTACK_MSVC_DEMANGLE_ENABLED</li>
+      <li>EACALLSTACK_GCC_DEMANGLE_ENABLED</li>
+      <li>EACALLSTACK_CODEWARRIOR_DEMANGLE_ENABLED</li>
+      <li>EACALLSTACK_MSVC_MAPFILE_ENABLED</li>
+      <li>EACALLSTACK_GCC_MAPFILE_ENABLED</li>
+      <li>EACALLSTACK_SN_MAPFILE_ENABLED</li>
+      <li>EACALLSTACK_CODEWARRIOR_MAPFILE_ENABLED </li>
+      <li>EACALLSTACK_PDBFILE_ENABLED</li>
+      <li>EACALLSTACK_DWARFFILE_ENABLED</li>
+    </ul>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+
+
+
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.11.01</span> (September 16, 2009)</p>
+<p>Release Notes</p>
+<ul>
+  <li>Wii RSO modules aren't automatically supported yet, though this is planned for an upcoming version.</li>
+  <li>PS3 PRX modules aren't automatically supported yet, though this is planned for an upcoming version. </li>
+  <li>This version includes an as-yet incomplete PS3 core dump reader which will be complete in the next version, though the existing functionality does work.</li>
+  <li>There is a report by Daniel Collin of heap corruption related to the DWARF reader running on Windows. The nature of this hasn't been determined yet. </li>
+  <li>There is a report by Michael Pang of XBox 360 .pdb file lookups failing on Windows Vista 64, thought it's unclear if this has anything to do with EACallstack, given that this pathway uses Microsoft's DbgHelp.dll to do the work. It it does have anything to do with EACallstack then the behavior is probably the same with all EACallstack releases. This will be investigated for the next EACallstack release. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>
+    <p>Added basic Linux64 support. Not all features are available yet. </p>
+  </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed memory overwrite bug in Win64 GetCallstack under VS2005. This occurred due to incorrect Microsoft documentation regarding the RtlVirtualUnwind function. Found by Tom Van Dijck and Albert Ho.</li>
+  <li>Fixed bug in PDBFileMS::Init whereby it would mistakenly return false and fail the init when it should have returned true. </li>
+  <li>Fixed bug in GetModuleBaseAddress under XBox 360 whereby it would compare the wrong file name string. Reported by Derek Beland.</li>
+  <li>Fixed bug in EADasm.cpp where disassembling a (big endian) PowerPC instruction stream would give wrong results on a little-endian system because of endian-ness.</li>
+  <li>Fixed bug in EADasm.cpp for DisassemblerPowerPC where it might think the last instruction in your input is out-of-bounds.</li>
+  <li>Fixed bug in EADasm.cpp for DisassemblerPowerPC where it neglected to 0-terminate a string for one opcode.</li>
+  <li>Fixed SN .elf file lookups from PC. SN .elf file lookups natively from PS3 aren't working due to something different SN is doing in their symbol generation.</li>
+  <li>Fixed missing 'break' statements in switch statement in EAAddressRep.cpp MakeAddressRepLookupFromDatabase. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added .build file options to control config parameters without modifying code or environment variables.</li>
+  <li>Added Wii map file functionality to allow automatic detection of the base address. Suggested by Gilbert Wong.</li>
+  <li>Made CabReader code avoid triggering a PC-Lint warning. Reported by Alan Chung. </li>
+  <li>Added null pointer check to CodeWarrior demangler in EASymbolUtil.cpp, just to be safe.</li>
+  <li>CodeWarrior MapFile reader now automatically demangles symbol names for you. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.11.00</span> (April 6, 2009)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added IAddressRepLookup option kOptionLowMemoryUsage and implemented it for MSVC .map files, with other .map files to be supported next. This option causes .map files to be iteratively read instead of read all at once into large memory structures. It is useful for runtime usage on console platforms.</li>
+  <li>Added IAddressRepLookup option kOptionFileBufferSize, which allows for manually specifying buffer sizes. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in AbbrevSectionReader::FindEntryByCode which could cause lookups to fail. Submitted by Olivier Nallet. </li>
+  <li>Fixed bug in AbbrevSectionEntry::CopyFrom, though this function isn't actually in use. Submitted by Olivier Nallet.</li>
+  <li>Fixed pc64 (Windows 64) compiler warning. </li>
+</ul>
+Changes
+<ul>
+  <li>EAAddressRep::GetModuleBaseAddressByHandle now uses LoadLibrary to load psapi.dll instead of implicitly linking it. It appears that older versions of VC++ don't come with psapi.lib. Reported by Jeff Skelton. </li>
+  <li>Improved MapFileMSVC memory usage when reading the entire map file at once. Previously it was creating a memory image of the entire file, whereas now it uses a 4K stream buffer to read the file. The other MapFile implementations already were using such buffering. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.10.01</span> (January 19, 2008)<br>
+    <br>
+Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in AbbrevSectionReader::FindEntryByCode which could cause lookups to fail. Submitted by Olivier Nallet. </li>
+  <li>Fixed bug in AbbrevSectionEntry::CopyFrom, though this function isn't actually in use. Submitted by Olivier Nallet.</li>
+  <li>Fixed pc64 (Windows 64) compiler warning. </li>
+</ul>
+Changes
+<ul>
+  <li>EAAddressRep::GetModuleBaseAddressByHandle now uses LoadLibrary to load psapi.dll instead of implicitly linking it. It appears that older versions of VC++ don't come with psapi.lib. Reported by Jeff Skelton. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.10.00</span> (September 16, 1008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in Wii CodeWarrior .map file reader whereby it would incorrectly translate addresses. </li>
+  <li>Provided workaround for not being able to read .elf files generated by linkers other than GCC. The workaround works only on PC and doesn't work from a PS3 or Wii app reading its own .elf file at runtime. For these it will still be necessary to use the .map file instead. A future release will hopefully deal with this. </li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.09.01</span> (August 21, 2008)<br>
+    <br>
+  Release Notes</p>
+<ul>
+  <li>The latest PS3 linker (GCC or SN) sometimes generates .elf files for which EACallstack function lookups fail. This is being looked into and will hopefully be solved in a subsequent release. In the meantime, .map files (GCC and SN) work fine. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added support for DLL builds. </li>
+  <li>Added support for SN-generated .map files. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed pc64 (Win64) callstack optimized build code generation problem.</li>
+  <li>Fixed new SNC compiler warning generated on PS3 SDK 240.</li>
+</ul>
+Changes
+<ul>
+  <li>Improved the Linux x86 support. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.09.00</span> (April 1, 2008)<br>
+    <br>
+  Release Notes</p>
+<ul>
+  <li>This version includes dramatically faster ELF file lookups, including lookups done directly from a PS3 to its own elf file. Lookups are now ~30 times faster and usually can be done in less than a second, even for huge .elf files.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added <font size="-1">EACALLSTACK_VERSION / EACALLSTACK_VERSION_N</font> to the definition set. This allows for determining the version at compile time.</li>
+  <li>Added global GetAllocator/SetAllocator functions to specify the default EACallstack allocator. There were some EASTL fixed_* containers (e.g. fixed_string) which upon overflow would try to use global new/delete. These now use the allocator specified by SetAllocator.</li>
+  <li>Added SPU support for GetCallstack and GetCallstackContext. Updated build file to build an SPU library.</li>
+  <li>Added support for reading an SPU callstack from the PPU (main processor).</li>
+  <li>Added AsInterface to IAddressRepLookup in order to safely downcast to a pdb reader, elf reader, map reader, etc. </li>
+  <li>Added SetOption to IAddressRepLookup, and added two options in particular: kOptionCopyFileToMemory and kOptionSymbolCacheLevel. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed possible NULL-pointer crash in GetModuleBaseAddress. Submitted by Ling Lo. </li>
+  <li>Fixed Wii bug in GetInstructionPointer and GetCallstack. Submitted by Yulay Rakhmangulov.</li>
+  <li>Fixed a couple bugs in the .elf file reader (DwarfFile.h/cpp). In particular, file/line lookups could mistakenly fail. The primary bug was reported by Daniel Collin. </li>
+  <li>Fixed bug in PDBFileCustom (used for reading XBox 360 .pdb files from XBox 360) whereby the reported function offset would be miscalculated.</li>
+</ul>
+Changes
+<ul>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+  <li>The ELF reader is now much faster. It is on the order of 20x faster than previously.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.08.00 </span>(December 2, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added ability to read PS3 .self files (as opposed to .elf files). </li>
+  <li>Added SNC compiler compatibility.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fix for PS3 GetCallstackContext in the case of reading the context from another thread. Submitted by Yulay Rakhmangulov. </li>
+  <li>Fixed bug whereby function names were sometimes printed as gibberish, particularly in optimized builds. <br>
+    This bug is fixed because the Dwarf2 reader can now interpret DW_AT_SPECIFICATION tags, which are sometimes used for C++ member functions and namespaced functions, at least on PS3. The primary weakness of this fixed version is that when it reads the function name, it doesn't read its fully qualified name. So EA::SomeClass::RenderWidget() gets printed as just RenderWidget. This will be rectified soon.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.07.01 </span>(November 5, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in PDBFileCustom whereby it fail to lookup symbols correctly because it was mistakenly not finding the .text section information. Bug originally reported by Gilbert Wong. </li>
+</ul>
+Changes
+<ul>
+  <li>MakeAddressRepLookupFromDatabase now construct the DB classes (e.g PDBFile) with the user-supplied ICoreAllocator. Suggested by Rashin Arab. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.07.00 </span>(September 6, 2007)<br>
+    <br>
+  Release Notes</p>
+<ul>
+  <li><font color="#009933">Package dependencies have been simplified and reduced. See the Changes section for details.</font></li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added x64 (Win64) callstack support (EACallstack.h/cpp). Symbol support for Win64 was already previously present. </li>
+  <li>Added ability for user to override/control memory allocation debug names. See <font size="-1">EACALLSTACK_ALLOC_PREFIX</font> in Config.h.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>The XBox 360 .pdb file reader (class PDBFile) was completely re-written. This fixes some bugs causing some .pdb files to be inexplicably unreadable and makes the code significantly more understandable. </li>
+</ul>
+Changes
+<ul>
+  <li>Removed dependency on the MemoryMan and UTFFoundation packages; added dependency on the EAStdC package. This is part of the move to reduce and simplify the UTF family of packages such that only basic common core packages are used. The current package dependencies now are:
+      <ul>
+        <li>EABase, EASTL, EAAssert, EAStdC, EAThread, EAIO, CoreAllocator, PPMalloc</li>
+      </ul>
+      Note that EAStdC provides the functionality that UTFFoundation did, but is also a package which succeeds rwstdc. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.06.01 </span>(June 1, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Runtime symbol information for rebased DLLs which  is now supported. A unit test was added to test this. Previously, if your app used DLLs and you read symbols from the DLLs at runtime, the symbol information might have been missing or incorrect. </li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.06.00 </span>(May 4, 2007)<br>
+    <br>
+Additions </p>
+<ul>
+  <li>Added basic callstack support for Linux and Cygwin.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Added missing #includes of  assert.h to support the use of assert().</li>
+  <li>Fix for bug in reading a flag that would result in output of callstack info of types different from what you requested.</li>
+  <li>Fixed CodeWarrior compile warnings of various sorts.</li>
+  <li>Fixed Linux and Cygwin compile warnings and errors of various sorts.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.05.02 
+  </span>(Mar 20, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added an EACallstack_x86.cpp file, implemented by Max Burke. This is a manually implemented x86 callstack reader which is independent of the Windows and Microsoft debug API.</li>
+  <li>Added Wii support for much of EACallstack functionality. </li>
+  <li>Added CodeWarrior symbol demangling support. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug whereby an ELF file auto-detection didn't work. It also had the effect that Symmogrifier wouldn't read ELF files. </li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.05.01 </span>(Feb 8, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed .build file to add a link lib entry for PS3.</li>
+  <li>Fixed a possible compiler warning related to EAAssert/EATrace #defines. </li>
+</ul>
+Changes
+<ul>
+  <li>Simplified the .build file system for this package. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version </span><span style="font-weight: bold;">1.05.00 </span>(Dec 5, 2006)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added EnableAutoDatabaseFind to AddressRepCache. </li>
+  <li>Added Mac OSX support. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed possible infinite loop in PDBFile reader on XBox 360. </li>
+  <li>Fixed some potential compiler warnings related to redefining existing defines.</li>
+  <li>Fixed some bogus unit test failure reports.</li>
+  <li>Fixed potential free of null pointer in PDBFile reader.</li>
+  <li>Fixed endian swapping in the PDBFile reader for when used on a little-endian platform.</li>
+</ul>
+Changes
+<ul>
+  <li>Made all package header files include the package config.h header. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.04.00 </span>(Nov 14, 2006) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added VS2005 support. This mostly amounted to dealing with new compiler warnings. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.03.00 </span>(Nov 1, 2006) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>All of EACallstack can be redirected through an ICoreAllocator now.</li>
+  <li>Added ability to tell the AddressRepCache to limit its memory usage to a user-specfied ceiling. </li>
+  <li>The unit test has been upgraded to do additional testing.</li>
+  <li>Added <font size="-1" face="Courier New, Courier, mono">void GetCallstackContext(CallstackContext&amp; context, const Context* pContext = NULL);</font> to EACallstack.h/cpp. This function converts a full machine Context to a CallstackContext (subset of Context which is what a callstack needs to read). </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>The PS3 elf reader is now working again and you can read PS3 elf files from Windows or from PS3 (or from XBox 360 for that matter). However, the C++ function names that it generates are still in mangled form. </li>
+</ul>
+Changes
+<ul>
+  <li>Trimmed some memory usage from the VC++ MapFile reader. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.02.00 </span>(Oct 24, 2006) <br>
+  <br>
+Release Notes</p>
+<ul>
+  <li>This version represents the first formally published version of this package.</li>
+</ul>
+<p>Additions </p>
+<ul>
+    <li>Added Framework 2 / EAConfig / NAnt build files to this package.</li>
+    <li>Added ability to switch between the lightweight EAAssert package and the heavier EATrace package.</li>
+    <li>Added this Changes.html document. </li>
+</ul>
+Bug Fixes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+Changes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Earlier versions</span><br>
+
+  <br>
+
+Version 1.02.00 (above) is the first version of this package which contained this document. A list of previous changes is not available and is not likely worthwhile, as 1.02.00 is the version published as a formal package.<br>
+
+<br>
+
+</p>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>

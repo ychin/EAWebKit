@@ -1,0 +1,37 @@
+<project>
+    <Library name="voipaux" frompartial="DSLibrary">
+        <includedirs>
+            ${package.dir}/contrib/voipaux/include/voipaux
+        </includedirs>
+
+        <headerfiles basedir="${package.dir}/contrib/voipaux">
+            <includes name="include/**.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="${package.dir}/contrib/voipaux/project/${dirtyplat}/source.txt"/>
+        </sourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+                Speex
+                opus
+            </auto>
+        </dependencies>
+
+        <config>
+            <warningsuppression>
+                <do if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                    -Wno-unused-parameter
+                </do>
+            </warningsuppression>
+
+            <defines>
+                <do if="${config-system} == 'stadia'">
+                    VOIPOPUS_DEFAULT_SAMPLING_RATE=48000
+                </do>
+            </defines>
+        </config>
+    </Library>
+</project>

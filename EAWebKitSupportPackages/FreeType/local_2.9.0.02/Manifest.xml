@@ -1,0 +1,51 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>Frostbite Game Framework Foundation</contactName>
+  <contactEmail>Frostbite.Team.GameFramework.Foundation@ea.com</contactEmail>
+  <componentName>Game Framework - Foundation</componentName>
+  <summary>FreeType SDK</summary>
+  <description>
+		Implements a Framework2 package for the FreeType open source font rasterization library.
+  </description>
+  <changes>See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/FreeType-2.9.0.02/FreeType/2.9.0.02/doc/Changes.html">changelog</a>.</changes>
+  <status>Official</status>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <tags>eatech, core</tags>
+  <licenseDetails>
+	<license>EA Proprietary (Internal Use Only)</license>
+  </licenseDetails>
+  <sourceLocation>//packages/FreeType/2.9.0.02/</sourceLocation>
+  <driftVersion>2.9.0.02</driftVersion>
+  <versionName>2.9.0.02</versionName>
+  <relationship>
+	<builds>
+	  <build name="solution" supported="true" />
+	  <build name="nant" supported="true" targets="build test-build example-build" />
+	  <build name="test" supported="false" targets="" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc-dev" name="pc" test="NotSupported" />
+	  <platform build="Supported" configs="pc64-vc-dev" name="pc64" test="NotSupported" />
+	  <platform build="Supported" name="xenon" test="NotSupported" />
+	  <platform build="Supported" name="ps3" test="NotSupported" />
+	  <platform build="Supported" name="unix" test="NotSupported" />
+	  <platform build="Supported" name="unix64" test="NotSupported" />
+	  <platform build="Supported" name="osx" test="NotSupported" />
+	  <platform build="Supported" name="iphone" test="NotSupported" />
+	  <platform build="Supported" name="android" test="NotSupported" />
+	  <platform build="Supported" name="capilano" test="NotSupported" />
+	  <platform build="Supported" name="kettle" test="NotSupported" />
+	  <platform build="Supported" name="nx" test="NotSupported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

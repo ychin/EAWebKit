@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAText -- Graphics Engine Support</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta content="Description of the Motivation for creating EAText."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+<!--
+.style1 {color: #0000FF}
+-->
+  </style>
+</head>
+<body>
+<h1>Graphics Engine Support </h1>
+<p>This document discusses how to get EAText to work with an arbitrary graphics engine. You should expect it to take about one or two days' work to make an EAText adapter for your graphics system, assuming you are familiar with your graphics system. You should be familiar with the information in the 
+<a href="User%20Guide.html">User Guide</a> document before reading this document.</p>
+<p>Text must be drawn by some graphics system, but there are different graphics systems across varying applications and platforms. EAText attempts to implement as much text/font/glyph/layout as posible, but there still needs to be some glue provided by the user to make this work with a given graphics system. There are two fundamental things the user needs to provide in the way of this glue:</p>
+<UL __designer:dtid="562949953421739">
+  <LI __designer:dtid="562949953421740">A subclass of EAText GlyphCache which implements four functions. </LI>
+  <LI 
+__designer:dtid="562949953421741">A glyph mesh container which understands the graphic system's vertex/index buffer API. </LI>
+</UL>
+<h3>Glyph Cache</h3>
+<p>The GlyphCache class implements a dynamic texture atlas, which consists of one or more textures which store glyphs derived from outline (e.g. TrueType) fonts. Recall that TrueType fonts are defined by scalable outlines but we need to draw them on the screen as bitmaps. The conversion of a TrueType character from its outline form on disk to a bitmap form in memory is a fairly CPU-intensive task. So what we do is implement a cache of these bitmaps which stores them in one or more textures. Here is an example of a glyph cache texture completely filled with glyphs. </p>
+<blockquote>
+  <p><img src="images/GlyphCacheTexture.jpg" width="258" height="258"></p>
+</blockquote>
+<p>The GlyphCache class implements the management of this dynamic texture atla for you. However, since it uses a graphics system texture to store the bitmapped glyphs, it cannot do so without some help from the user. Below is the public interface for the current version of the GlyphCache class. Note that the four functions in blue are pure-virtual and the user must provide an implementation of this in a subclass of GlyphCache. The user can additionally override other functions in the GlyphCache class or entirely re-implement the GlyphCache class. </p>
+<pre><p class="code-example">class GlyphCache
+{
+public:
+    GlyphCache(Allocator::ICoreAllocator* pCoreAllocator = NULL);
+    virtual ~GlyphCache();
+
+    virtual void SetAllocator(Allocator::ICoreAllocator* pCoreAllocator);
+
+    virtual int Init(uint32_t nMaxTextureCount = 1, uint32_t nInitialTextureCount = 0);
+    virtual int Shutdown();
+
+    virtual bool GetGlyphTextureInfo(Font* pFont, GlyphId glyphId, 
+                                     GlyphTextureInfo& glyphTextureInfo) const;
+
+    virtual bool SetGlyphTextureInfo(Font* pFont, GlyphId glyphId, 
+                                     const GlyphTextureInfo& glyphTextureInfo);
+
+    virtual bool AddGlyphTexture(Font* pFont, GlyphId glyphId, 
+                                 const void* pSourceData, uint32_t nSourceSizeX, uint32_t nSourceSizeY, 
+                                 uint32_t nSourceStride, uint32_t nSourceFormat,
+                                 EA::Text::GlyphTextureInfo& glyphTextureInfo);
+
+<span class="style1">    virtual uintptr_t CreateTexture(TextureInfo* pTextureInfo) = 0;
+    virtual bool      DestroyTexture(TextureInfo* pTextureInfo) = 0;
+</span>
+    virtual TextureInfo* GetTextureInfo(uint32_t nTextureIndex);
+    virtual uint32_t     GetTextureInfoCount() const;
+
+    virtual TextureInfo* AddTextureInfo(TextureInfo* pTextureInfo = NULL, bool bInitialized = false);
+
+    virtual bool ClearTexture(TextureInfo* pTextureInfo);
+
+    virtual void ClearTextureImage(void* pDest, uint32_t nDestSize, uint32_t nDestStride, uint32_t nDestFormat);
+
+    virtual TextureInfo* AllocateTextureArea(uint32_t xSize, uint32_t ySize, 
+                                             uint32_t& xPosition, uint32_t& yPosition);
+
+<span class="style1">    virtual bool BeginUpdate(TextureInfo* pTextureInfo) = 0;
+    virtual bool EndUpdate(TextureInfo* pTextureInfo) = 0;
+</span>
+    virtual bool WriteTextureArea(TextureInfo* pTextureInfo, uint32_t nDestPositionX, uint32_t nDestPositionY,
+                                  const void* pSourceData, uint32_t nSourceSizeX, uint32_t nSourceSizeY,    
+                                  uint32_t sourceStride, uint32_t nSourceFormat);
+
+    virtual void WriteTextureArea(void* pDest, uint32_t nDestPositionX, uint32_t nDestPositionY, 
+                                  uint32_t nDestStride, uint32_t nDestFormat,
+                                  const void* pSourceData, uint32_t nSourceSizeX, uint32_t nSourceSizeY,
+                                  uint32_t nSourceStride, uint32_t nSourceFormat);
+
+    virtual uint32_t GetGlyphTextureData(void* pGlyphData, uint32_t nGlyphDataSize, bool bPortable = true);
+    virtual bool     SetGlyphTextureData(const void* pGlyphData, uint32_t nGlyphDataSize);
+}</p></pre><p>The following code demonstrates the implementation of the required four functions for an XBox 360 Direct 3D version of GlyphCache.</p><pre><p class="code-example">class GlyphCache_XBox360 : public GlyphCache
+{
+public:
+    uintptr_t CreateTexture(TextureInfo* pTextureInfo);
+    bool      DestroyTexture(TextureInfo* pTextureInfo);
+
+    bool      BeginUpdate(TextureInfo* pTextureInfo);
+    bool      EndUpdate(TextureInfo* pTextureInfo);
+
+protected:
+    IDirect3DDevice9* mpDevice;
+};
+
+
+uintptr_t GlyphCache_XBox360::CreateTexture(TextureInfo* pTextureInfo)
+{
+    EA_ASSERT(mpDevice);
+
+    pTextureInfo->mFormat = kTextureFormatDXT3; <span class="code-example-comment">// In this example we hard-code the format to DXT, but that's not necessary.</span>
+
+    IDirect3DTexture9* pTexture = NULL;
+    mpDevice->CreateTexture(pTextureInfo->mnSize, pTextureInfo->mnSize, 1, 0, D3DFMT_LIN_DXT3, 0, &pTexture, NULL);
+
+    EA_ASSERT_MESSAGE((pTexture != NULL), "CreateTexture failed");
+    return (uintptr_t)(void*)pTexture;
+}
+
+
+bool GlyphCache_XBox360::DestroyTexture(TextureInfo* pTextureInfo)
+{
+    if(pTextureInfo->mTexture)
+    {
+        IDirect3DTexture9* pTexture = (IDirect3DTexture9*)(void*)pTextureInfo->mTexture;
+        pTexture->Release();
+    }
+    return true;
+}
+
+
+bool GlyphCache_XBox360::BeginUpdate(TextureInfo* pTextureInfo)
+{
+    #if EATEXT_THREAD_SAFETY_ENABLED
+        EA::Thread::AutoFutex autoMutex(mMutex);
+    #endif
+
+    EA_COMPILETIME_ASSERT(sizeof(pTextureInfo->mLockInformation) >= sizeof(D3DLOCKED_RECT));
+
+    IDirect3DTexture9* const pTexture = (IDirect3DTexture9*)(void*)pTextureInfo->mTexture;
+    D3DLOCKED_RECT*    const pLocked  = (D3DLOCKED_RECT*)(void*)pTextureInfo->mLockInformation;
+
+    if(!pTextureInfo->mpData) <span class="code-example-comment">// If not already locked... (to consider: Allow BeginUpdate calls to be additive).</span>
+    {
+        if (SUCCEEDED(pTexture->LockRect(0, pLocked, NULL, NULL)))
+        {
+            pTextureInfo->mpData   = (uint8_t*)pLocked->pBits;
+            pTextureInfo->mnStride = (uint8_t*)pLocked->Pitch;
+
+            #if EATEXT_THREAD_SAFETY_ENABLED
+                mMutex.Lock(); <span class="code-example-comment">// Will be matched by Unlock in EndUpdate.</span>
+            #endif
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool GlyphCache_XBox360::EndUpdate(TextureInfo* pTextureInfo)
+{
+    EA_ASSERT_MESSAGE(pTextureInfo->mpData, "GlyphCache_XBox360::EndUpdate: texture is not locked.");
+
+    #if EATEXT_THREAD_SAFETY_ENABLED
+        EA::Thread::AutoFutex autoMutex(mMutex);
+    #endif
+
+    if(pTextureInfo->mpData) <span class="code-example-comment">// If already locked...</span>
+    {
+        pTextureInfo->mpData = NULL;
+
+        IDirect3DTexture9* const pTexture = (IDirect3DTexture9*)(void*)pTextureInfo->mTexture;
+        pTexture->UnlockRect(0);   <span class="code-example-comment">// Unlock top-most MIP map level</span>
+
+        #if EATEXT_THREAD_SAFETY_ENABLED
+            mMutex.Unlock(); <span class="code-example-comment">// Matched by previous Lock in BeginUpdate.</span>
+        #endif
+
+        return true;
+    }
+
+    return false;
+}
+</p>
+</pre>
+<h3>Glyph Mesh </h3>
+<p>A glyph mesh is a vertex buffer of glyphs with their associated texture and color information. It is much like a text &quot;model.&quot; Just as you might implement an object in your 3D world as a 3D model, a block of layed out text is best implemented as a model as well. That way text can be drawn repeatedly quickly and with lighting, transforms, and GPU programs (shaders)  like any other model. The easiest way to accomplish this with EAText is to implement a GlyphMesh adapter class. Such a class converts the  LineLayout generated by Typesetter into one of these glyph meshes. We will refer to the GlyphMesh class provided by the EATextRNA package as an example for the rest of this section.</p><p>Here is the current GlyphMesh public interface from the EATextRNA package:</p><pre class="code-example">class GlyphMesh_RNA
+{
+public:
+&nbsp;&nbsp;&nbsp; GlyphMesh_RNA();
+&nbsp;&nbsp; ~GlyphMesh_RNA();
+<span class="code-example-comment">
+&nbsp;&nbsp;&nbsp; /// Initializes the class for use. This function should be called after any
+&nbsp;&nbsp;&nbsp; /// setup Set functions (e.g. SetDevice) but before rendering functions (Build/Draw).
+</span>&nbsp;&nbsp;&nbsp; bool Init();
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Releases any resources acquired during usage.
+</span>&nbsp;&nbsp;&nbsp; bool Shutdown();
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Reserve space for a mesh of at least glyphCapacity glyphs.
+&nbsp;&nbsp;&nbsp; /// This function is rather like the STL vector::reserve function.
+&nbsp;&nbsp;&nbsp; /// This function is mostly useful for the case whereby you plan on
+&nbsp;&nbsp;&nbsp; /// re-using a GlyphMesh to redraw text as you go.
+&nbsp;&nbsp;&nbsp; /// This function can be called at any time but would typically be
+&nbsp;&nbsp;&nbsp; /// called just a single time before Init.
+&nbsp;&nbsp;&nbsp; /// Beware that the required glyph count may be greater than the
+&nbsp;&nbsp;&nbsp; /// text character count, especially with some complex languages.
+</span>&nbsp;&nbsp;&nbsp; bool Reserve(uint32_t glyphCapacity, size_t nMeshIndex = (size_t)~0);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets the device used by this class. Generally there is a single
+&nbsp;&nbsp;&nbsp; /// global DeviceC which is supplied to any instances of this class.
+&nbsp;&nbsp;&nbsp; /// This function should be called once before Init.</span>
+&nbsp;&nbsp;&nbsp; void SetDevice(RNA::DeviceC* pDevice);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets the glyph cache used by this class. Generally there is a single
+&nbsp;&nbsp;&nbsp; /// global GlyphCache which is supplied to any instances of this class.
+&nbsp;&nbsp;&nbsp; /// This function should be called once before Init.
+</span>&nbsp;&nbsp;&nbsp; void SetGlyphCache(EA::Text::GlyphCache* pGlyphCache);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets the glyph shader used by this class. Often there is a single
+&nbsp;&nbsp;&nbsp; /// global GlyphShader which is supplied to any instances of this class,
+&nbsp;&nbsp;&nbsp; /// but not necessarily so.
+&nbsp;&nbsp;&nbsp; /// This function can be called at any time.
+</span>&nbsp;&nbsp;&nbsp; void SetGlyphShader(RNA::ShaderC* pGlyphShader);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets double buffering for this mesh.
+&nbsp;&nbsp;&nbsp; /// Double buffering means that a different mesh is used on every other
+&nbsp;&nbsp;&nbsp; /// frame (draw cycle) so that the other mesh can be used by the graphics
+&nbsp;&nbsp;&nbsp; /// hardware in a safe and non-blocking way.
+&nbsp;&nbsp;&nbsp; /// The count must be a value in the range of [1,2].
+&nbsp;&nbsp;&nbsp; /// By default the value is 1 and there is no double buffering.
+&nbsp;&nbsp;&nbsp; /// a value of 2 means the mesh is double buffered.
+</span>&nbsp;&nbsp;&nbsp; void SetMeshCount(size_t count);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets the LineLayout to be used by the Build and Draw functions.
+&nbsp;&nbsp;&nbsp; /// A LineLayout is generated by EATextTypesetter and it is the fundamental
+&nbsp;&nbsp;&nbsp; /// unit of text layout.
+</span>    &nbsp;&nbsp;&nbsp; void SetLineLayout(EA::Text::LineLayout* pLineLayout);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Specifies how color is chosen for glyph vertex coloring.
+&nbsp;&nbsp;&nbsp; /// The glyphs can be colored by one of two means: the color stored in the
+&nbsp;&nbsp;&nbsp; /// LineLayout.mAnalysisInfoArray[].mpTextStyle per character or the color
+&nbsp;&nbsp;&nbsp; /// specified by the SetColor function in this class. The former is more powerful
+&nbsp;&nbsp;&nbsp; /// and useful for advanced layout but is a little slower to process and
+&nbsp;&nbsp;&nbsp; /// requires that the LineLayout be done via EAText TextStyles.
+&nbsp;&nbsp;&nbsp; /// By default the second method (this class' SetColor) is used, but the user
+&nbsp;&nbsp;&nbsp; /// can use this function to change that.
+</span>&nbsp;&nbsp;&nbsp; void SetUseTextStyleColor(bool bUseTextStyleColor);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets the color to draw the glyphs.
+&nbsp;&nbsp;&nbsp; /// This function can be called at any time, and it can be used to vary
+&nbsp;&nbsp;&nbsp; /// the color of text within a drawn LineLayout.
+&nbsp;&nbsp;&nbsp; /// If bRGBA is true, the color is presumed to be in RGBA format, else it
+&nbsp;&nbsp;&nbsp; /// is presumed to be in ARGB format.
+</span>&nbsp;&nbsp;&nbsp; void SetColor(uint32_t color, bool bRGBA = true);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Sets a rectangle to clip output to during the Build function.
+&nbsp;&nbsp;&nbsp; /// Clipping is done at the polygon level and not the glyph level.
+&nbsp;&nbsp;&nbsp; /// Thus if a glyph is partially clipped then it will be partially
+&nbsp;&nbsp;&nbsp; /// drawn, as opposed to the entire glyph being omitted.
+&nbsp;&nbsp;&nbsp; /// Clipping is applied during Build, so if you want to change the
+&nbsp;&nbsp;&nbsp; /// clipping then you need to call Build again.
+&nbsp;&nbsp;&nbsp; /// The build rectangle coordinate space is the LineLayout coordinate
+&nbsp;&nbsp;&nbsp; /// space (i.e. model coordinate space) as opposed to world or screen
+&nbsp;&nbsp;&nbsp; /// coordinate space. To apply a world or screen coordinate space
+&nbsp;&nbsp;&nbsp; /// clipping, you need to accomplish this via GPU-level functionality
+&nbsp;&nbsp;&nbsp; /// such as the depth, stencil, or screen alpha testing or via a
+&nbsp;&nbsp;&nbsp; /// vertex or fragment GPU program.
+</span>&nbsp;&nbsp;&nbsp; void SetClipRect(float fLTRB[4]);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Builds a mesh based on the current settings (LineLayout, color).
+&nbsp;&nbsp;&nbsp; /// The Build operation doesn't apply color; color is applied during the
+&nbsp;&nbsp;&nbsp; /// Draw operation or via shader parameters the user may have set.
+&nbsp;&nbsp;&nbsp; /// This function need only be called once for a given layout, but
+&nbsp;&nbsp;&nbsp; /// it is safe (though inefficient) to be called multiple times.
+&nbsp;&nbsp;&nbsp; /// Calling Build has the same effect as BuildBegin(), BuildPart(), BuildEnd().
+</span>&nbsp;&nbsp;&nbsp; void Build();
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Begin an incremental build. This is an alternative to Build().
+&nbsp;&nbsp;&nbsp; /// Must be eventually followed by a BuildEnd call after any number of
+&nbsp;&nbsp;&nbsp; /// BuildPart calls.
+&nbsp;&nbsp;&nbsp; /// glyphCount is the number of glyphs that will be built.
+&nbsp;&nbsp;&nbsp; /// This function is useful for creating a single mesh that uses multiple
+&nbsp;&nbsp;&nbsp; /// LineLayouts and/or colors.
+&nbsp;&nbsp;&nbsp; /// glyphIndexEnd follows the 'iterator' standard of being one-past the
+&nbsp;&nbsp;&nbsp; /// last valid index.
+</span>&nbsp;&nbsp;&nbsp; bool BuildBegin(uint32_t glyphCount = 0xffffffff);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Add a part of the current LineLayout to an incremental build.
+</span>&nbsp;&nbsp;&nbsp; bool BuildPart(uint32_t glyphIndexBegin = 0, uint32_t glyphIndexEnd = 0xffffffff);
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Finalizes a build begun with BuildBegin.
+</span>&nbsp;&nbsp;&nbsp; void BuildEnd();
+
+<span class="code-example-comment">&nbsp;&nbsp;&nbsp; /// Draw the text that was most recently built to the currently set device.
+&nbsp;&nbsp;&nbsp; /// It is expected that the Build function be called prior to this Draw function.
+&nbsp;&nbsp;&nbsp; /// It is expected that the lineLayout be the same one used with the Build function.
+&nbsp;&nbsp;&nbsp; /// Note that a given glyphIndex may not match the same characterIndex. You need
+&nbsp;&nbsp;&nbsp; /// to use LineLayout::GetGlyphRangeFromCharRange to properly get a glyph range
+&nbsp;&nbsp;&nbsp; /// from a char range. The user is required to do this instead of the function
+&nbsp;&nbsp;&nbsp; /// doing this because the user may want to throw away the LineLayout before
+&nbsp;&nbsp;&nbsp; /// calling this function.
+</span>&nbsp;&nbsp;&nbsp; void Draw(uint32_t glyphIndexBegin = 0, uint32_t glyphIndexEnd = 0xffffffff);
+};</pre><p>This class is entirely implemented on top of EAText and EAText is unaware of the existence of this class. It might be easiest if you simply copied this class (from the EATextRNA package) and leave its public interface as it is here but re-write the implementation for your own graphics system. Much of the source code to this class would work for any modern graphics system. </p>
+<p>Here's an example of how to use this glyph mesh:</p><pre class="code-example">GlyphMesh_RNA glyphMesh;&nbsp;  <span class="code-example-comment">// Usually this is a member of some class.</span>
+
+glyphMesh.SetGlyphCache(pGlyphCache);
+glyphMesh.SetGlyphShader(pGlyphShader);
+glyphMesh.SetLineLayout(&pTypesetter->GetLineLayout());
+glyphMesh.SetColor(0x7fff00ff);
+glyphMesh.Init();
+
+<span class="code-example-comment">// When text is first set or changes:
+</span>EA::Text::LayoutSimple("Hello", 5, x, y, pFont, pTypesetter->GetLineLayout(), &pTypesetter->GetLayoutSettings());
+glyphMesh.Build();
+
+<span class="code-example-comment">// Every frame:</span>
+glyphMesh.Draw();</pre><p>Note that you don't necessarily need to implement a GlyphMesh class, but it makes working with text very easy and flexible, and results in efficient runtime execution. </p>
+<hr style="width: 100%; height: 2px;">
+<p>End of document<br>
+  <br>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

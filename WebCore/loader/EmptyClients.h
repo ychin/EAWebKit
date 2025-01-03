@@ -133,7 +133,7 @@ public:
     virtual void delegatedScrollRequested(const IntPoint&) { }
 #endif
 #if ENABLE(REQUEST_ANIMATION_FRAME) && !USE(REQUEST_ANIMATION_FRAME_TIMER)
-    virtual void scheduleAnimation() { }
+    virtual void scheduleAnimation() override { }
 #endif
 
     virtual IntPoint screenToRootView(const IntPoint& p) const override { return p; }

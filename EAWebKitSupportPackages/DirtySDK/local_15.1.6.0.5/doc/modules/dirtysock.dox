@@ -1,0 +1,113 @@
+/*!
+    \Moduledef DirtySock DirtySock
+
+    \Description
+        The Dirtysock module provides a portable sockets implementation.
+
+        <b>Overview</b>
+
+            Dirtysock is a platform independent API providing access to common network library
+            functions. It it similar in many respects to BSD/Sockets and Winsock, but targeted
+            specifically for a real-time game networking environment.  It will be helpful to have
+            an understanding of sockets before reading this documentation.
+
+            Unlike BSD and Windows sockets, only the AF_INET address family is supported, and blocking
+            read and write calls are not supported.  Instead, the Dirtysock API supports two
+            extensions not present in a normal socket environment that allow user-defined callbacks
+            and idle functions.  The SocketCallback() function allows you to register a function
+            that gets called when an incoming packet arrives on a particular socket. This can be
+            used to process incoming packets in essentially real-time. If the \em idle parameter
+            of SocketCallback() is nonzero, the registered function will be called approximately
+            every \em idle milliseconds. This can be used to deal with resends and things of
+            that nature.  Callback and idle functions are called by a private Dirtysock thread.
+
+        <b>Initializing DirtySock</b>
+
+        \code{.c}
+        #include "DirtySDK/dirtysock.h"
+
+        // initialize DirtySock
+        SocketCreate();
+        \endcode
+
+        <b>BSD Socket Function Equivalency</b>
+
+        The following is a table of BSD socket functions with their Dirtysock equivalents:
+
+                BSD function | Dirtysock function    | Notes
+                ------------ | --------------------- | -----
+                accept       | SocketAccept()        |  -
+                bind         | SocketBind()          |  -
+                closesocket  | SocketClose()         |  -
+                connect      | SocketConnect()       |  -
+                getpeername  | SocketInfo()          |  Call with info = 'peer'
+                getsockname  | SocketInfo()          |  Call with info = 'bind'
+                getsockopt   | No equivalent         |  -
+                htonl        | SocketHtonl()         |  -
+                htons        | SocketHtons()         |  -
+                inet_addr    | SocketInTextGetAddr   |  -
+                inet_ntoa    | SocketInAddrGetText   |  -
+                ioctlsocket  | No equivalent         |  -
+                listen       | SocketListen()        |  -
+                ntohl        | SocketNtohl()         |  -
+                ntohs        | SocketNtohs()         |  -
+                recv         | SocketRecv()          |  -
+                recvfrom     | SocketRecvfrom()      |  -
+                select       | No direct equivalent  |  Calling SocketInfo() with info = 'stat' returns connection status
+                send         | SocketSend()          |  -
+                sendto       | SocketSendto()        |  -
+                setsockopt   | No equivalent         |  -
+                shutdown     | SocketShutdown()      |  -
+                socket       | SocketOpen()          |  -
+
+        <b>Examples</b>
+
+        <em>Create a new stream socket connection</em>
+
+        \code{.c}
+        struct sockaddr peeraddr;
+
+        pSock = SocketOpen(AF_INET, SOCK_STREAM, 0);
+        if (pSock != NULL)
+        {
+            // init sockaddr structure
+            SockaddrInit(&peeraddr, AF_INET);
+            SockaddrInSetAddr(&peeraddr, iAddr);
+            SockaddrInSetPort(&peeraddr, iPort);
+
+            // start the connect
+            SocketConnect(pSock, (struct sockaddr *)&peeraddr, sizeof(peeraddr));
+        }
+        \endcode
+
+        <em>Check for connection ready</em>
+
+        \code{.c}
+        // note: as connection resolution is asynchronous, SocketInfo() is usually
+        // called repeatedly until either the connection is ready or a given timeout occurs
+        if (SocketInfo(pSock, 'stat', NULL, 0) > 0)
+        {
+            NetPrint("Connection ready\n");
+        }
+        \endcode
+
+        <em>Send data on a stream socket</em>
+
+        \code{.c}
+        char data[] = "Data to send to remote host";
+        SocketSend(pSock, data, sizeof(data), 0);
+        \endcode
+
+        <em>Receive data from a datagram socket</em>
+
+        \code{.c}
+        char data[256];
+        struct sockaddr from;
+        int32_t len, fromlen;
+
+        if ((len = SocketRecvfrom(pSock, data, sizeof(data), 0, &from, &fromlen)) > 0)
+        {
+            NetPrint("Received %d bytes from socket\n",len);
+        }
+        \endcode
+*/

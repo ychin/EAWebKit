@@ -1,0 +1,1 @@
+sample/ticker/source/android/native_main.cpp

@@ -1,0 +1,15 @@
+<project>
+    <property name="package.zlibEAWebKit.includedirs">
+        ${package.zlibEAWebKit.dir}\install
+        ${package.zlibEAWebKit.dir}\include
+    </property>
+
+    <do unless="@{PropertyExists('package.zlibEAWebKit.libdir')}">
+        <property name="package.zlibEAWebKit.libdir" value="${package.zlibEAWebKit.builddir}/${config}/lib"/>
+    </do>
+
+    <fileset name="package.zlibEAWebKit.libs">
+        <includes name="${package.zlibEAWebKit.libdir}/${lib-prefix}zlibEAWebKit${lib-suffix}"/>
+    </fileset>
+   
+</project>

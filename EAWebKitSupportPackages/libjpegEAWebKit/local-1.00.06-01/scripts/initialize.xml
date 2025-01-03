@@ -1,0 +1,19 @@
+<project>
+
+	<!-- libjpegEAWebKit header files location. -->
+	<property name="package.libjpegEAWebKit.includedirs">
+		${package.libjpegEAWebKit.dir}/include/
+	</property>
+
+	<!-- libjpegEAWebKit libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.libjpegEAWebKit.libs">
+					<includes name="${package.libjpegEAWebKit.builddir}/${config}/lib/${lib-prefix}libjpegEAWebKit${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

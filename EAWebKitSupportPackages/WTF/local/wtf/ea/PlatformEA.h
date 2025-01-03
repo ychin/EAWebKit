@@ -30,7 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define WTF_PlatformEA_h
 
 #include <EABase/eabase.h>
-#if !defined(EA_PLATFORM_WINDOWS)
+#if !defined(EA_PLATFORM_WINDOWS) && !defined(EA_PLATFORM_XBSX) && !defined(EA_PLATFORM_XBOX_GDK)
 extern "C" char* getenv(const char*);
 #else
 #include <stdlib.h>

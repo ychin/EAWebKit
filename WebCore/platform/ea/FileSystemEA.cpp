@@ -304,8 +304,14 @@ Vector<String> listDirectory(const String& path, const String& filter)
 	using namespace EA::IO;
 	DirectoryIterator di;
 	DirectoryIterator::EntryList entryList;
-	di.Read(pathDup.charactersWithNullTermination().data(), entryList, filterDup.charactersWithNullTermination().data(), EA::IO::kDirectoryEntryFile, 1000);
-	for(DirectoryIterator::EntryList::const_iterator iter = entryList.begin(); iter != entryList.end(); ++iter)
+
+    wchar_t dirBuff[kMaxPathLength];
+    wchar_t filerBuff[kMaxPathLength];
+    EA::StdC::Strlcpy(dirBuff, pathDup.charactersWithNullTermination().data(), kMaxPathLength);
+    EA::StdC::Strlcpy(filerBuff, filterDup.charactersWithNullTermination().data(), kMaxPathLength);
+
+    di.Read(dirBuff, entryList, filerBuff, EA::IO::kDirectoryEntryFile, 1000);
+    for(DirectoryIterator::EntryList::const_iterator iter = entryList.begin(); iter != entryList.end(); ++iter)
 	{
 		entries.append(reinterpret_cast<const UChar*>(iter->msName.c_str()));
 	}

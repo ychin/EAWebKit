@@ -1,0 +1,35 @@
+<mx:Extension Category="windows.xbox.networking" xmlns:mx="http://schemas.microsoft.com/appx/2013/xbox/manifest">
+    <mx:XboxNetworkingManifest>
+        <mx:SocketDescriptions>
+            <mx:SocketDescription Name="T2Host" SecureIpProtocol="Tcp" BoundPort="3232">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+            <mx:SocketDescription Name="HttpServ" SecureIpProtocol="Tcp" BoundPort="9000">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceSocketUsage Type="Accept" />
+                    <mx:SecureDeviceSocketUsage Type="ReceiveInsecure" />
+                    <mx:SecureDeviceSocketUsage Type="SendInsecure" />
+                </mx:AllowedUsages>
+            </mx:SocketDescription>
+        </mx:SocketDescriptions>
+        <mx:SecureDeviceAssociationTemplates>
+            <!-- t2host<->t2client connection -->
+            <mx:SecureDeviceAssociationTemplate Name="T2HostTemplate" InitiatorSocketDescription="T2Host" AcceptorSocketDescription="T2Host" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceAssociationUsage Type="Default" />
+                </mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+            <!-- httpserv server; uses insecure tcp socketdescription from dirtysock-networkmanifest.xml -->
+            <mx:SecureDeviceAssociationTemplate Name="HttpServTemplate" InitiatorSocketDescription="insecure-tcp-any" AcceptorSocketDescription="HttpServ" MultiplayerSessionRequirement="None">
+                <mx:AllowedUsages>
+                    <mx:SecureDeviceAssociationUsage Type="Default" />
+                </mx:AllowedUsages>
+            </mx:SecureDeviceAssociationTemplate>
+        </mx:SecureDeviceAssociationTemplates>
+    </mx:XboxNetworkingManifest>
+</mx:Extension>
+

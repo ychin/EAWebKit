@@ -1,0 +1,28 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<!-- The build script is using custom buildtypes that extend these default build types,
+    but for determining the binary locations in the public data we can use the default build types -->
+	<property name="EATextBuildType" local="true" value="Library"/>
+	<property name="EATextBuildType" local="true" value="DynamicLibrary" if="${Dll??false} and !${EAText.force_static??false}"/>
+	
+	<!-- EAText header files location. -->
+	<property name="package.EAText.includedirs">
+		${package.EAText.dir}/include
+	</property>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EAText.libs">
+			<includes name="${package.EAText.builddir}/${config}/lib/${lib-prefix}EAText${lib-suffix}" />
+		</fileset>
+	</do>
+	
+	<publicdata packagename="EAText" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<module name="EAText" buildtype="${EATextBuildType}">
+			<includedirs>
+				${package.EAText.includedirs}
+			</includedirs>
+		</module>
+	</publicdata>
+	
+</project>

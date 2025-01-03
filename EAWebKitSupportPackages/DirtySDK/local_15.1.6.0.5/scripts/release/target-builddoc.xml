@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+
+<!--This NAnt build file contains ten tasks that:
+(1) runs Doxygen
+(2) writes the output HTML to the Webserver
+(3) parses the table of contents file-->
+
+<project>
+
+    <!-- Define chm and exe locations -->
+    <property name="dirtysdk-chm-dir" value="${package.dir}\doc\chm" />
+    <property name="dirtysdk-publish-dir" value="\\sc-fs1\gos_docs\dirtysdk-latest\15.1.x\doc" />
+
+    <!-- Define base dxy file location -->
+    <property name="doxygencfg" value="${package.dir}/doc/chm/dirtysock.dxy" />
+
+    <!-- Get source files from fileset -->
+    <property name="dirtysock-sourcefiles" value="@{FileSetToString('runtime.dirtysock.sourcefiles', ' ')}" />
+    <property name="dirtysock-headerfiles" value="@{FileSetToString('runtime.dirtysock.headerfiles', ' ')}" />
+
+    <fileset name="runtime.dirtysock.docfiles">
+        <includes name="${package.dir}/doc/modules/*.dox"/>
+    </fileset>
+    <property name="dirtysock-docfiles" value="@{FileSetToString('runtime.dirtysock.docfiles', ' ')}"/>
+
+    <!-- Set default values for properties that haven't already been specified -->
+    <property name="doctype" value="public" if="not @{PropertyExists('doctype')}" />
+    <property name="docformat" value="chm" if="not @{PropertyExists('docformat')}" />
+
+    <!-- Generate .dxy file based on template options, plus includes and source files based on platform -->
+    <target name="dirtysdk-doc-makecfg" hidden="true">
+        <script>
+            <code><![CDATA[
+                // main function for generating the config file
+                public static void ScriptMain(Project project)
+                {
+                    int iStr;
+                    string strOutput = "                 Building Doxygen.dxy file " + project.Properties["package.dir"] + "/doc/chm/" + project.Properties["platform"] + "/_DirtySock.dxy";
+                    System.Console.WriteLine(strOutput);
+
+                    // load base config
+                    string strConfig = "@INCLUDE = " + project.Properties["doxygencfg"] + "\r\n";
+
+                    // append custom settings
+                    strConfig += "\r\n";
+                    strConfig += "#---------------------------------------------------------------------------\r\n";
+                    strConfig += "# Settings appended by target-builddoc\r\n";
+                    strConfig += "#---------------------------------------------------------------------------\r\n";
+
+                    strConfig += "PROJECT_NUMBER = " + project.Properties["package.version"] + "\r\n";
+
+                    // if this is the full doc build, append setting
+                    if (project.Properties["doctype"] == "full")
+                    {
+                        strConfig += "EXTRACT_STATIC = YES\r\n";
+                    }
+
+                    // enable chm if specified
+                    if (project.Properties["docformat"] == "chm")
+                    {
+                        strConfig += "GENERATE_HTMLHELP = YES\r\n";
+                    }
+                    else
+                    {
+                        strConfig += "GENERATE_TREEVIEW = YES\r\n";
+                        strConfig += "SEARCHENGINE = YES\r\n";
+                    }
+
+                    // add input files (headers followed by source)
+                    strConfig += "INPUT = ";
+
+                    // get docfiles
+                    string[] strDocs = project.Properties["dirtysock-docfiles"].Split(' ');
+                    for (iStr = 0; iStr < strDocs.Length; iStr += 1)
+                    {
+                        strConfig += "   " + strDocs[iStr] + " \\\r\n";
+                    }
+
+                    // get headerfiles
+                    string[] strHeaders = project.Properties["dirtysock-headerfiles"].Split(' ');
+                    for (iStr = 0; iStr < strHeaders.Length; iStr += 1)
+                    {
+                        strConfig += "    " + strHeaders[iStr] + " \\\r\n";
+                    }
+
+                    // get sourcefiles
+                    string[] strSource = project.Properties["dirtysock-sourcefiles"].Split(' ');
+
+                    for (iStr = 0; iStr < strSource.Length-1; iStr += 1)
+                    {
+                        strConfig += "    " + strSource[iStr] + " \\\r\n";
+                    }
+                    strConfig += "    " + strSource[iStr] + " \r\n";
+
+                    // mark end of generated text
+                    strConfig += "\r\n";
+                    strConfig += "#---------------------------------------------------------------------------\r\n";
+                    strConfig += "# End of settings appended by target-builddoc\r\n";
+                    strConfig += "#---------------------------------------------------------------------------\r\n";
+
+                    // write the updated file
+                    string dstFile = project.Properties["package.dir"] + "/doc/chm/" + project.Properties["platform"] + "/_DirtySock.dxy";
+                    File.WriteAllText(dstFile, strConfig);
+                }
+                ]]>
+            </code>
+        </script>
+    </target>
+
+    <!-- Build documentation for a platform -->
+    <target name="dirtysdk-doc" hidden="true">
+
+        <dependent name="Doxygen"/>
+        <property name="dirtysdk-doxygen-dir" value="${package.Doxygen.dir}\installed\bin" />
+        <property name="dirtysdk-hhc-dir" value="${package.Doxygen.dir}\installed\bin" />
+
+        <dependent name="GraphViz"/>
+        <property name="dirtysdk-dot-dir" value="${package.GraphViz.dir}\installed\bin" />
+
+        <!-- map the platform name based on our directory structure -->
+        <do if="${config-system} == 'capilano'">
+            <property name="platform" value="xboxone"/>
+        </do>
+        <do if="${gdk.enabled??false}">
+            <property name="platform" value="gdk"/>
+        </do>
+        <do if="${config-system} == 'kettle'">
+            <property name="platform" value="ps4" />
+        </do>
+        <do if="${config-system} == 'pc64'">
+            <property name="platform" value="pc" />
+        </do>
+        <do if="${config-system} == 'unix64'">
+            <property name="platform" value="unix" />
+        </do>
+
+        <!-- Generate config file -->
+        <call target="dirtysdk-doc-makecfg" />
+
+        <!-- Run Doxygen -->
+        <exec program="${dirtysdk-doxygen-dir}\doxygen.exe" commandline="_DirtySock.dxy" output="buildlog.xml" stdout="false" workingdir="${dirtysdk-chm-dir}\${platform}" > -->
+          <env>
+            <option name="PATH" value="${dirtysdk-dot-dir}" />
+          </env>
+        </exec>
+
+        <!-- Create .chm file -->
+        <do if="${docformat} == 'chm'">
+          <exec program="${dirtysdk-hhc-dir}\hhc.exe" commandline="html\index.hhp" stdout="false" workingdir="${dirtysdk-chm-dir}\${platform}" failonerror="false" />
+
+          <!-- Parse .hhc file in staging folder, apply regexs -->
+          <script>
+              <code><![CDATA[
+                  public static void ScriptMain(Project project)
+                  {
+                      string filedir = project.Properties["dirtysdk-chm-dir"] + "\\" + project.Properties["platform"] + "\\html";
+
+                      string pattern1 = @"<LI>.*?value=""(.*?)"".*?value=""(.*?)"".*?value=""1""></OBJECT>";
+                      string pattern2 = @"<LI>.*?value=""(.*?)"".*?value=""(.*?)"".*?value=""11""></OBJECT>";
+                      string pattern3 = @"(\s+)</UL>";
+                      Regex Rgx1 = new Regex(pattern1);
+                      Regex Rgx2 = new Regex(pattern2);
+                      Regex Rgx3 = new Regex(pattern3);
+
+                      StreamReader reader = new StreamReader(filedir + "\\index.hhc");
+                      StreamWriter writer = new StreamWriter(filedir + "\\whtdata0.xml");
+
+                      writer.WriteLine("<?xml version='1.0' encoding='windows-1252' ?>");
+                      writer.WriteLine("<tocdata>");
+
+                      string line = reader.ReadLine();
+
+                      while(line != null)
+                      {
+                          if (Rgx1.IsMatch(line))
+                          {
+                              line = Rgx1.Replace(line, "<book name=\"$1\" url=\"$2\">");
+                              writer.WriteLine(line);
+                          }
+                          else if (Rgx2.IsMatch(line))
+                          {
+                              line = Rgx2.Replace(line, "<item name=\"$1\" url=\"$2\" />");
+                              writer.WriteLine(line);
+                          }
+                          else if (Rgx3.IsMatch(line))
+                          {
+                              line = Rgx3.Replace(line, "$1</book>");
+                              writer.WriteLine(line);
+                          }
+
+                          line = reader.ReadLine();
+                      }
+
+                      writer.WriteLine("</tocdata>");
+
+                      reader.Close();
+                      writer.Close();
+                  }
+              ]]></code>
+          </script>
+
+          <!-- Overwrite the old chm file with the new one -->
+          <move file="${dirtysdk-chm-dir}\${platform}\html\index.chm" tofile="${dirtysdk-chm-dir}\${platform}\DirtySock.chm" clobber="true" />
+        </do>
+
+        <do if="@{FileGetSize('${dirtysdk-chm-dir}\${platform}\warnings.log')} > 0">
+            <echo message="======== Doxygen Warnings ========"/>
+            <script>
+                <code>
+                    <![CDATA[
+                      public static void ScriptMain(Project project)
+                      {
+                          string logfile = project.Properties["dirtysdk-chm-dir"] + "\\" + project.Properties["platform"] + "\\warnings.log";
+                          StreamReader reader = new StreamReader(logfile);
+                          string line = reader.ReadLine();
+                          while(line != null)
+                          {
+                              Console.WriteLine(line);
+                              line = reader.ReadLine();
+                          }
+
+                          reader.Close();
+                      }
+                    ]]>
+                </code>
+            </script>
+            <echo message="=================================="/>
+            <fail message="Doxygen Warnings found!"/>
+        </do>
+    </target>
+
+    <target name="dirtysdk-doc-clean" hidden="true">
+        <!-- map the platform name based on our directory structure -->
+        <do if="${config-system} == 'capilano'">
+            <property name="platform" value="xboxone"/>
+        </do>
+        <do if="${gdk.enabled??false}">
+            <property name="platform" value="gdk"/>
+        </do>
+        <do if="${config-system} == 'kettle'">
+            <property name="platform" value="ps4" />
+        </do>
+        <do if="${config-system} == 'pc64'">
+            <property name="platform" value="pc" />
+        </do>
+        <do if="${config-system} == 'unix64'">
+            <property name="platform" value="unix" />
+        </do>
+
+        <delete dir="${dirtysdk-chm-dir}\${platform}\html" />
+        <delete file="${dirtysdk-chm-dir}\${platform}\buildlog.xml" />
+        <delete file="${dirtysdk-chm-dir}\${platform}\warnings.log" />
+        <delete file="${dirtysdk-chm-dir}\${platform}\_DirtySock.dxy" />
+    </target>
+
+    <target name="dirtysdk-doc-publish" hidden="true">
+        <!-- map the platform name based on our directory structure -->
+        <do if="${config-system} == 'capilano'">
+            <property name="platform" value="xboxone"/>
+        </do>
+        <do if="${gdk.enabled??false}">
+            <property name="platform" value="gdk"/>
+        </do>
+        <do if="${config-system} == 'kettle'">
+            <property name="platform" value="ps4" />
+        </do>
+        <do if="${config-system} == 'pc64'">
+            <property name="platform" value="pc" />
+        </do>
+        <do if="${config-system} == 'unix64'">
+            <property name="platform" value="unix" />
+        </do>
+
+        <property name="target-dir" value="${dirtysdk-publish-dir}\${platform}"/>
+        <echo message="Copying ${platform} HTML docs to ${target-dir}"/>
+        <mkdir unless="@{DirectoryExists('${target-dir}')}" dir="${target-dir}"/>
+        <copy todir="${target-dir}">
+            <fileset basedir="${dirtysdk-chm-dir}\${platform}\html" >
+                <includes name="**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="dirtysdk-builddoc" description="Builds the chm file (excluding static functions) for the currently selected configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}" />
+        <call target="dirtysdk-doc" />
+    </target>
+
+    <target name="dirtysdk-buildhtmldoc" description="Builds the html documentation (excluding static functions) for the currently selected configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}" />
+        <property name="docformat" value="html" />
+        <call target="dirtysdk-doc" />
+    </target>
+
+    <target name="dirtysdk-buildfulldoc" description="Builds the chm file (including static functions) for the currently selected configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}" />
+        <property name="doctype" value="full" />
+        <call target="dirtysdk-doc" />
+    </target>
+
+    <target name="dirtysdk-buildfullhtmldoc" description="Builds the html documentation (including static functions) for the currently select configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}"/>
+        <property name="doctype" value="full"/>
+        <property name="docformat" value="html"/>
+        <call target="dirtysdk-doc"/>
+    </target>
+
+    <target name="dirtysdk-buildalldoc-caller" description="Builds documentation for all platforms" hidden="true">
+        <foreach item="String" in="capilano-vc xb1gdk-vc kettle-clang ps5-clang pc64-vc unix64-clang nx-arm64-clang" property="builddoc-config">
+            <property name="builddoc-config-name" value="${builddoc-config}-debug"/>
+            <nant buildfile="${package.dir}/${package.name}.build" target="${dirtysdk-doctarget}" if="@{StrEndsWith(${builddoc-config-name}, 'debug')}">
+                <echo message="target (${builddoc-config-name})" />
+                <property name="config" value="${builddoc-config-name}"/>
+            </nant>
+        </foreach>
+    </target>
+
+    <target name="dirtysdk-builddoc-all" description="Builds the chm documentation (excluding static functions) for all platforms" hidden="true">
+        <property name="dirtysdk-doctarget" value="dirtysdk-builddoc"/>
+        <call target="dirtysdk-buildalldoc-caller" />
+    </target>
+
+    <target name="dirtysdk-buildhtmldoc-all" description="Builds the html documentation (excluding static functions) for all platforms" hidden="true">
+       <property name="dirtysdk-doctarget" value="dirtysdk-buildhtmldoc"/>
+       <call target="dirtysdk-buildalldoc-caller" />
+    </target>
+
+    <target name="dirtysdk-buildfullhtmldoc-all" description="Builds the html documentation (including the static functions) for all platforms" hidden="true">
+        <property name="dirtysdk-doctarget" value="dirtysdk-buildfullhtmldoc"/>
+        <call target="dirtysdk-buildalldoc-caller"/>
+    </target>
+
+    <target name="dirtysdk-buildfulldoc-all" description="Builds the chm documentation (including static functions) for all platforms" hidden="true">
+        <property name="dirtysdk-doctarget" value="dirtysdk-buildfulldoc"/>
+        <call target="dirtysdk-buildalldoc-caller" />
+    </target>
+
+    <target name="dirtysdk-builddoc-clean" description="Removes the extra files created by builddoc for the currently selected configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}" />
+        <call target="dirtysdk-doc-clean" />
+    </target>
+
+    <target name="dirtysdk-builddoc-cleanall" description="Removes the extra files created by builddoc for all platforms" hidden="true">
+        <property name="dirtysdk-doctarget" value="dirtysdk-builddoc-clean"/>
+        <call target="dirtysdk-buildalldoc-caller"/>
+    </target>
+
+    <target name="dirtysdk-publishdoc" description="Publishes the HTML documentation for the currently selected configuration's platform" hidden="true">
+        <property name="platform" value="${config-system}" />
+        <call target="dirtysdk-doc-publish" />
+    </target>
+
+    <target name="dirtysdk-publishdoc-all" description="Builds the chm files for all platforms" hidden="true">
+        <property name="dirtysdk-doctarget" value="dirtysdk-publishdoc"/>
+        <call target="dirtysdk-buildalldoc-caller"/>
+    </target>
+
+</project>

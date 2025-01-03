@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>kettle-clang-dev-debug</Configuration>
+    <Configuration>kettle-clang-debug</Configuration>
     <Platform>ORBIS</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="kettle-clang-dev-debug|ORBIS">
-      <Configuration>kettle-clang-dev-debug</Configuration>
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="kettle-clang-dev-opt|ORBIS">
-      <Configuration>kettle-clang-dev-opt</Configuration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,116 +18,119 @@
     <ProjectGuid>{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>WTF</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -std=c++11 -Wno-format -Wno-unneeded-internal-declaration -Wno-narrowing -Wno-invalid-noreturn -Wno-unused-function -Wno-tautological-compare -Wno-unused-variable -Wno-unused-private-field -Wno-c++11-compat-deprecated-writable-strings -fPIC </AdditionalOptions>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-narrowing -Wno-invalid-noreturn -Wno-unused-function -Wno-tautological-compare -Wno-unused-variable -Wno-unused-private-field -Wno-c++11-compat-deprecated-writable-strings -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT</NantUnescapedPreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-debug\lib\libWTF.a</OutputFile>
+      <OutputFile>kettle-clang-debug\lib\libWTF.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-debug\build\WTF" mkdir "kettle-clang-dev-debug\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-debug\lib" mkdir "kettle-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-debug\build\WTF" mkdir "kettle-clang-debug\build\WTF" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <OutDir>kettle-clang-dev-debug\lib\</OutDir>
-    <IntDir>kettle-clang-dev-debug\build\WTF\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\lib\</OutDir>
+    <IntDir>kettle-clang-debug\build\WTF\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\WTF\v.tlog\</TLogLocation>
     <TargetName>libWTF</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -std=c++11 -Wno-format -Wno-unneeded-internal-declaration -Wno-narrowing -Wno-invalid-noreturn -Wno-unused-function -Wno-tautological-compare -Wno-unused-variable -Wno-unused-private-field -Wno-c++11-compat-deprecated-writable-strings -fPIC </AdditionalOptions>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -fdata-sections -ffunction-sections -Wno-format -Wno-unneeded-internal-declaration -Wno-narrowing -Wno-invalid-noreturn -Wno-unused-function -Wno-tautological-compare -Wno-unused-variable -Wno-unused-private-field -Wno-c++11-compat-deprecated-writable-strings -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT;NDEBUG</NantUnescapedPreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_LIB;_UNICODE;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;JS_NO_EXPORT;NDEBUG;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-opt\lib\libWTF.a</OutputFile>
+      <OutputFile>kettle-clang-opt\lib\libWTF.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-opt\build\WTF" mkdir "kettle-clang-dev-opt\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-opt\lib" mkdir "kettle-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-opt\build\WTF" mkdir "kettle-clang-opt\build\WTF" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <OutDir>kettle-clang-dev-opt\lib\</OutDir>
-    <IntDir>kettle-clang-dev-opt\build\WTF\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\lib\</OutDir>
+    <IntDir>kettle-clang-opt\build\WTF\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\WTF\v.tlog\</TLogLocation>
     <TargetName>libWTF</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup Label="ProjectReferences">
-    <ProjectReference Include="..\..\EABaseEAWebKit\local-2.06.05-01\EABaseEAWebKit.vcxproj">
-      <Project>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</Project>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -136,8 +139,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ASCIICType.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Assertions.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\Assertions.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\Assertions.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\Assertions.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\Assertions.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Assertions.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Atomics.h" />
@@ -146,8 +149,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\BagToHashMap.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Bitmap.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\BitVector.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\BitVector.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\BitVector.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\BitVector.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\BitVector.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\BitVector.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\BlockStack.h" />
@@ -158,40 +161,40 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CheckedBoolean.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CommaPrinter.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CompilationThread.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\CompilationThread.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\CompilationThread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\CompilationThread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\CompilationThread.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CompilationThread.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Compiler.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Condition.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CryptographicallyRandomNumber.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\CryptographicallyRandomNumber.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\CryptographicallyRandomNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\CryptographicallyRandomNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\CryptographicallyRandomNumber.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CryptographicallyRandomNumber.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CryptographicUtilities.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\CryptographicUtilities.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\CryptographicUtilities.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\CryptographicUtilities.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\CryptographicUtilities.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CryptographicUtilities.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CurrentTime.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\CurrentTime.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\CurrentTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\CurrentTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\CurrentTime.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\CurrentTime.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DataLog.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\DataLog.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\DataLog.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\DataLog.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\DataLog.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DataLog.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DateMath.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\DateMath.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\DateMath.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\DateMath.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\DateMath.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DateMath.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DecimalNumber.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\DecimalNumber.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\DecimalNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\DecimalNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\DecimalNumber.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DecimalNumber.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DeferrableRefCounted.h" />
@@ -199,35 +202,35 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DisallowCType.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\DoublyLinkedList.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ExportMacros.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FastBitVector.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\FastBitVector.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\FastBitVector.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\FastBitVector.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\FastBitVector.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FastBitVector.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FastMalloc.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FeatureDefines.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FilePrintStream.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\FilePrintStream.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\FilePrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\FilePrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\FilePrintStream.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FilePrintStream.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FlipBytes.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Forward.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Functional.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FunctionDispatcher.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\FunctionDispatcher.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\FunctionDispatcher.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\FunctionDispatcher.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\FunctionDispatcher.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\FunctionDispatcher.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\GetPtr.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\GregorianDateTime.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\GregorianDateTime.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\GregorianDateTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\GregorianDateTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\GregorianDateTime.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\GregorianDateTime.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashCountedSet.h" />
@@ -237,8 +240,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashMethod.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashSet.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashTable.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\HashTable.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\HashTable.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\HashTable.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\HashTable.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashTable.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\HashTraits.h" />
@@ -250,32 +253,32 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ListDump.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ListHashSet.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Lock.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\Lock.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\Lock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\Lock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\Lock.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Lock.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Locker.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MainThread.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\MainThread.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\MainThread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\MainThread.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\MainThread.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MainThread.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MallocPtr.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MathExtras.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MD5.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\MD5.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\MD5.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\MD5.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\MD5.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MD5.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MediaTime.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\MediaTime.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\MediaTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\MediaTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\MediaTime.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MediaTime.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MessageQueue.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocator.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\MetaAllocator.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\MetaAllocator.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\MetaAllocator.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\MetaAllocator.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocator.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocatorHandle.h" />
@@ -284,8 +287,8 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\NoLock.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Noncopyable.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\NumberOfCores.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\NumberOfCores.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\NumberOfCores.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\NumberOfCores.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\NumberOfCores.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\NumberOfCores.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ObjcRuntimeExtras.h" />
@@ -293,48 +296,48 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\OSAllocator.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\OSObjectPtr.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\OSRandomSource.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\OSRandomSource.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\OSRandomSource.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\OSRandomSource.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\OSRandomSource.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\OSRandomSource.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PackedIntVector.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PageAllocation.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PageBlock.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\PageBlock.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\PageBlock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\PageBlock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\PageBlock.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PageBlock.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PageReservation.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobs.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsGeneric.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ParallelJobsGeneric.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ParallelJobsGeneric.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ParallelJobsGeneric.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ParallelJobsGeneric.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsGeneric.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsLibdispatch.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsOpenMP.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParkingLot.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ParkingLot.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ParkingLot.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ParkingLot.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ParkingLot.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ParkingLot.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PassRef.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PassRefPtr.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Platform.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PrintStream.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\PrintStream.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\PrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\PrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\PrintStream.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\PrintStream.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ProcessID.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RAMSize.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\RAMSize.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\RAMSize.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\RAMSize.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\RAMSize.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RAMSize.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RandomNumber.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\RandomNumber.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\RandomNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\RandomNumber.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\RandomNumber.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RandomNumber.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RandomNumberSeed.h" />
@@ -344,20 +347,20 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCounted.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCountedArray.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCountedLeakCounter.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\RefCountedLeakCounter.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\RefCountedLeakCounter.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\RefCountedLeakCounter.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\RefCountedLeakCounter.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCountedLeakCounter.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCounter.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\RefCounter.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\RefCounter.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\RefCounter.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\RefCounter.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefCounter.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RefPtr.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RetainPtr.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RunLoop.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\RunLoop.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\RunLoop.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\RunLoop.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\RunLoop.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RunLoop.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\RunLoopTimer.h" />
@@ -366,26 +369,26 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SegmentedVector.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SentinelLinkedList.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SHA1.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\SHA1.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\SHA1.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\SHA1.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\SHA1.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SHA1.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SimpleStats.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SinglyLinkedList.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SixCharacterHash.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\SixCharacterHash.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\SixCharacterHash.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\SixCharacterHash.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\SixCharacterHash.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SixCharacterHash.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SizeLimits.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\SizeLimits.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\SizeLimits.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\SizeLimits.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\SizeLimits.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Spectrum.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\SpinLock.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StackBounds.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\StackBounds.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\StackBounds.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\StackBounds.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\StackBounds.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StackBounds.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StackStats.h" />
@@ -397,16 +400,16 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StringHashDumpContext.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StringHasher.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StringPrintStream.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\StringPrintStream.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\StringPrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\StringPrintStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\StringPrintStream.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\StringPrintStream.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\TemporaryChange.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ThreadIdentifierDataPthreads.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Threading.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\Threading.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\Threading.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\Threading.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\Threading.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\Threading.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ThreadingPrimitives.h" />
@@ -424,87 +427,87 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WeakPtr.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WindowsExtras.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WordLock.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\WordLock.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\WordLock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\WordLock.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\WordLock.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WordLock.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WorkQueue.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\WorkQueue.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\WorkQueue.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\WorkQueue.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\WorkQueue.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WorkQueue.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WTFThreadData.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\WTFThreadData.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\WTFThreadData.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\WTFThreadData.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\WTFThreadData.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\WTFThreadData.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\bignum.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\bignum.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\bignum.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\bignum.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum-dtoa.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\bignum-dtoa.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\bignum-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\bignum-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\bignum-dtoa.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum-dtoa.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\cached-powers.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\cached-powers.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\cached-powers.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\cached-powers.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\cached-powers.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\cached-powers.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\diy-fp.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\diy-fp.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\diy-fp.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\diy-fp.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\diy-fp.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\diy-fp.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double-conversion.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\double-conversion.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\double-conversion.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\double-conversion.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\double-conversion.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double-conversion.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fast-dtoa.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\fast-dtoa.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\fast-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\fast-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\fast-dtoa.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fast-dtoa.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fixed-dtoa.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\fixed-dtoa.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\fixed-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\fixed-dtoa.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\fixed-dtoa.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fixed-dtoa.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\strtod.cc">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\dtoa\strtod.cc.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\dtoa\strtod.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\dtoa\strtod.cc.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\dtoa\strtod.cc.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\strtod.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\dtoa\utils.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\FeatureDefinesEA.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\MainThreadEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\MainThreadEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\MainThreadEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\MainThreadEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\MainThreadEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\OSAllocatorEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\OSAllocatorEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\OSAllocatorEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\OSAllocatorEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\OSAllocatorEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\PlatformEA.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\RunLoopEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\RunLoopEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\RunLoopEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\RunLoopEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\RunLoopEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\ThreadingEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\ThreadingEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\ThreadingEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\ThreadingEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\ThreadingEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\ThreadSpecificEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\ThreadSpecificEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\ThreadSpecificEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\ThreadSpecificEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\ThreadSpecificEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\WorkQueueEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\ea\WorkQueueEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\ea\WorkQueueEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\ea\WorkQueueEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\ea\WorkQueueEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu\unicode\AlternateSubstSubtables.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu\unicode\AnchorTables.h" />
@@ -754,96 +757,96 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\spi\darwin\XPCSPI.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\ASCIIFastPath.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicString.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\AtomicString.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\AtomicString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\AtomicString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\AtomicString.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicString.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringHash.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringImpl.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\AtomicStringImpl.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\AtomicStringImpl.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\AtomicStringImpl.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\AtomicStringImpl.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringImpl.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringTable.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\AtomicStringTable.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\AtomicStringTable.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\AtomicStringTable.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\AtomicStringTable.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringTable.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\Base64.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\Base64.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\Base64.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\Base64.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\Base64.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\Base64.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\ConversionMode.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\CString.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\CString.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\CString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\CString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\CString.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\CString.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\IntegerToStringConversion.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\LChar.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuffer.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuilder.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\StringBuilder.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\StringBuilder.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\StringBuilder.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\StringBuilder.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuilder.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringCommon.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringConcatenate.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringHash.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringImpl.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\StringImpl.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\StringImpl.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\StringImpl.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\StringImpl.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringImpl.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringOperators.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringStatics.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\StringStatics.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\StringStatics.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\StringStatics.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\StringStatics.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringView.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\StringView.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\StringView.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\StringView.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\StringView.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\StringView.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\SymbolImpl.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\SymbolRegistry.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\SymbolRegistry.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\SymbolRegistry.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\SymbolRegistry.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\SymbolRegistry.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\SymbolRegistry.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\TextPosition.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\UniquedStringImpl.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\WTFString.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\text\WTFString.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\text\WTFString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\text\WTFString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\text\WTFString.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text\WTFString.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads\BinarySemaphore.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\threads\BinarySemaphore.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\threads\BinarySemaphore.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\threads\BinarySemaphore.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\threads\BinarySemaphore.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads\BinarySemaphore.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\CharacterNames.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\Collator.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\UTF8.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\unicode\UTF8.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\unicode\UTF8.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\unicode\UTF8.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\unicode\UTF8.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\UTF8.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\ea\CollatorEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\unicode\ea\CollatorEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\unicode\ea\CollatorEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\unicode\ea\CollatorEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\unicode\ea\CollatorEA.cpp.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\ea\UnicodeEA.cpp">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\WTF\unicode\ea\UnicodeEA.cpp.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\WTF\unicode\ea\UnicodeEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\WTF\unicode\ea\UnicodeEA.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\WTF\unicode\ea\UnicodeEA.cpp.obj</ObjectFileName>
     </ClCompile>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -852,4 +855,10 @@
       <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
 </Project>

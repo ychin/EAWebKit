@@ -1,0 +1,81 @@
+<project>
+    <!-- Create a list of sample libraries to use, based on the platform in question -->
+    <property name="package.DirtySDK.samples.available"/>
+
+    <do if="${dirtysdk-samples??false}">
+        <!-- =================  Android  =================== -->
+        <property if="${config-system} == 'android'" name="package.DirtySDK.samples.available">
+            ticker
+        </property>
+
+        <!-- =================  PS5  =================== -->
+        <property if="${config-system} == 'ps5'" name="package.DirtySDK.samples.available">
+            ticker
+            tester2host
+        </property>
+
+        <!-- =================  Capilano  ================== -->
+        <property if="${config-system} == 'capilano'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  Scarlett  ================== -->
+        <property if="${config-system} == 'xbsx'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  iPhone  =================== -->
+        <property if="${config-system} == 'iphone'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  Kettle  =================== -->
+        <property if="${config-system} == 'kettle'" name="package.DirtySDK.samples.available">
+            ticker
+            tester2host
+        </property>
+
+        <!-- =================  OSX  =================== -->
+        <property if="${config-system} == 'osx'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  PC  =================== -->
+        <property if="${config-system} == 'pc'" name="package.DirtySDK.samples.available">
+            libstat
+            ssltest
+            tester2host
+            tester2client
+            ticker
+        </property>
+
+        <!-- =================  PC64  =================== -->
+        <property if="${config-system} == 'pc64'" name="package.DirtySDK.samples.available">
+            dirtysim
+            ssltest
+            tester2host
+            tester2client
+            ticker
+        </property>
+
+        <!-- =================  UNIX  =================== -->
+        <property if="${config-system} == 'unix'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  UNIX64  =================== -->
+        <property if="${config-system} == 'unix64'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+
+        <!-- =================  STADIA  =================== -->
+        <property if="${config-system} == 'stadia'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+        
+        <!-- =================  NX  =================== -->
+        <property if="${config-system} == 'nx'" name="package.DirtySDK.samples.available">
+            tester2host
+        </property>
+    </do>
+</project>

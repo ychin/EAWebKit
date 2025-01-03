@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-debug|Win32">
+      <Configuration>pc-vc-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-opt|Win32">
+      <Configuration>pc-vc-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>EABase</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <OutDir>pc-vc-debug\build\EABase\</OutDir>
+    <IntDir>pc-vc-debug\build\EABase\v\</IntDir>
+    <TLogLocation>pc-vc-debug\build\EABase\v.tlog\</TLogLocation>
+    <TargetName>EABase</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <OutDir>pc-vc-opt\build\EABase\</OutDir>
+    <IntDir>pc-vc-opt\build\EABase\v\</IntDir>
+    <TLogLocation>pc-vc-opt\build\EABase\v.tlog\</TLogLocation>
+    <TargetName>EABase</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\eabase.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\eadeprecated.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\eahave.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\earesult.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\eastdarg.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\eaunits.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\int128.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common\EABase\config\eaplatform.h" />
+  </ItemGroup>
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

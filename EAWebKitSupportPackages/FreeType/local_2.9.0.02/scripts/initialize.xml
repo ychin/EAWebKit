@@ -1,0 +1,22 @@
+﻿<project>
+
+  <property name="FreeTypeBuildType" value="CLibrary"/>
+  
+  <publicdata packagename="FreeType">
+    <module name="FreeType" buildtype="${FreeTypeBuildType}">
+      <includedirs>
+		${package.FreeType.dir}/installed/include
+	  </includedirs>
+      <libs>
+        <includes name="${package.FreeType.libdir}/${lib-prefix}FreeType${lib-suffix}"/>
+      </libs>
+    </module>
+  </publicdata>
+
+    <!-- FT_CONFIG_OPTION_SUBPIXEL_RENDERING -->
+    <!-- If you want to enable FreeType sub-pixel rendering support, you need to FT_CONFIG_OPTION_SUBPIXEL_RENDERING defined and     -->
+    <!-- have visible to any code that #include FreeType headers in addition to being visible to the FreeType build itself.          -->
+    <!-- The simplest way to accomplish his with nant is to use <globaldefines>FT_CONFIG_OPTION_SUBPIXEL_RENDERING=1</globaldefines> -->
+    <!-- in your masterconfig file. Beware that this must be legally approved for each platform you want to do it with.              -->
+
+</project>

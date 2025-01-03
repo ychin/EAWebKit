@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>kettle-clang-dev-debug</Configuration>
+    <Configuration>kettle-clang-debug</Configuration>
     <Platform>ORBIS</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="kettle-clang-dev-debug|ORBIS">
-      <Configuration>kettle-clang-dev-debug</Configuration>
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="kettle-clang-dev-opt|ORBIS">
-      <Configuration>kettle-clang-dev-opt</Configuration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
       <Platform>ORBIS</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,40 +18,40 @@
     <ProjectGuid>{E0C359C8-17A5-C1EE-D97F-86677C6226DA}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>pixman</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>Clang</PlatformToolset>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ClCompile>
       <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
-      <CompileAs>CompileAsC</CompileAs>
+      <AdditionalOptions>-Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;PACKAGE_BUGREPORT="";PACKAGE_VERSION="";PACKAGE=pixman;PIXMAN_NO_TLS;USE_SSE2</NantUnescapedPreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;PACKAGE_BUGREPORT=;PACKAGE_VERSION=;PACKAGE=pixman;PIXMAN_NO_TLS;USE_SSE2</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
@@ -60,41 +60,40 @@
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-debug\lib\libpixman.a</OutputFile>
+      <OutputFile>kettle-clang-debug\lib\libpixman.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-debug\build\pixman" mkdir "kettle-clang-dev-debug\build\pixman" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-debug\lib" mkdir "kettle-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-debug\build\pixman" mkdir "kettle-clang-debug\build\pixman" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <OutDir>kettle-clang-dev-debug\lib\</OutDir>
-    <IntDir>kettle-clang-dev-debug\build\pixman\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\lib\</OutDir>
+    <IntDir>kettle-clang-debug\build\pixman\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\pixman\v.tlog\</TLogLocation>
     <TargetName>libpixman</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ClCompile>
       <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
-      <CompileAs>CompileAsC</CompileAs>
+      <AdditionalOptions>-Wno-error -fno-elide-type -fdata-sections -ffunction-sections -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;NDEBUG;PACKAGE_BUGREPORT="";PACKAGE_VERSION="";PACKAGE=pixman;PIXMAN_NO_TLS;USE_SSE2</NantUnescapedPreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;NDEBUG;PACKAGE_BUGREPORT=;PACKAGE_VERSION=;PACKAGE=pixman;PIXMAN_NO_TLS;USE_SSE2</PreprocessorDefinitions>
@@ -104,20 +103,21 @@
       <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-opt\lib\libpixman.a</OutputFile>
+      <OutputFile>kettle-clang-opt\lib\libpixman.a</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "kettle-clang-dev-opt\build\pixman" mkdir "kettle-clang-dev-opt\build\pixman" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "kettle-clang-opt\lib" mkdir "kettle-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-opt\build\pixman" mkdir "kettle-clang-opt\build\pixman" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <OutDir>kettle-clang-dev-opt\lib\</OutDir>
-    <IntDir>kettle-clang-dev-opt\build\pixman\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\lib\</OutDir>
+    <IntDir>kettle-clang-opt\build\pixman\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\pixman\v.tlog\</TLogLocation>
     <TargetName>libpixman</TargetName>
     <TargetExt>.a</TargetExt>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
@@ -139,130 +139,130 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include\pixman-private.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\include\pixman-version.h" />
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-access.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-access.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-access.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-access.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-access.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-access-accessors.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-access-accessors.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-access-accessors.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-access-accessors.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-access-accessors.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-arm.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-arm.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-arm.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-arm.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-arm.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-bits-image.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-bits-image.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-bits-image.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-bits-image.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-bits-image.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-combine32.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-combine32.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-combine32.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-combine32.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-combine32.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-combine-float.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-combine-float.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-combine-float.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-combine-float.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-combine-float.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-conical-gradient.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-conical-gradient.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-conical-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-conical-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-conical-gradient.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-edge.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-edge.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-edge.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-edge.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-edge.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-edge-accessors.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-edge-accessors.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-edge-accessors.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-edge-accessors.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-edge-accessors.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-fast-path.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-fast-path.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-fast-path.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-fast-path.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-fast-path.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-general.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-general.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-general.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-general.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-general.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-glyph.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-glyph.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-glyph.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-glyph.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-glyph.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-gradient-walker.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-gradient-walker.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-gradient-walker.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-gradient-walker.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-gradient-walker.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-image.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-image.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-image.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-image.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-image.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-implementation.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-implementation.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-implementation.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-implementation.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-implementation.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-linear-gradient.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-linear-gradient.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-linear-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-linear-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-linear-gradient.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-matrix.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-matrix.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-matrix.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-matrix.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-matrix.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-mips.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-mips.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-mips.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-mips.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-mips.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-noop.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-noop.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-noop.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-noop.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-noop.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-ppc.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-ppc.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-ppc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-ppc.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-ppc.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-radial-gradient.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-radial-gradient.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-radial-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-radial-gradient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-radial-gradient.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-region16.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-region16.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-region16.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-region16.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-region16.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-region32.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-region32.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-region32.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-region32.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-region32.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-solid-fill.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-solid-fill.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-solid-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-solid-fill.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-solid-fill.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-sse2.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-sse2.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-sse2.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-sse2.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-sse2.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-timer.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-timer.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-timer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-timer.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-timer.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-trap.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-trap.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-trap.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-trap.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-trap.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-utils.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-utils.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-utils.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-utils.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-utils.c.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\pixman\local-0.28.2\source\pixman-x86.c">
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\pixman\pixman-x86.c.obj</ObjectFileName>
-      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\pixman\pixman-x86.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\pixman\pixman-x86.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\pixman\pixman-x86.c.obj</ObjectFileName>
     </ClCompile>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -271,4 +271,10 @@
       <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
 </Project>

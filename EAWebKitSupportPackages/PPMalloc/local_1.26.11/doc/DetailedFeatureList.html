@@ -1,0 +1,826 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Detailed Feature List</title>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  <meta content="Detailed breakdown of PPMalloc features." name="description"></head><body>
+  <p><font size="+3">Detailed Feature List</font></p>
+  <p><span style="font-weight: bold;">Detailed Feature List</span><span style="font-weight: bold;"></span></p>
+  <p>For the purposes of those evaluating this package, we provide a detailed
+  feature list for each of the PPMalloc modules. Further below we provide
+  a list of features not included in PPMalloc and an explanation for why
+  they aren't present.<br>
+  <br>
+  
+
+  
+
+  
+
+  <span style="font-weight: bold;">GeneralAllocator / GeneralAllocatorDebug</span></p>
+  <p>GeneralAllocator is a fully generalized allocator with no serious
+  limitations. GeneralAllocatorDebug is a user-level debug layer over
+  GeneralAllocator. We list GeneralAllocator and GeneralAllocatorDebug
+  together because the latter is an extension of the former and they will
+  almost always be used with the other in a development environment. For
+  more information and example code, see <a href="GeneralAllocator.html">GeneralAllocator.html</a>.
+  We use the term "core memory" here to refer to the large block of
+  memory that an allocator uses as the source for user allocations.<br>
+  
+
+  
+
+  
+
+  </p>
+  <div style="margin-left: 40px;">
+<table cellpadding="2" cellspacing="0" border="1" style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Feature</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Clean implementation<br>
+</td><td style="vertical-align: top;">The header and source are very
+clean and include no hacks or concessions. Dependencies are minimal, as
+GeneralAllocator relies only on EABase. All public functionality is
+documented in the header in Doxygen-friendly format. Comes with a good
+set of heavy unit tests that test both simulation allocation behaviour
+and real-world allocation behaviour.<br>
+</td></tr>
+<tr>
+      <td style="vertical-align: top;">High performance and efficiency<br>
+</td>
+      <td style="vertical-align: top;">GeneralAllocator is very
+fast and very efficient. The primary algorithm is based on the
+well-regarded dlmalloc algorithm but is futher improved.
+GeneralAllocator runs at 5x-20x faster than most custom allocators in
+use within EA. No allocator yet seen within EA has been as fast or as
+scalable.<br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">High scalability<br>
+      </td>
+      <td style="vertical-align: top;">GeneralAllocator scales very
+well from small systems to large systems. In general, scaling is nearly
+constant (O(1)) with respect the amount of memory or number of
+allocations involved. This is unlike many other allocators which bog
+down once the application goes beyond a few thousand concurrent
+allocations, and large applications for the PC are already pushing a
+million concurrent allocations while console applications of the future
+will have similarly high requirements.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Minimal system allocation overhead<br>
+      </td>
+      <td style="vertical-align: top;">System
+overhead per allocation is either 4 or 8 bytes, depending on the
+allocation size. This is compared to 12 or 16 bytes of overhead found
+in most allocators. When a 'tiny block' shim is used, the overhead for
+small block sizes becomes zero.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Highly resistant to both internal and external fragmentation.</td>
+      <td style="vertical-align: top;">Internal fragmentation refers to
+extra memory that is unused within an allocated, while external
+fragmentatio refers to free blocks or space that in practice become
+unavailable for use. GeneralAllocator's algorithm is resistant to both
+types of fragmentation an university studies on GeneralAllocator's
+brother, dlmalloc, confirm this. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Useful extra malloc variants, including MallocAligned, Realloc, MallocMultiple, Calloc.<br>
+      </td>
+      <td style="vertical-align: top;">In addition to the standard
+Malloc, GeneralAllocator has MallocAligned which allows for an
+allocation to be aligned to a user-specified value with an optional
+offset to the requested aligned position. GeneralAllocator also has an
+optimized Realloc which can very quickly shrink an allocation in place
+and grow in place as well if possible. MallocMultiple allows the user
+to request multiple guaranteed-contiguous blocks of equal or varying
+size in a single call that has executes almost as fast as a single
+allocation. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Includes high memory and end-packed memory options<br>
+      </td>
+      <td style="vertical-align: top;">High memory allocation is an
+allocation option that requests the allocated block be stored in a more
+permanent place so as to reduce external fragmentation.
+GeneralAllocator supports the high memory option for all malloc
+variants. End-packed memory is an option that requests that memory come
+from as low as possible or high as possible in the heap in order to
+reduce fragmentation at the cost of extra processing time. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Ability to create independent peer heaps and sub-heaps</td>
+      <td style="vertical-align: top;">Unlike some allocators
+GeneralAllocator is not hard-wired to be a "singleton". Multiple
+concurrent instances of GeneralAllocator are possible and one instance
+of GeneralAllocator can act as a sub-heap within another instance of
+GeneralAllocator. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Portable to all current platforms and compilers<br>
+      </td>
+      <td style="vertical-align: top;">GeneralAllocator is portable to
+all current EA platforms, including PS2, PSP, XBox, GameCube, Windows,
+Linux (various hardware), Macintosh OSX, and others. GeneralAllocator
+compiles under all currently used compilers, including GCC, VC++, SN,
+Intel, Metrowerks, and Borland. Portability includes 64 bit platforms
+such as IA-64 and Power-PC64. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"> Savvy to platforms<br>
+ </td>
+      <td style="vertical-align: top;">GeneralAllocator isn't limited
+or crippled to any least-common denominator platform. For example,
+under Windows it will take advantage of memory mapping and virtual
+memory reserve and commit operations. This allows for maximum
+performance and flexibility on platforms that have extended
+functionality. It also allows for GeneralAllocator to be a completely
+arbitrary replacement for malloc/free new/delete for all types of uses
+from tools to shipping applications. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Flexible heap reporting<br>
+      </td>
+      <td style="vertical-align: top;">The heap can be walked by the
+user via iteration or via a function callback. Additionally, the user
+can take a snapshot of the heap state for storage and future analysis.
+Filter flags allow the user to specify the types of blocks to be
+iterated. Heap reporting forms the basis for the creation heap analysis
+tools and is invaluable for analysis of runtime memory issues.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Allocation hooking<br>
+      </td>
+      <td style="vertical-align: top;">Allocation hooks allow the user
+to be notified of every user-level allocation operation, such as Malloc
+and Free. For added flexibility, hooks come in both entry and exit
+form, whereby the former is called before the allocation operation is
+executed and the latter is called after execution. The hook gives the
+user all information about the call, including the return value for
+exit hooks.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Multi-level heap validation<br>
+      </td>
+      <td style="vertical-align: top;">The heap structure can be
+validated automatically every N operations or manually at any time via
+the ValidateHeap function. Validation has multiple levels of checking
+detail, from basic quick checking to fully comprehensive checking. If
+some piece of code is trashing the heap, automatic or manually
+sprinkled heap validation calls will find the culprit. <br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Optional thread safety<br>
+</td><td style="vertical-align: top;">Enables use of the allocator in a
+thread-safe way. GeneralAllocator has special thread safety
+functionality which greatly improves thread-safe performance for slow
+platforms such as PS2, which has slow semaphore locking.<br>
+</td></tr>
+
+    <tr>
+      <td style="vertical-align: top;">Plug-innable assertion/trace output<br>
+      </td>
+      <td style="vertical-align: top;">User can redirect assertion and
+trace output to the function of their choice, allowing integration with
+the user's debug/trace system.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Extensive leak reporting output</td>
+      <td style="vertical-align: top;">Memory leak trace output
+includes detailed block information, including data preview, user debug
+tags, file/line, allocation call stacks, etc. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Flexible core memory<br>
+      </td>
+      <td style="vertical-align: top;">Can assign your own core memory
+(the source for allocation) to GeneralAllocator or let it get it from
+the system itself. Core memory can be added via multiple core blocks
+and can be added at any time. Core memory can come from independent
+sources and be of independent types.<br>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="vertical-align: top;">Manual or automatic core expansion<br>
+</td>
+      <td style="vertical-align: top;">The user can manually
+assign core; this is typically used on console and embedded platforms.
+Additionally, the allocator can be enabled to automatically expand core
+via operating system memory. This is typically used on PC, workstation,
+and server platforms that have more advanced memory management systems
+than smaller platforms. <br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Many compile time and runtime configurable options</td>
+      <td style="vertical-align: top;">There
+are a number of compile-time options that tweak the functionality or
+performance of GeneralAllocator and GeneralAllocatorDebug.
+Additionally, there are a number of runtime options that tweak the
+functionality or performance of these allocators.<br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Automated activity recording and playback.</td>
+      <td style="vertical-align: top;">Recording and playback of
+allocation activity can be valuable in studying heap behaviour.
+GeneralAllocator is recordable automatically via AllocationRecorder.
+AllocationRecorder can playback recordings via GeneralAllocator or a
+user-specified mechanism.<br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Extensive internal consistency checking<br>
+</td><td style="vertical-align: top;">GeneralAllocator has very extensive
+internal consistency checking which is enabled by default in a debug
+build but is available if desired in a shippable build. Whether through
+maintainence of the code or through user-caused damage of the heap, the
+internal consistency very quickly finds the problem. <br>
+</td></tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Flexible delayed frees<br>
+      <br>
+</td>
+      <td style="vertical-align: top;">Delayed frees refer to
+behaviour whereby an allocator doesn't free memory when the user
+requests but instead delays it for some time in order to help detect
+certain kinds of application misbehaviour. GeneralAllocatorDebug has a
+configurable delayed free mechanism with multiple policies, such as
+count-based, time-based, and volume-based delays.</td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Flexible guard fills (sentinels)<br>
+</td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug has
+advanced guard fill (a.k.a. sentinel) functionality. Guard fills can be
+of constant size or scaled to the size of the allocation with clamps on
+min/max fill sizes. Guard fills are useful in detecting memory overruns
+and random memory writes by application code.&nbsp;</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Debug fills<br>
+</td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug
+implements various kinds of memory fills to aid in detecting
+application misbehaviour. These include including new fills, free
+fills, delayed free fills, and guard fills.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Constant allocations</td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug allows the
+user to flag a memory block as constant and will verify that the
+contents have not changed over the life of the allocation.<br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Pointer validation<br>
+</td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug has
+built-in pointer validation. This is particularly useful for detecting
+"multiple free" (whereby a block of memory is freed more than once)
+bugs when they occur instead of later when the heap becomes corrupted. <br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Arbitrary data association<br>
+      </td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug allows the
+user to attach any data of any size to an allocation. This data can be
+a pointer to other data or can be a block of arbitrary size. An number
+of unique pieces of data can be associated with blocks; the user is not
+limited to a single item. The user also has the option of storing this
+data at any time and not just at the time that the allocation occured.
+The user also has the option of storing this data within the allocated
+block or separately from the allocated block.<br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Named allocations<br>
+</td>
+      <td style="vertical-align: top;">A common technique for
+tracking the usage of memory is to associate a name with an allocated
+block. GeneralAllocatorDebug allows for named allocations. Names can be
+unique to each block and don't have size limits.<br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">File/Line recording<br>
+Call stack recording<br>
+</td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug has
+the ability to store file/line information about an allocation as
+commonly done with the C __FILE__ and __LINE__ defines. It also has the
+ability to store full or partial call stacks for allocations as well,
+for extended contextual information about the allocation. Both
+file/line and callstack information can be done globally or just on the
+blocks the user chooses.<br>
+</td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Group recording<br>
+</td><td style="vertical-align: top;">GeneralAllocatorDebug has the
+optional concept of allocation groups whereby it has an assignable
+current group number and any allocations are assigned that group
+number. A primary benefit is that the user can enter a new phase of the
+application and change the group number and upon exiting that phase the
+user can verify that no allocations exist with that group number. <br>
+</td></tr>
+
+    <tr>
+      <td style="vertical-align: top;">Other per-block information<br>
+</td>
+      <td style="vertical-align: top;">In addition to the
+various items mentioned above, GeneralAllocatorDebug has the ability to
+optionally automatically associate other pieces of information with
+allocations, such as requested size, alignment, index, time, system
+overhead, and thread id. <br>
+</td>
+    </tr><tr>
+      <td style="vertical-align: top;">Extensive metrics<br>
+      </td>
+      <td style="vertical-align: top;">GeneralAllocatorDebug has
+extensive metrics reporting facilities. You can query the number of
+allocations, volume of allocations, volume of system overhead, total
+historical allocation count, free count, etc. <br>
+      </td>
+    </tr>
+
+    
+    
+    
+  </tbody>
+</table>
+</div>
+  <p><span style="font-weight: bold;">Stack Allocator</span></p>
+  <p>The StackAllocator is an allocator which allocates space via a
+  pointer increment and is very fast at the cost of not being able to
+  free arbitrary individual blocks.<br>
+  
+  </p>
+  <div style="margin-left: 40px;">
+<table cellpadding="2" cellspacing="0" border="1" style="text-align: left; width: 100%;">
+<tbody><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Feature</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Clean implementation<br>
+</td><td style="vertical-align: top;">The header and source are very
+clean and include no hacks or concessions. Dependencies are minimal, as
+StackAllocator relies only on EABase (though you can enable it to use
+GeneralAllocator). All public functionality is documented in the header
+in Doxygen-friendly format. Comes with a fairly heavy unit test. </td></tr>
+<tr>
+      <td style="vertical-align: top;">Very fast allocation<br>
+</td>
+      <td style="vertical-align: top;">Allocation is about as
+fast as an allocator can get, as it amounts to little more than an
+alignment check and pointer increment in fast mode.<br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">All conventional allocation styles<br>
+</td>
+      <td style="vertical-align: top;">Includes Malloc, MallocAligned, Realloc, and Free, just like GeneralAllocator.<br>
+</td>
+    </tr><tr>
+      <td style="vertical-align: top;">Incremental allocation<br>
+      </td>
+      <td style="vertical-align: top;">With incremental allocation, you
+can build an allocation incrementally instead of all at once. Building
+an object incrementally is not the same as making multiple calls to
+Malloc, as the latter aligns allocations whereas the former doesn't.
+Also, the incremental allocation is faster as it has less to do.
+Incremental objects are useful for building streams of data on the fly
+and is also useful for building static string tables or similar tables
+on the fly.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Fast mode / safe mode<br>
+      </td>
+      <td style="vertical-align: top;">Allocations can be done in fast
+mode, whereby no bounds check is done on the allocation space, and safe
+mode, whereby an space check is done and core is expanded if needed.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Multiple free<br>
+      </td>
+      <td style="vertical-align: top;">Allows you to free one or more blocks off the top of the stack at a time.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Bookmarks<br>
+      </td>
+      <td style="vertical-align: top;">Allows you to record a position
+in the allocation stack to which you can roll back to later. This is
+useful for pushing and popping pools used for systems that are
+temporary. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Plug-innable core memory<br>
+      </td>
+      <td style="vertical-align: top;">Much like GeneralAllocator, StackAllocator lets you supply 'core'
+memory for the allocator to work with. Multiple blocks of core are
+supported; the allocator is not limited to a single contiguous core. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Same interface as GeneralAllocator<br>
+      </td>
+      <td style="vertical-align: top;">Malloc, MallocAligned, etc. are
+defined the same in StackAllocator as they are in GeneralAllocator,
+making the systems consistent with each other.The mechanism to add and free core is also the same as GeneralAllocator. </td>
+    </tr>
+
+    
+    
+    
+    </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+<p>  <span style="font-weight: bold;">FixedAllocator</span></p>
+<p>The FixedAllocator is an allocator which allocates blocks of a
+  single size, which increases speed and eliminates block overhead at the
+  cost of requiring some extra pool space.<br>
+  
+
+</p>
+<div style="margin-left: 40px;">
+<table cellpadding="2" cellspacing="0" border="1" style="text-align: left; width: 100%;">
+<tbody><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Feature</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Clean implementation<br>
+</td><td style="vertical-align: top;">The header and source are very
+clean and include no hacks or concessions. Dependencies are minimal, as
+FixedAllocator relies only on EABase (though you can enable it to use
+GeneralAllocator). All public functionality is documented in the header
+in Doxygen-friendly format. Comes with a fairly heavy unit test. </td></tr>
+    <tr>
+      <td style="vertical-align: top;">Very fast allocation<br>
+      </td>
+      <td style="vertical-align: top;">Allocation is about as fast as an allocator can get, as it involves only a comparison and two assignments. <br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Templated design<br>
+</td>
+      <td style="vertical-align: top;">For maximal runtime
+efficiency, FixedAllocator is a C++ template class that compiles down
+to the minimal code with the least possible overhead. The class is
+templated by allocation class type, though it can also be used to
+simply allocate memory of a given size.<br>
+</td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Similar interface to GeneralAllocator<br>
+</td>
+<td style="vertical-align: top;">The primary functionality of
+FixedAllocator is the same as GeneralAllocator, for consistency. There
+is Malloc and Free (MallocAligned and Realloc are not applicable), as
+well as a mechanism to manually add core which is similar to
+GeneralAllocator. <br>
+</td></tr>
+
+    
+    
+    
+    </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+<p>
+  <span style="font-weight: bold;"></span><span style="font-weight: bold;">NonLocalAllocator</span></p>
+<p>(to do) </p>
+<p><span style="font-weight: bold;">SmallObjectAllocator / SmallBlockAllocator</span></p>
+<p>(to do) </p>
+<p><span style="font-weight: bold;">ScratchpadAllocator</span></p>
+<p>(to do) </p>
+<p><span style="font-weight: bold;">HandleAllocator</span></p>
+<p>The HandleAllocator is an allocator which implements lockable
+  memory, resulting in very good compaction and low fragmentation at the
+  cost of speed and ease-of-use.<br>
+  
+</p>
+<div style="margin-left: 40px;">
+<table cellpadding="2" cellspacing="0" border="1" style="text-align: left; width: 100%;">
+<tbody><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Feature</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+      </td>
+    </tr>
+    <tr>
+<td style="vertical-align: top;">Clean implementation<br>
+</td>
+<td style="vertical-align: top;">The header and source are very clean
+and include no hacks or concessions. Dependencies are minimal, as
+FixedAllocator relies only on GeneralAllocator (which itself is
+dependent only on EABase). All public functionality is documented in
+the header in Doxygen-friendly format. Comes with a fairly heavy unit
+test.</td></tr>
+<tr>
+      <td style="vertical-align: top;">Conventional lock semantics<br>
+</td>
+      <td style="vertical-align: top;">Calling Lock returns a
+pointer, calling Unlock undoes the Lock. Locks are cumulative, so a
+handle can be safely locked more than once at a time by two different
+entities.<br>
+</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">All conventional allocation styles</td>
+      <td style="vertical-align: top;">Includes Malloc, MallocAligned,
+Realloc, and Free, just like GeneralAllocator. The only difference is
+that HandleAllocator returns a handle instead of a pointer. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Mixable with GeneralAllocator<br>
+      </td>
+      <td style="vertical-align: top;">HandleAllocator is built upon GeneralAllocator and can share allocations with a GeneralAllocator heap.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Rich debugging functionality<br>
+      </td>
+      <td style="vertical-align: top;">Since HandleAllocator uses
+GeneralAllocator at its core, all the debug functionality of
+GeneralAlloator and GeneralAllocatorDebug applies to HandleAllocator as
+well.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Allocation-level and heap-level compaction<br>
+      </td>
+      <td style="vertical-align: top;">Individual allocations can be
+manually compacted or the entire heap can be manually compacted. The
+former is faster but the latter generally results in better packing.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Handle utilities<br>
+      </td>
+      <td style="vertical-align: top;">ValiateHandle, GetHandleFromAddress, GetLockCount, etc. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Multiple compaction levels<br>
+      </td>
+      <td style="vertical-align: top;">Multiple compaction levels
+allows for balancing the tradeoff between compaction and runtime speed,
+as better compaction requires more processing time.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Multiple compaction strategies<br>
+      </td>
+      <td style="vertical-align: top;">Multiple compaction strategies
+can be applied to individual allocations or to the entire heap. One
+such strategy is to pack high instead of pack low.<br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">Optional thread safety<br>
+</td>
+      <td style="vertical-align: top;">Enables use of the
+allocator in a thread-safe way. HandleAllocator has special thread
+safety functionality which greatly improves thread-safe performance for
+slow platforms such as PS2, which has slow semaphore locking.<br>
+</td>
+    </tr><tr>
+      <td style="vertical-align: top;">Same interface as GeneralAllocator</td>
+      <td style="vertical-align: top;">Malloc, MallocAligned, etc. are defined the same in HandleAllocator as
+they are in GeneralAllocator, making the systems consistent with each
+other. The mechanism to add and free core is also the same as GeneralAllocator.<br>
+      </td>
+    </tr>
+
+    
+    
+    
+    </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+<p>
+  <span style="font-weight: bold;"></span><span style="font-weight: bold;">Non-Feature List</span></p>
+<p>Here we provide a list of features that PPMalloc doesn't have which you
+  may have considered. For simplicity, the list is not broken down by
+  module.<br>
+</p>
+<div style="margin-left: 40px;">
+<table cellpadding="2" cellspacing="0" border="1" style="text-align: left; width: 100%;">
+<tbody><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Feature</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span><br>
+      </td><td style="vertical-align: top;"><span style="font-weight: bold;">Explanation</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">StackAllocator and FixedAllocator thread safety<br>
+</td>
+      <td style="vertical-align: top;">The StackAllocator and
+FixedAllocator classes have no option to enable thread safety. This is
+unlike the GeneralAllocator, GeneralAllocatorDebug, and HandleAllocator
+classes, which have the option to be thread safe. <br>
+</td><td style="vertical-align: top;">Adding thread safety is a
+possibility for these classes and is open for consideration. In the
+meantime, most uses for classes like these are specialized and thread
+safety can often be implemented by&nbsp; the user of the class around
+usage of the class instances. These allocators are much simpler than
+GeneralAllocator and HandleAllocator and there is little or no special
+benefit to internalizing thread safety to the class other than to
+simplify its usage. <br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Generalized Fixed Allocator<br>
+</td>
+      <td style="vertical-align: top;">There is no
+FixedAllocator variant with takes an arbitrarily-sized allocation
+request and allocates it from a large array of fixed sized bins.<br>
+</td><td style="vertical-align: top;">This approach is sometimes seen
+as an allocation strategy. It results in fast allocation speed at the
+cost of memory wastage due to unused pool space. Studies have been done
+on such allocators and they are in practice not much faster than
+allocators such as GeneralAllocator but have significantly higher
+memory usage due to the above-mentioned wastage. In a nutshell, you
+don't wnat one of these allocators when instead you should just use
+GeneralAllocator. <br>
+      </td>
+
+    </tr><tr>
+      <td style="vertical-align: top;">Ability to report X<br>
+      </td>
+      <td style="vertical-align: top;">PPMalloc doesn't have high-level
+reporting functionality but instead only has the core functionality
+upon which high-level reporting can be built.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">Various users have added customized reporting to their allocation
+systems to support their specific needs. Each of these is unique to the
+team or project. PPMalloc (the GeneralAllocator module in particular)
+has rich support for reporting heap information to the user, but it
+doesn't try to solve needs that are specific to individual projects. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Advanced multi-threading support<br>
+      </td>
+      <td style="vertical-align: top;">GeneralAllocator doesn't have
+specialized functionality for heavy multithreaded uses. If two threads
+are very frequently using the same allocator, there is no advanced
+functionality to improve performance. An example of such an allocator
+is <a href="www.hoard.org">Hoard</a>.<br>
+      </td>
+      <td style="vertical-align: top;">For the great majority of EA
+needs, there is little to be gained by specialized multithreading
+support such as this. However, if it is ever deemed necessary,
+GeneralAllocator can be extended to support such functionality.<br>
+      </td>
+    </tr>
+
+    
+    
+    
+    </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;">End of document<br>
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,12 @@
+<project>
+  <!-- cairo header files location. -->
+  <property name="package.cairo.includedirs">
+    ${package.cairo.dir}/include
+    ${package.cairo.dir}/include/cairo
+  </property>
+
+  <!-- cairo libraries location. -->
+  <fileset name="package.cairo.libs">
+    <includes name="${package.cairo.builddir}/${config}/lib/${lib-prefix}cairo${lib-suffix}" />
+  </fileset>
+</project>

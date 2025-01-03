@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText">
+      <UniqueIdentifier>{37843535-E640-2EA8-C2DB-BA8E5A4B7EAB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\D3D">
+      <UniqueIdentifier>{FF063982-3B09-1EA8-48AA-AD293FEECA42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\EASkeleton">
+      <UniqueIdentifier>{73526FD2-2E60-20FD-7030-DED9FDF3675F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\gxm">
+      <UniqueIdentifier>{97EAB5EF-6FA6-48DD-5228-343AAB4F8049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\internal">
+      <UniqueIdentifier>{C5ADF9BC-AAE7-7A0D-C8FE-2FE02CCDD816}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\OpenGL_ES">
+      <UniqueIdentifier>{D8620313-19BE-09B7-AB29-14B788BE7C0A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\PSGL">
+      <UniqueIdentifier>{015BD5D0-440A-48A0-4825-9EB76DD3145D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\RNA">
+      <UniqueIdentifier>{101AE707-4EB4-2A7E-F645-77C9EDE30AF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAText\Xenon">
+      <UniqueIdentifier>{D7DA6B0E-27C4-64BB-3B20-FA5C1F86071F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\D3D">
+      <UniqueIdentifier>{EACD40D3-48C3-D39D-93E7-216A15FA5BFB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\internal">
+      <UniqueIdentifier>{0507DC95-253D-2470-6433-CE87F971582B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Changes.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Commonly Confused Characters.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Effects.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\FAQ.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Font Quality.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Glossary.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Graphics Engine Support.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\How-To.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Language Characters.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Metrics.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Motivation.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Requirements.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Sub-pixel Antialiasing (ClearType).html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Typesetter.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Character Sets.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Families, Faces, and Fonts.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\Understanding Phonetic Modifiers.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\User Guide.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\doc\White Paper.html">
+      <Filter>doc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\D3D\EATextGlyphCache_D3D.h">
+      <Filter>include\EAText\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EASkeleton\EATextGlyphCache_EASkeleton.h">
+      <Filter>include\EAText\EASkeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EAText.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBaseline.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBmpFont.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextBreak.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCache.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCollation.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextCompression.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextConfig.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextDebugFont.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextEffects.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextFont.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextFontServer.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextIterator.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextLayout.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextOutlineFont.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextPolygonFont.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextScript.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextStyle.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextStyleReader.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextTypesetter.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\EATextUnicode.h">
+      <Filter>include\EAText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\gxm\EATextGlyphCache_gxm.h">
+      <Filter>include\EAText\gxm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EALexer.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EAStackAllocatorNew.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextBidi.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextBitmap.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCollation.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCoreAllocatorNew.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextCoreAllocatorStack.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextOpenType.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextRefCount.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptArabic.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptHangul.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptHebrew.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextScriptThai.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextSquish.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\internal\EATextStream.h">
+      <Filter>include\EAText\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\OpenGL_ES\EATextGlyphCache_OpenGL_ES.h">
+      <Filter>include\EAText\OpenGL_ES</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\PSGL\EATextGlyphCache_PSGL.h">
+      <Filter>include\EAText\PSGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\RNA\EATextGlyphCache_RNA.h">
+      <Filter>include\EAText\RNA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\include\EAText\Xenon\EATextGlyphCache_Xenon.h">
+      <Filter>include\EAText\Xenon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\D3D\EATextGlyphCache_D3D.cpp">
+      <Filter>source\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EAText.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBaseline.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBmpFont.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextBreak.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCache.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCollation.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextCompression.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextDebugFont.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextEffects.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextFont.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextFontServer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextLayout.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextOutlineFont.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextPolygonFont.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextScript.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextStyle.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextStyleReader.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextTypesetter.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\EATextUnicode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextBidi.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextBitmap.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextOpenType.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeArabic.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeGeneral.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeHangul.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeHebrew.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeIndic.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextShapeThai.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextSquish.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAText\local_1.21.00\source\internal\EATextStream.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

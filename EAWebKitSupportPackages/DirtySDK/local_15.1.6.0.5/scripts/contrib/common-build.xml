@@ -1,0 +1,45 @@
+<project>
+    <Library name="common" frompartial="DSLibrary">
+        <includedirs>
+            ${package.DirtySDK.dir}/contrib/common/include/libsample
+        </includedirs>
+
+        <headerfiles basedir="${package.DirtySDK.dir}/contrib/common/">
+            <includes name="include/**.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.DirtySDK.dir}/contrib/common">
+            <includes name="source/zfile.c"/>
+            <includes name="source/zlib.c"/>
+            <includes name="source/zlist.c"/>
+            <includes name="source/zmem.c"/>
+            <includes name="source/zmemtrack.c"/>
+
+            <do if="${config-system} == 'pc' or ${config-system} == 'pc64' or ${config-system} == 'capilano' or ${config-system} == 'xbsx'">
+                <includes name="source/pc/zfilepc.c"/>
+            </do>
+
+            <do if="${config-system} == 'unix' or ${config-system} == 'unix64' or ${config-system} == 'stadia' or ${config-system} == 'iphone' or ${config-system} == 'iphonesim' or ${config-system} == 'osx' or ${config-system} == 'nx'">
+                <includes name="source/unix/zfileunix.c"/>
+            </do>
+
+            <do if="${config-system} == 'kettle' or ${config-system} == 'ps5'">
+                <includes name="source/ps4/zfileps4.c"/>
+            </do>
+        </sourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+            </auto>
+        </dependencies>
+
+        <config>
+            <warningsuppression>
+                <do if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                    -Wno-unused-parameter
+                </do>
+            </warningsuppression>
+        </config>
+    </Library>
+</project>

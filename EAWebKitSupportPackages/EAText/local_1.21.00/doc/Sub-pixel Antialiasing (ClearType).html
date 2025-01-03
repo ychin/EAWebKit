@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+<title>EAText -- Sub-pixel Antialiasing</title>
+<meta content="Paul Pedriana" name="author">
+<meta content="Frequently Asked Questions about EAText"
+ name="description">
+<link href="UTFDoc.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+.SmallBody {font-size: 10pt}
+.style1 {font-size: 9pt}
+.style36 {	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+}
+.style29 {font-family: Arial, Helvetica, sans-serif}
+.style35 {font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666666; }
+.style37 {font-size: x-small}
+.grayInlineText {color: #999999}
+.style38 {
+	font-family: "Courier New", Courier;
+	font-size: 8pt;
+}
+-->
+  </style>
+</head>
+<body>
+<h1>Sub-pixel Antialiasing</h1>
+<p>EAText supports sub-pixel text antialiasing via FreeType's LCD subpixel hinting. Using it is the same as using other kinds of fonts, though implementing it typically requires a fragment shader that has support for it. Microsoft has patented parts of this under the name of ClearType, and so when we refer to ClearType below, we are referring to Microsoft's implementation of sub-pixel anti-aliasing. We will henceforth abbreviate sub-pixel antialiasing as SubPixelAA.</p>
+<h3>Enabling</h3>
+<p>You need to enable this option in FreeType via defining <span class="style37">FT_CONFIG_OPTION_SUBPIXEL_RENDERING</span> in ftoption.h or globally. However, beware that this functionality is partially patented by Microsoft until the year 2019 via ClearType, and you must officially license it from Microsoft to use it. As of this writing we are negotiating with Microsoft on this. </p>
+<p>EAText enables SubPixelAA via the kOptionSubPixelAA option. You can set this option on individual OutlineFont objects via (e.g.) Font::SetOption(kOptionSubPixelAA, kSCT_LCD_H_RGB) and you can enable it by default for FontServer-created fonts via FontServer::SetOption(kOptionSubPixelAA, kSCT_LCD_H_RGB). If you enable kOptionSubPixelAA then the enabled Outline Font will automatically generate glyphs that are 24 bit RGB encoded as per the documentation for the type. It's up to the graphics engine to convert those to a glyph cache texture entry, though EAText has some default converters. </p>
+<p>SubPixelAA support is specific to the type of screen being used, as it depends on the design of the pixels on the screen. This creates some potential runtime problems for executing applications which might have to determine what kind of screen is available. </p>
+<pre class="code-example"><span class="grayInlineText">/// ScreenColorType</span>
+<span class="grayInlineText">/// Specifies how color pixels are implemented on the screen.</span>
+enum ScreenColorType
+{
+    kSCT_Unknown, &nbsp;&nbsp;<span class="grayInlineText">/// Display is known to not be LCD, for example.</span>
+    kSCT_LCD_H_RGB, <span class="grayInlineText">/// Horizontal R, G, B. Most desktop LCD displays are like this.</span>
+    kSCT_LCD_H_BGR, <span class="grayInlineText">/// Horizontal B, G, R. A desktop display rotated 180 degrees would be like this.</span>
+    kSCT_LCD_V_RGB, <span class="grayInlineText">/// Vertical R, B, B. Desktop LCD displays rotated 90 degrees clockwise would be like this.</span>
+    kSCT_LCD_V_BGR, <span class="grayInlineText">/// Vertical R, B, B. Desktop LCD displays rotated 90 degrees counter-clockwise would be like this.</span>
+    kSCT_LCD_Other &nbsp;<span class="grayInlineText">/// Display is LCD but not a linear color type (e.g. PenTile).</span>
+};</pre>
+<p>A  shader is required which handles glyph textures with SubPixelAA support. Typically this is something specific to each graphics engine. You may also need to supply glyph cache support for three channel textures. We discuss this more specifically below.</p>
+<h3>Licensing</h3>
+<p>We are currently (February 2014) working towards understanding the licensing requirements for ClearType. If you need to know more then talk to the EA legal team via the <em>Legal IP Team @ EAHQ</em> mailing list. However, it's important to be sure that you don't publish any software that uses SubPixelAA until you are sure that IP (intellectual property) issues are resolved. </p>
+<h3>How SubPixelAA works</h3>
+<p>SubPixelAA is a form of anti-aliasing that works at the sub-pixel level. It works by using the individual red, green, and blue components of an LCD screen pixel as if they were independent pixels. Consider that an LCD screen when viewed very magnified looks somewhat like this: </p>
+<blockquote>
+  <p><img src="images/LCDPixels.png" width="183" height="122"></p>
+</blockquote>
+<p>When glyphs are drawn with SubPixelAA, they are drawn with variable amounts of coloring in each pixel component: </p>
+<blockquote>
+  <p><img src="images/ClearTypeZoom.png" width="294" height="177"></p>
+</blockquote>
+<p>The following demonstrates size 14 Arial drawn with SubPixelAA, with regular anti-aliasing, and without anti-aliasing. On most LCD monitors the top row (SubPixelAA) will look the smoothest, but it may also show coloring around the edges of the glyphs. The larger the text, the less it needs SubPixelAA, and very large text (&gt;= size 80) may not need any anti-aliasing at all. </p>
+<blockquote>
+  <p><img src="images/AntiAliasing1.gif" width="589" height="82"></p>
+</blockquote>
+<p>The picture below consists of the same text drawn at Arial size 9. The top row is the smoothest of the three and is evenly weighted, but it clearly shows a discoloring that makes it look like the text is not black. The second row is fairly smooth but demonstrates how anti-aliasing has problems with very small text, as the font size is too small for anti-aliasing to look good with some of the letters (e.g. w, s, k). The third row looks very crisp, though slightly blocky. The reason it looks so crisp is that this font (Microsoft Arial) has extensive hinting (desribed in the next section) built into it. The bottom row has no no anti-aliasing nor hinting and looks the worst. It is unacceptable for commercial applications and demonstrates why hinting is so important for smaller sized fonts. </p>
+<blockquote>
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <th width="227" rowspan="6" scope="col"><span class="style36"><img src="images/AntiAliasing2.png"></span></th>
+    </tr>
+    <tr>
+      <td width="1"><span class="style29"></span></td>
+      <td width="16">&nbsp;</td>
+      <td><span class="style35">ClearType</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">Anti-Aliasing</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">Hinting</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">No hinting or anti-aliasing </span></td>
+    </tr>
+  </table>
+</blockquote>
+<p>The <a href="https://www.grc.com/freeandclear.htm">http://en.wikipedia.org/wiki/Subpixel_rendering</a> page has more information about this. </p>
+<h3>Applicability</h3>
+<p>SubPixelAA as implemented by EAText through FreeType supports computer displays that have horizontally consecutive RGB sub-pixels. Nearly all consumer LCD computer monitors are like this. Some televisions are like this, but not all. Phone and Tablet displays often don't have this kind of screen pixel arragement and often have things like PenTile displays. </p>
+<blockquote>
+  <p><img src="images/PenTileDisplay.png" name="sdf" width="73" height="73"><br>
+  PenTile display </p>
+</blockquote>
+<p>When an LCD screen is rotated 90 degrees (as some displays support), the horizontal orientation becomes vertical and the anti-aliasing </p>
+<p>SubPixelAA is supported under EAText  with TrueType and related outline font types (e.g. .ttf, .ttc, .otf). EAText Effects do not currently support sub-pixel anti-aliasing, though that may be an option in the future. Some TrueType fonts work better than others, but most yield decent results. If you create a font with an effect then SubPixelAA will be disabled. Bitmap fonts (e.g. EATextBmpFont) don't explicitly support SubPixelAA but a 24 bit bitmapped font could be constructed that's pre-built with SubPixelAA encoding. If you are interested in doing this then let us know. </p>
+<h3><a name="Experimentation"></a>Experimentation</h3>
+<p>In order to test sub-pixel anti-aliasing we provide the FreeType ftview.exe applet, which lets you experiment with glyph drawing parameters directly out of FreeType. This applet is in the EAText tools directory and runs on Windows 32 and 64 bit platforms. Use F1 at runtime to see a list of options to control the settings. The controls in this app directly correspond to FreeType-level options, which are mostly exposed by EAText by EAText-level options. </p>
+<blockquote>
+  <p><img src="images/ftview.png" width="817" height="639"></p>
+</blockquote>
+<h3><a name="TelevisionBehavior"></a>Television Behavior</h3>
+<p>SubPixelAA works on many televisions but doesn't work quite as well as it does on desktop monitors. There are a number of factors here:</p>
+<ul>
+  <li>Televisions sometimes have R,G,B pixels that aren't linearly aligned. </li>
+  <li>Most modern televisions have image processing that affects the color or sharpness in ways that help movies and games but not text. </li>
+  <li>The sharpness of television screens is typically lower than desktop monitors. </li>
+</ul>
+<blockquote>
+  <p><img src="images/Samsung%20LED%20TV%20Pixels.png" width="509" height="248"></p>
+  <p><img src="images/JVC%20LED%20TV%20Pixels.jpg" width="465" height="247"></p>
+</blockquote>
+<p>Our tests have shown that SubPixelAA on modern LCD/Plasma televisions doesn't look much sharper, but does have better and more consistent glyph weighting.</p>
+<h3><a name="GlyphCache"></a>Glyph Cache</h3>
+<p>When SubPixelAA is enabled, the EAText OutlineFont::RenderGlyphBitmap function generates a bitmap which is an opacity map like with regular AA glyphs, but is three times as wide (24bpp instead of 8bpp) and and with three times the detail. For example, here's a memory view of the &quot;1&quot; glyph with regular 8bpp opacity:</p>
+<blockquote>
+  <p><img src="images/RegularAAGlyphMemoryImage1.png" width="91" height="113"></p>
+</blockquote>
+<p>Here's the same 1 glyph drawn with SubPixelAA 24bpp opacity:</p>
+<blockquote>
+  <p><img src="images/SubPixelAAGlyphMemoryImage1.png" width="375" height="114"></p>
+</blockquote>
+<p>This needs to be directly converted into an RGB texture in the glyph cache. Each RGB triplet above maps to one texel in the texture, and as usual each texel in the texure maps to a pixel on the screen 1:1. While there are 24 bits of information above for each texel, you could conceivably reduce that to 16 bit (e.g. 565) to save space. The opacity of the texel would be calculated by the fragment shader and is typically the average of the three values, though a more advanced algorithm could yield improved results.</p>
+<h3><a name="Shader"></a>Shader</h3>
+<p>The <a href="http://code.google.com/p/freetype-gl/">freetype-gl project</a> has an example vertex and fragment OpenGL shader that is applicable to EAText-based SubPixelAA. </p>
+<p>The vertex shader is straightforward:</p>
+<pre class="code-example">uniform sampler2D texture;
+uniform vec3      pixel;
+uniform mat4      model;
+uniform mat4      view;
+uniform mat4      projection;
+
+attribute vec3  vertex;
+attribute vec4  color;
+attribute vec2  tex_coord;
+attribute float agamma;
+varying   float vgamma;
+ 
+void main()
+{
+    vgamma = agamma;
+    gl_FrontColor = color;
+    gl_TexCoord[0].xy = tex_coord.xy;
+    gl_Position = projection*(view*(model*vec4(vertex,1.0)));
+}
+</pre>
+<p>The fragment shader is a little more involved. The following is similar to the shader that freetype-gl uses, though we are looking into coming up with something better because the shader below seems to not have as much AA effect as it should. </p>
+<pre class="code-example style1">uniform sampler2D texture;
+uniform vec3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixel;
+varying float&nbsp;&nbsp;&nbsp;&nbsp; vgamma;
+
+void main()
+{
+    vec2 uv = gl_TexCoord[0].xy;
+
+&nbsp;&nbsp;&nbsp;&nbsp;if(pixel.z == 1.0) // If there is just 1 byte per pixel...
+  &nbsp;&nbsp;{
+  &nbsp;&nbsp;    float a = texture2D(texture, uv).r;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gl_FragColor = gl_Color * pow(a, 1.0/vgamma);
+  &nbsp;&nbsp;}
+  &nbsp;&nbsp;else // Else do SubPixelAA. 
+  &nbsp;&nbsp;{
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vec4 current &nbsp;= texture2D(texture, uv);
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vec4 previous = texture2D(texture, uv+vec2(-1.,0.)*pixel.xy);
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current = pow(current, &nbsp;vec4(1.0/vgamma));
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous= pow(previous, vec4(1.0/vgamma));
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float r = current.r;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float g = current.g;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float b = current.b;
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float t &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= max(max(r,g),b);
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vec4 color&nbsp;&nbsp; = vec4(gl_Color.rgb, (r+g+b)/3.0);
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = t*color + (1.0-t)*vec4(r,g,b, min(min(r,g),b));
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gl_FragColor = vec4(color.rgb, gl_Color.a*color.a);
+  &nbsp;&nbsp;}
+}</pre>
+<h3><a name="Subpixelpositioning"></a>Sub-pixel positioning</h3>
+<p>In addition to the topic of sub-pixel antialiasing there is the concept of sub-pixel positioning. In that case glyphs are placed on fractional pixel positions along the text baseline. There are three primary ways of accomplishing this graphically:</p>
+<ol>
+  <li>Layout the glyphs with fractional positions and advances, but at the actual step of drawing glyphs, round their positions to pixel boundaries. This results in lines of text that have accurate width, but individual glyphs may look horizontally slightly misaligned.</li>
+  <li>Layout the glyphs with fractional position and advances, and make/draw special versions of each glyph whereby each version has specialized antialiasing for that position. This results in accurate line width and good looking glyphs, but explodes the size of your glyph cache because you need to cache multiple glyphs, one for each fraction.</li>
+  <li>Layout the glyphs with fractional position and advances, and make  anti-aliased versions of glyphs (better if using SubPixelAA), but have the fragment shader revise the channel calculation to shift the glyph. This results in accurate line width and glyphs that look almost as good as case #2 above for many cases, and yet doesn't have the downside of requiring multiple glyph caching. The freetype-gl package's text.frag file shows how to implement this as a variation of the fragment shader shown above.</li>
+</ol>
+<h3>Links</h3>
+<ul>
+  <li><a href="https://www.grc.com/freeandclear.htm">http://en.wikipedia.org/wiki/Subpixel_rendering</a></li>
+  <li> <a href="http://alienryderflex.com/sub_pixel/">http://alienryderflex.com/sub_pixel/</a></li>
+  <li><a href="http://blog.typekit.com/category/type-rendering/">http://blog.typekit.com/category/type-rendering/</a></li>
+  <li><a href="http://spasche.net/files/lcdfiltering/">http://spasche.net/files/lcdfiltering/</a></li>
+  <li><a href="http://www.usabilitypost.com/2010/08/26/font-smoothing/">http://www.usabilitypost.com/2010/08/26/font-smoothing/</a> </li>
+  <li><a href="http://code.google.com/p/freetype-gl/">http://code.google.com/p/freetype-gl/</a></li>
+  <li><a href="http://www.antigrain.com/research/font_rasterization/index.html">http://www.antigrain.com/research/font_rasterization/index.html</a></li>
+  <li><a href="https://www.grc.com/freeandclear.htm">https://www.grc.com/freeandclear.htm</a></li>
+  <li> <a href="http://www.microsoft.com/typography/WhatIsClearType.mspx">http://www.microsoft.com/typography/WhatIsClearType.mspx</a></li>
+  <li><a href="http://www.microsoft.com/en-us/legal/IntellectualProperty/IPLicensing/Programs/ClearType.aspx">http://www.microsoft.com/en-us/legal/IntellectualProperty/IPLicensing/Programs/ClearType.aspx</a></li>
+  <li> <a href="http://www.freetype.org/">http://www.freetype.org/</a></li>
+  <li>  <a href="http://david.freetype.org/cleartype-patents.html">http://david.freetype.org/cleartype-patents.html</a></li>
+</ul>
+<p class="style1">
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

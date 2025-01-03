@@ -1,0 +1,174 @@
+body 
+{ 
+    margin: 60px; 
+    font-family: sans-serif;
+    font-size: 14;
+    background-color: #ffffff
+}
+
+h1
+{
+    font-family: sans-serif;
+    color: #2838A0;
+}
+
+h2
+{
+    font-family: sans-serif;
+    color: #5858A0;
+}
+
+h3
+{
+    font-family: sans-serif;
+    color: #7070A0;
+}
+
+h4
+{
+    font-family: sans-serif;
+    color: #A0A0A0;
+}
+
+/* This is a custom table style borrowed from the docs wiki */
+table.custom {
+ margin-top: 2ex;
+ margin-right: 0px;
+ margin-bottom: 0px;
+ padding: 0px;
+ /* only want this when used with wiki markup: {|border="1"*/
+ /*border-collapse: collapse;*/
+ /* so for now go with */
+ border:none;
+}
+table.custom th {
+ padding: 1ex;
+ text-align: left;
+ color: #FFFFFF;
+ background-color: #4075CB;
+ vertical-align: middle;
+ border:none;
+}
+table.custom td {
+ padding: 1ex;
+ background-color: #D9E3F5;
+ border:none;
+}
+
+/* Command line option formatting */
+p.cl-option
+{
+    font-family: monospace;
+}
+
+p.definition
+{
+    margin-left: 2em
+}
+
+/*
+ * Configuration for syntax highlighting
+ */
+pre code[class]:after {
+  content: 'highlight: ' attr(class);
+  display: block; text-align: right;
+  font-size: smaller;
+  color: #CCC; background: white;
+  border-top: solid 1px;
+  padding-top: 0.5em;
+}
+
+pre code {
+  display: block;
+  background: #F0F0F0;
+}
+
+pre code, 
+.ruby .subst {
+  color: black;
+}
+
+.string,
+.function .title,
+.class .title, 
+.tag .attribute .value,
+.css .rules .value,
+.preprocessor,
+.ruby .symbol,
+.built_in,
+.sql .aggregate,
+.django .template_tag,
+.django .variable,
+.smalltalk .class {
+  color: DarkViolet;
+}
+
+.comment,
+.java .annotation,
+.template_comment {
+  color: DarkBlue;
+}
+
+.number,
+.regexp,
+.javascript .literal,
+.smalltalk .symbol,
+.smalltalk .char {
+  color: #080;
+}
+
+.javadoc,
+.ruby .string,
+.python .decorator,
+.django .filter .argument,
+.smalltalk .localvars,
+.smalltalk .array,
+.css .attr_selector,
+.xml .pi {
+  color: #88F;
+}
+
+.keyword,
+.css .id,
+.phpdoc,
+.function .title,
+.class .title,
+.vbscript .built_in,
+.sql .aggregate,
+.rsl .built_in,
+.smalltalk .class,
+.xml .tag .title {
+  font-weight: bold;
+  color: DarkGreen;
+}
+
+body {
+}
+
+#header {
+    padding-bottom:20px;
+    background-color: #fff;
+}
+
+#menubar {
+    float:left;
+    width:18%;
+    background-color: #fff;
+}
+
+#content {
+    float:right;
+    width:75%;
+    background-color: #fff;
+}
+
+#footer {
+    clear:both;
+    padding-top:20px;
+    background-color: #fff;
+}
+
+#title {
+    font-size:48;
+    color: #2838A0;
+}

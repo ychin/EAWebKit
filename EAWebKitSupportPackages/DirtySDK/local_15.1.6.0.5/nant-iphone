@@ -1,0 +1,32 @@
+#!/bin/bash
+
+FW_VERSION=version
+FW_DIR=../Framework/$FW_VERSION
+
+if [ ! -f $FW_DIR/bin/nant.exe ]; then
+    echo "Unable to locate nant.exe."
+else
+    MONO_PATH=mono
+
+    # if the default mono fails, try finding another installed version
+    ${MONO_PATH} $FW_DIR/bin/nant.exe -version > /dev/null
+    if [ $? -ne 0 ]; then
+        MONO_PATH=""
+        foundmonos=`whereis -b mono | sed 's/^mono://g'`
+        for next in $foundmonos
+        do
+            ${next} $FW_DIR/bin/nant.exe -version > /dev/null
+            if [ $? -eq 0 ]; then
+                MONO_PATH=${next}
+                break
+            fi
+        done
+        if [ "${MONO_PATH}" == "" ]; then
+            echo "Failed to find a version of Mono runnable with $FW_DIR/bin/nant.exe. Note: framework 3 requires minimum Mono JIT compiler version 2.10.8."
+            exit -1
+        fi
+    fi
+
+    echo $MONO_PATH $FW_DIR/bin/nant.exe $@ ...
+    exec $MONO_PATH $FW_DIR/bin/nant.exe $@ -masterconfigfile:iphone-masterconfig.xml
+fi

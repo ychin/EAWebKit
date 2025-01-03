@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 16,3,1,1
- PRODUCTVERSION 16,3,1,1
+ FILEVERSION 16,4,2,0
+ PRODUCTVERSION 16,4,2,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,12 +69,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Electronic Arts, Inc."
             VALUE "FileDescription", "EAWebKit"
-            VALUE "FileVersion", "16.3.1.1"
+            VALUE "FileVersion", "16.4.2.0"
             VALUE "InternalName", "EAWebKit"
-            VALUE "LegalCopyright", "Copyright (C) 2017"
+            VALUE "LegalCopyright", "Copyright (C) 2020"
             VALUE "OriginalFilename", "EAWebKit"
             VALUE "ProductName", "EAWebKit"
-            VALUE "ProductVersion", "16.3.1.1"
+            VALUE "ProductVersion", "16.4.2.0"
         END
     END
     BLOCK "VarFileInfo"

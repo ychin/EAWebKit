@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\framework_tmp\CapilanoSDK-180715\XdkBuild.v141.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-debug|Durango">
+      <Configuration>capilano-vc-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-opt|Durango">
+      <Configuration>capilano-vc-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4836B6A6-0EA6-81E9-164C-55D84863E469}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>FreeType</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64 /Zf -w44254 -w44265 -w44287 -w44296 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\180715\xdk\lib\amd64";"$(XboxOneExtensionSDKLatest)\References\CommonConfiguration\Neutral";"$(DurangoXDK)\180715\xdk\VS2017\vc\platform\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4702; 4701; 4703; 4611; 4505; 4306; 4305; 4267; 4255; 4245; 4244; 4189; 4146; 4131; 4101; 4005; 4312; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>capilano-vc-debug\lib\FreeType.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>capilano-vc-debug\lib/FreeType.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-debug\lib" mkdir "capilano-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-debug\build\FreeType" mkdir "capilano-vc-debug\build\FreeType" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-debug|Durango' ">
+    <OutDir>capilano-vc-debug\lib\</OutDir>
+    <IntDir>capilano-vc-debug\build\FreeType\v\</IntDir>
+    <TLogLocation>capilano-vc-debug\build\FreeType\v.tlog\</TLogLocation>
+    <TargetName>FreeType</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\180715\xdk\Include;$(DurangoXDK)\180715\xdk\Include\shared;$(DurangoXDK)\180715\xdk\Include\um;$(DurangoXDK)\180715\xdk\Include\winrt;$(NETFXKitsDir)\Include\um;$(DurangoXDK)\180715\xdk\ucrt\inc;$(DurangoXDK)\180715\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64 /Zf -w44254 -w44265 -w44287 -w44296 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"$(DurangoXDK)\180715\xdk\lib\amd64";"$(XboxOneExtensionSDKLatest)\References\CommonConfiguration\Neutral";"$(DurangoXDK)\180715\xdk\VS2017\vc\platform\amd64";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4702; 4701; 4703; 4611; 4505; 4306; 4305; 4267; 4255; 4245; 4244; 4189; 4146; 4131; 4101; 4005; 4312; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;FT2_BUILD_LIBRARY;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>capilano-vc-opt\lib\FreeType.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>capilano-vc-opt\lib/FreeType.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-opt\lib" mkdir "capilano-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-opt\build\FreeType" mkdir "capilano-vc-opt\build\FreeType" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-opt|Durango' ">
+    <OutDir>capilano-vc-opt\lib\</OutDir>
+    <IntDir>capilano-vc-opt\build\FreeType\v\</IntDir>
+    <TLogLocation>capilano-vc-opt\build\FreeType\v.tlog\</TLogLocation>
+    <TargetName>FreeType</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(DurangoXDK)\180715\xdk\Include;$(DurangoXDK)\180715\xdk\Include\shared;$(DurangoXDK)\180715\xdk\Include\um;$(DurangoXDK)\180715\xdk\Include\winrt;$(NETFXKitsDir)\Include\um;$(DurangoXDK)\180715\xdk\ucrt\inc;$(DurangoXDK)\180715\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\ft2build.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\freetype.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftadvanc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbbox.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbdf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbitmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbzip2.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftcache.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftchapters.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftcid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftdriver.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fterrdef.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fterrors.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgasp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftglyph.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgxval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgzip.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftimage.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftincrem.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlist.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlzw.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmac.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmodapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmoderr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftotval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftoutln.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftparams.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftpfr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftrender.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsizes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsnames.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftstroke.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsynth.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsystem.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fttrigon.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fttypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\t1tables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ttnameid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\tttables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\tttags.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftheader.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftoption.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\autohint.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\cffotypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\cfftypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftdrv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\fthash.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftpic.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\internal.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\psaux.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\pshints.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\t1types.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\tttypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svcid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svkern.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svmm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svotval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svprop.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svwinfnt.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\autofit\autofit.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbase.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbbox.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbitmap.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftdebug.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftfntfmt.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftfstype.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftgasp.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftglyph.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftinit.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftlcdfil.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftmm.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftpfr.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftstroke.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftsynth.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftsystem.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\fttype1.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftwinfnt.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\bdf\bdf.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cache\ftcache.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cff\cff.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cid\type1cid.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\gzip\ftgzip.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\lzw\ftlzw.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pcf\pcf.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pfr\pfr.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\psaux\psaux.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pshinter\pshinter.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\psnames\psmodule.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\raster\raster.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\sfnt\sfnt.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\smooth\smooth.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\truetype\truetype.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\type1\type1.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\type42\type42.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\winfonts\winfnt.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

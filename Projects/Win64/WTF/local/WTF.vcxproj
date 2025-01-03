@@ -1,16 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+=======
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>>>>>>> mirror
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>pc64-vc-dev-debug</Configuration>
+    <Configuration>pc64-vc-debug</Configuration>
     <Platform>x64</Platform>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="pc64-vc-dev-debug|x64">
-      <Configuration>pc64-vc-dev-debug</Configuration>
+    <ProjectConfiguration Include="pc64-vc-debug|x64">
+      <Configuration>pc64-vc-debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="pc64-vc-dev-opt|x64">
-      <Configuration>pc64-vc-dev-opt</Configuration>
+    <ProjectConfiguration Include="pc64-vc-opt|x64">
+      <Configuration>pc64-vc-opt</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -18,28 +22,42 @@
     <ProjectGuid>{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}</ProjectGuid>
     <Keyword>x64Proj</Keyword>
     <ProjectName>WTF</ProjectName>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <UCRTContentRoot>C:\Program Files (x86)\Windows Kits\10\</UCRTContentRoot>
     <UniversalCRTSdkDir>C:\Program Files (x86)\Windows Kits\10\</UniversalCRTSdkDir>
     <WindowsSdkDir_10>C:\Program Files (x86)\Windows Kits\10\</WindowsSdkDir_10>
     <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
     <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
+=======
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+>>>>>>> mirror
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+<<<<<<< HEAD
     <PlatformToolset>v141</PlatformToolset>
+=======
+    <PlatformToolset>v142</PlatformToolset>
+>>>>>>> mirror
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
@@ -47,32 +65,33 @@
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>/vmg -bigobj /FS /fp:except- -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>/vmg -bigobj /FS /Zf /fp:except- -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4530; 4996; 4275; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4530; 4996; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <FloatingPointModel>Precise</FloatingPointModel>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX=1;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_LIB;_UNICODE;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EA_SLN_BUILD=1;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\WTF.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-debug\lib\WTF.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -81,52 +100,54 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-debug\lib\WTF.lib</OutputFile>
+      <OutputFile>pc64-vc-debug\lib/WTF.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-debug\lib" mkdir "pc64-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-debug\build\WTF" mkdir "pc64-vc-dev-debug\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc64-vc-debug\lib" mkdir "pc64-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-debug\build\WTF" mkdir "pc64-vc-debug\build\WTF" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
-    <OutDir>pc64-vc-dev-debug\lib\</OutDir>
-    <IntDir>pc64-vc-dev-debug\build\WTF\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-debug|x64' ">
+    <OutDir>pc64-vc-debug\lib\</OutDir>
+    <IntDir>pc64-vc-debug\build\WTF\v\</IntDir>
+    <TLogLocation>pc64-vc-debug\build\WTF\v.tlog\</TLogLocation>
     <TargetName>WTF</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>/vmg -Zo -d2SSAOptimizer- -bigobj /FS /fp:except- -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\WTF\local";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\ea\icu";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\text";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\threads";"..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common"</AdditionalIncludeDirectories>
+      <AdditionalOptions>/vmg -Zo -d2SSAOptimizer- -bigobj /FS /Zf /fp:except- -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4530; 4996; 4275; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4530; 4996; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <FloatingPointModel>Precise</FloatingPointModel>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX=1;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STD_C;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_LIB;_UNICODE;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_SLN_BUILD=1;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\WTF.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-opt\lib\WTF.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -135,31 +156,31 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-opt\lib\WTF.lib</OutputFile>
+      <OutputFile>pc64-vc-opt\lib/WTF.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc64-vc-dev-opt\lib" mkdir "pc64-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc64-vc-dev-opt\build\WTF" mkdir "pc64-vc-dev-opt\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc64-vc-opt\lib" mkdir "pc64-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc64-vc-opt\build\WTF" mkdir "pc64-vc-opt\build\WTF" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
-    <OutDir>pc64-vc-dev-opt\lib\</OutDir>
-    <IntDir>pc64-vc-dev-opt\build\WTF\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-opt|x64' ">
+    <OutDir>pc64-vc-opt\lib\</OutDir>
+    <IntDir>pc64-vc-opt\build\WTF\v\</IntDir>
+    <TLogLocation>pc64-vc-opt\build\WTF\v.tlog\</TLogLocation>
     <TargetName>WTF</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup Label="ProjectReferences">
-    <ProjectReference Include="..\..\EABaseEAWebKit\local-2.06.05-01\EABaseEAWebKit.vcxproj">
-      <Project>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</Project>
+    <ProjectReference Include="..\..\EABase\local_2.10.01\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
       <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>False</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
@@ -666,6 +687,7 @@
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\WTF\local\wtf\unicode\ea\UnicodeEA.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+<<<<<<< HEAD
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />-->
   <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />-->
   <ImportGroup Label="ExtensionTargets">
@@ -678,3 +700,11 @@
     </VisualStudio>
   </ProjectExtensions>
 </Project>
+=======
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>
+>>>>>>> mirror

@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAText -- Font Quality</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta content="Description of the Motivation for creating EAText."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+<!--
+.style2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+}
+.style29 {font-family: Arial, Helvetica, sans-serif}
+.style31 {font-family: "Arial Unicode MS"; font-size: 12 px;}
+.style35 {font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666666; }
+-->
+  </style>
+</head>
+<body>
+<h1>Font Quality </h1>
+<p>This document describes various things you want to understand while in the pursuit of superior font quality in your applications. This is a surprisingly complicated topic which is easy to take for granted when seeing professional font usage in software and television. We will provide a discussion on various topics and then a concluding paragraph discussing strategy. In this document we refer to Font Fusion, which is a third party library that reads TrueType fonts and which is used by EAText for this. </p>
+<h2>Outline and Bitmapped Fonts</h2>
+<p>Outline fonts are defined by curves such as B&eacute;zier curves and are thus scalable. TrueType and PostScript fonts are examples of outline fonts. An application can load a single outline font and use it to draw text at multiple sizes. You can edit outline fonts with the FontLab commercial tool. </p>
+<blockquote>
+  <p><img src="images/OutlineS.png" width="612" height="370"></p>
+</blockquote>
+<p>Bitmapped fonts are defined by bitmapped data. Every glyph has a bitmap, and every glyph size requires a unique bitmap. The following picture shows 6X zoomed bitmapped anti-aliased font glyphs at multiple sizes. It turns out that TrueType fonts can have bitmap (&quot;sbit&quot;) data embedded in them as an alternative to outline data for small font sizes, though these bitmaps are limited to a single color and no anti-aliasing (smoothing). You can create bitmapped fonts with the EA BitmapFontEditor tool, the EA Mobile Font Editor, as well as the commerical BitFonter tool.</p>
+<blockquote>
+  <p><img src="images/BitmapS.png" width="612" height="283"></p>
+</blockquote>
+<p>The practical differences between outline and bitmapped fonts are described in the following table: </p>
+<blockquote>
+<table border="1">
+  <tr>
+    <th scope="col">&nbsp;</th>
+    <th scope="col">Outline fonts </th>
+    <th scope="col">Bitmap fonts </th>
+  </tr>
+  <tr>
+    <th scope="row">Advantages</th>
+    <td valign="top"> &#8226; Many pre-existing fonts to choose from.<br>
+       &#8226; Face data has a  low memory footprint.<br>
+      &#8226; Can support just about any script (writing system), including complex scripts. </td>
+    <td valign="top"><p> &#8226; Can be multi-colored; it is not limited to being monochromatic.<br>
+      &#8226; Can look good at any size.<br>
+      &#8226; Doesn't require complex code to interpret and render. </p>
+      </td>
+  </tr>
+  <tr>
+    <th scope="row">Disadvantages</th>
+    <td valign="top"><p>&#8226; Hard to  look  good at small sizes; few commercial fonts look good at small sizes.<br>
+      &#8226; Limited to being monochromatic.<br>
+      &#8226; Hard to use in large sizes due ot the memory consumption.<br>
+      &#8226; Requires complex code to interpret and render, though usually that is provided by a third party.</p>
+      </td>
+    <td valign="top"><p>&#8226; Almost impossible to use in large sizes due to the memory consumption.<br>
+      &#8226;Difficult to support complex scripts (writing system).<br>
+      &#8226; There is no accepted standard file format and virtually no commerical sources. </p>
+      </td>
+  </tr>
+</table>
+</blockquote>
+<p>Much of the rest of this document will be about the advantages and disadvantages listed in the above table. </p>
+<h2>Anti-Aliasing</h2>
+<p>Anti-aliasing (also known as font smoothign) allows font edges to be smoother, and is useful for making small sized fonts (&lt; 15 pixels) look good. There is a lot of discussion in this document about anti-aliasing, so we don't have much to say here other than to present an additional picture comparing large sized text with and without anti-aliasing:</p>
+<blockquote>
+  <p><img src="images/AntiAliasing3.png" width="206" height="169"></p>
+</blockquote>
+<h2>Sub-pixel anti-aliasing (a.k.a. ClearType)</h2>
+<p>See the <a href="Sub-pixel%20Antialiasing%20(ClearType).html">Sub-pixel Antialiasing document</a> for more info about EAText sub-pixel anti-aliasing support and usage. </p>
+<p>ClearType is the name of a Microsoft technology used to improve the appearance of text drawn on LCD displays. Microsoft didn't invent ClearType, as the same kind of technique was in fact employed years earlier. ClearType is otherwise called <em>LCD anti-aliasing</em> or <em>sub-pixel anti-aliasing</em>, as ClearType is a Microsoft trademark. ClearType anti-aliasing can be applied to outline or bitmap fonts. </p>
+<p>ClearType is a form of anti-aliasing that works at the sub-pixel level. It works by using the individual red, green, and blue components of an LCD screen pixel as if they were independent pixels. Consider that an LCD screen when viewed very magnified looks somewhat like this: </p>
+<blockquote>
+  <p><img src="images/LCDPixels.png" width="183" height="122"></p>
+</blockquote>
+<p>When glyphs are drawn with ClearType, they are drawn with variable amounts of coloring in each pixel component: </p>
+<blockquote>
+  <p><img src="images/ClearTypeZoom.png" width="294" height="177"></p>
+</blockquote>
+<p>The following demonstrates size 14  Arial drawn with ClearType, with regular anti-aliasing, and without anti-aliasing. On most LCD monitors the top row (ClearType) will look the smoothest, but it may also show coloring around the edges of the glyphs. The larger the text, the less it needs ClearType, and very large text (&gt;= size 80) may not need any anti-aliasing at all. </p>
+<blockquote>
+  <p><img src="images/AntiAliasing1.gif" width="589" height="82"></p>
+</blockquote>
+<p>The picture below consists of the same text drawn at Arial size 9. The top row is the smoothest of the three and is evenly weighted, but it clearly shows a discoloring that makes it look like the text is not black. The second row is fairly smooth but demonstrates how  anti-aliasing has problems with very small text, as the font size is too small for anti-aliasing to look good with some of the letters (e.g. w, s, k). The third row  looks very crisp, though slightly blocky. The reason it looks so crisp is that this font (Microsoft Arial) has extensive hinting (desribed in the next section) built into it. The bottom row has no no anti-aliasing nor hinting and looks the worst. It is unacceptable for commercial applications and demonstrates why hinting is so important for smaller sized fonts. </p>
+<blockquote>
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <th width="227" rowspan="6" scope="col"><span class="style2"><img src="images/AntiAliasing2.png"></span></th>
+    </tr>
+    <tr>
+      <td width="1"><span class="style29"></span></td>
+      <td width="16">&nbsp;</td>
+      <td><span class="style35">ClearType</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">Anti-Aliasing</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">Hinting</span></td>
+    </tr>
+    <tr>
+      <td><span class="style29"></span></td>
+      <td>&nbsp;</td>
+      <td><span class="style35">No hinting or anti-aliasing </span></td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Hinting</h2>
+<p>Hinting is an important concept for screen fonts or any fonts displayed at small sizes. In the words of Will Harris:</p>
+<blockquote>
+  <p><em>At its most basic level hinting (or, more accurately, instructing) a font is a method of defining exactly which pixels are turned on in order to create the best possible character bitmap shape at small sizes and low resolutions. Hints are necessary because the numbers of pixels (dots on screen) available to display a font at small sizes is so small that one pixel on or off can totally change the way a letter displays. A curve can become a blob. The stem of one letter may appear two pixels wide while another is only one pixel wide, causing words to look extremely uneven. </em></p>
+</blockquote>
+<p>Here's an example of the Verdana font (which in fact was hinted by Will Harris of the aforementioned paragraph) with hinting and without it: </p>
+<blockquote>
+  <p><img src="images/Hinting.png" width="252" height="51"></p>
+</blockquote>
+<p>Hinting isn't mutually exclusive with anti-aliasing -- you can have a font rendered with both techniques active. Hinting results in balanced crisp fonts that have hard edges. Anti-aliasing results in balanced soft fonts that have smooth edges. Choose whichever works best for your application. </p>
+<p>GASP (Grid-fitting and Scan-conversion Procedure) refers to information stored in a 
+TrueType font which identifies which font sizes are best for applying hinting 
+and anti-aliasing. A very large font (&gt;= 64 pixels) generally doesn't need to have hinting applied. On the other hand, a small font (~10 pixels) almost always needs hinting in order to look good. TrueType fonts often have a gasp table, which simply says what sizes the font author thinks should have hinting and anti-aliasing applied. The gasp information itself provides no hinting or anti-aliasing functionality. It's probably best if you ignore GASP information and let your artist decide for herself what looks best. </p>
+<p>The process of adding hints to a font is generally outside the expertise of most users and in any case is a laborious process that could take several man-months of work for just a single typeface. </p>
+<p>You can read more about hinting at <a href="http://www.microsoft.com/typography/TrueTypeHintingWhat.mspx">http://www.microsoft.com/typography/TrueTypeHintingWhat.mspx.</a></p>
+<h2>TrueType vs. PostScript</h2>
+<p>Let's cut to the chase: TrueType is superior to PostScript in terms of rendering quality on computer screens. There are sometimes arguments made by PostScript fans to the contrary, but such arguments are misinformed. If TrueType isn't superior in theory (in general it is), then it's superior in practice. The primary reason TrueType fonts are better is that the TrueType font format is designed for usage by fonts, whereas the PostScript font format is mostly a generic extension of the PostScript page description language. In particular, TrueType has a fairly powerful language for specifying how to draw fonts at small sizes, whereas PostScript has very little in these respects. PostScript fonts are fine for large artwork and work well when paired with PostScript printers, but that doesn't help screen-based graphical applications very much.</p>
+<p>There is another type of outline font called OpenType (.otf). Internally, however, .otf fonts may either be like TrueType (.ttf) fonts or like PostScript (.pfb) fonts. Unfortunately, you can't easily tell by looking at the name or some sample glyphs.</p>
+<p>The large majority of the time, you will want to use TrueType fonts in your application instead of PostScript fonts. But there are always exceptions. </p>
+<h2>Font Sources </h2>
+<p>There are numerous font vendors as well as freeware fonts and font makers for hire. </p>
+<p>There are dozens of commercial font vendors. The best known vendors include Ascender (Microsoft), Linotype, Bistream, Agfa, Monotype, and Adobe. An important thing to realize is that most font vendors don't provide screen fonts (fonts with hinting for small sizes). As described in our section on hinting, unhinted fonts look bad at smaller sizes and this badness may or may not be salvaged by using anti-aliasing. Ascender and Linotype have numerous screen fonts, and for a fee they can add screen hinting to an existing unhinted font that they provide. Another issue with commercial fonts is that they usually don't support languages beyond EFIGS (English, French, ...) and you will be stuck finding a way to modify these fonts for usage by localized applications. Ascender provides the best localized fonts, whereas Monotype an Adobe provide the worst. Another strike against Adobe is that their TrueType fonts are not native TrueType fonts but instead of PostScript fonts that have undergone a crude conversion process with the result that Adobe TrueType fonts have some of the poorest quality of commercially available fonts.</p>
+<p>There are thousands of freeware and shareware fonts, and some of them are pretty good for commercial art purposes (as evidenced by their usage in commerical artwork). However, almost no freeware fonts have screen hinting and thus they look poor at small sizes. They also tend to have small character sets and rarely go beyond Western languages. If you want to use one of these fonts, you'll need to be aware of the licensing terms and may find yourself manually augmenting the font to include all the characters you need. </p>
+<p>You can also hire a font designer to build a font for you. Some of these designers produce fairly good work and can produce all the characters you need. The cost of a custom designed font (which you own for all uses) isn't much more than the cost of licensing fonts for one-time usage from commercial font vendors. Once again there is the problem of small sizes and screen hinting. Most custom font designers are not experts at hinting TrueType fonts, and even those that are will charge a lot of money because the process of hinting a font is painstaking. </p>
+<h2>Font Fusion, FreeType, Win32, Macintosh</h2>
+<p>Font Fusion is a commercial package which reads outline fonts (e.g. TrueType fonts) and can convert them into bitmaps for use by EAText. Font Fusion is licensed by Electronic Arts for usage in its game applications and tools. An alternative to Font Fusion is FreeType (<a href="http://www.freetype.org/">http://www.freetype.org/</a>), which is an open source library which is very commonly used (including by Linux operating system distributions). On commercial desktop platforms such as Windows and Macintosh, the operating system provides its own outline font renderer which is available to running applications. We will summarize these font rasterizers with a table: </p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <th scope="col">&nbsp;</th>
+      <th scope="col">Font Fusion </th>
+      <th scope="col">FreeType</th>
+      <th scope="col">Windows</th>
+      <th scope="col">Macintosh</th>
+    </tr>
+    <tr>
+      <th scope="row">Advantages</th>
+      <td valign="top">&#8226; Highest performance.<br>
+&#8226; Provides optimized support for Asian fonts . <br>
+&#8226; Avoids concerns about font-related patents issues. <br>
+&#8226; Supports various font formats. <br>
+&#8226; Portable to all significant platforms.</td>
+      <td valign="top"><p>&#8226; Good performance.<br>
+&#8226; Free.<br>
+&#8226; Has ClearType-like functionality.<br> 
+&#8226; Supports many font formats. <br>
+&#8226; Has good rendering quality. <br>
+&#8226; Portable to all significant platforms. </p>
+      </td>
+      <td valign="top">&#8226; Most compatible with  existing fonts.<br>
+&#8226; Has good rendering quality. <br>
+&#8226; Has a lot of auxiliary functionality.</td>
+      <td valign="top"><p> &#8226; Has a good API for working with fonts and type in general. <br>
+&#8226; Has a lot of auxiliary functionality.</p></td>
+    </tr>
+    <tr>
+      <th scope="row">Disadvantages</th>
+      <td valign="top"><p>&#8226; Lowest quality rendering.<br>
+&#8226; Doesn't support ClearType-like rendering as of 6/2007 (despite its claims that it does).<br>
+&#8226; Most expensive option.</p></td>
+      <td valign="top">&#8226; There are potential concerns about font-related patents and open source intellectual property issues. <br>
+&#8226; There is little technical support, since it is open source. </td>
+      <td valign="top"><p>&#8226; Low performance compared to alternatives <br>
+&#8226; Not available on other platforms. <br>
+&#8226; Supports only TrueType and PostScript fonts.<br>
+&#8226; API is a bit quirky. </p>
+      </td>
+      <td valign="top"><p>&#8226; Rendering quality is not as good as Windows, though this is a frequent topic of debate. <br>
+&#8226; Not available on other platforms. <br>
+&#8226; Doesn't support ClearType-like rendering.</p></td>
+    </tr>
+  </table>
+</blockquote>
+<p>Electronic Arts currently licenses Font Fusion for use in game applications. Font Fusion is mostly a good choice; it's biggest weakness is that it lacks rendering quality in some cases, especially with respect to rendering small sized hinted fonts. You will have to simply try your fonts with it to see how they work. </p>
+<h2>Runtime Compression (ARGB vs. DXT) </h2>
+<p>EAText GlyphCache textures can be in the form of ARGB or DXT3 encoding. The latter compresses the data 4:1 relative to ARGB, but the compression is lossy. For monochromatic fonts the loss is practically imperceptible, while for highly colored bitmapped fonts the loss can indeed be perceptible, depending on the colors and patterns involved. </p>
+<p>Here we have a picture of a monochromatic font texture as it is in ARGB on the left and DXT3 on the right. The differences are negligible.</p>
+<blockquote>
+  <p><img src="images/GlyphCacheTextureARGB.png" width="258" height="258">		&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/GlyphCacheTextureDXT3.png" width="258" height="258"></p>
+</blockquote>
+<p>Here we have a picture of a bitmap font texture  as it is in ARGB on the left and DXT3 on the right. The compression loss evident in the DXT3 version makes it unacceptable for use.</p>
+<blockquote>
+  <p><img src="images/GlyphCacheTextureBmpARGB.png" width="256" height="256" border="1"> &nbsp;&nbsp;&nbsp;&nbsp;<img src="images/GlyphCacheTextureBmpDXT3.png" width="256" height="256" border="1"></p>
+</blockquote>
+<h2>Styles</h2>
+<p>Italic fonts, oblique fonts, and decorative fonts generally render worse than standard fonts at smaller sizes. You will likely find that you need to use larger font sizes and/or use anti-aliasing in order to the glyphs to look acceptable. The following demonstrates how a decorative font (Kuenstler Script) looks with anti-aliasing enabled and disabled. </p>
+<blockquote>
+  <p><img src="images/ScriptAntialiasing.png" width="135" height="84"></p>
+</blockquote>
+<p>The main point being made here is to watch out for the usage of these kinds of fonts in the small sizes typically used in software application interfaces. </p>
+<h2>Eastern Scripts</h2>
+<p>Non-Western scripts (writing systems) often use glyphs that have more visual detail than found in Western scripts such as Latin (English, French, etc.). If you are going to localize your application to an Eastern or Middle-Eastern locale, you may find that the fonts and font sizes you used for your Western locales is too small. For example, there are many English typefaces that are readable at sizes below 12 pixels, but such sizes are difficult or impossible to read with Japanse Kanji. </p>
+<p>Instead of trying to describe the situation with text, we will instead provide samples of text in various scripts rendered by the same font (Arial Unicode MS, 12 pixel). While you are looking at this text, consider that your system may be configured to use no anti-aliasing, anti-aliasing, or ClearType anti-aliasing. You should notice that while the simple scripts are fairly easy to read at this size, some of the others are not. </p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <th scope="col">Script</th>
+      <th scope="col">Languages</th>
+      <th scope="col">Example text </th>
+    </tr>
+    <tr>
+      <td>Latin</td>
+      <td>English, French, Italian, etc. </td>
+      <td class="style31"><span class="style31">The quick brown fox jumps over the lazy dog. </span></td>
+    </tr>
+    <tr>
+      <td>Greek</td>
+      <td>Greek</td>
+      <td class="style31"><span class="style31">&Kappa;&omicron;&iota;&nu;&#972; &omicron;&mu;&omicron;&lambda;&omicron;&gamma;&iota;&alpha;&kappa;&#972; &delta;&#940;&nu;&epsilon;&iota;&omicron; &#973;&psi;&omicron;&upsilon;&sigmaf; 7 &epsilon;&kappa;. &epsilon;&upsilon;&rho;&#974; &gamma;&iota;&alpha; &tau;&eta; &Pi;&epsilon;&tau;&zeta;&epsilon;&tau;&#940;&kappa;&iota;&sigmaf;</span></td>
+    </tr>
+    <tr>
+      <td>Hungarian</td>
+      <td>Hungarian</td>
+      <td class="style31"><p class="style31">A fele ez&eacute;rt szereti, a fele ez&eacute;rt gy&#369;l&ouml;li.</p>
+      </td>
+    </tr>
+    <tr>
+      <td>Hebrew</td>
+      <td>Hebrew</td>
+      <td class="style31">&#1489;&#1502;&#1513;&#1498; &#1513;&#1506;&#1493;&#1514; &#1488;&#1512;&#1493;&#1499;&#1493;&#1514; &#1513;&#1499;&#1489;&#1493; &#1495;&#1502;&#1497;&#1513;&#1492; &#1502;&#1496;&#1497;&#1497;&#1500;&#1497;&#1501; &#1510;&#1506;&#1497;&#1512;&#1497;&#1501; &#1489;&#1490;'&#1497;&#1508; &#1502;&#1512;&#1493;&#1505;&#1511;</td>
+    </tr>
+    <tr>
+      <td>Devanagari</td>
+      <td>Hindi</td>
+      <td class="style31"><span class="style31">&#2344;&#2381;&#2351;&#2366;&#2351;&#2366;&#2343;&#2368;&#2344; &#2344;&#2375; &#2310;&#2352;&#2379;&#2346; &#2340;&#2351; &#2325;&#2352;&#2344;&#2375; &#2325;&#2366; &#2348;&#2366;&#2342; &#2325;&#2361;&#2366; &#2361;&#2376; &#2325;&#2367; &#2357;&#2379; &#2309;&#2349;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340;&#2379;&#2306;</span></td>
+    </tr>
+    <tr>
+      <td>Arabic</td>
+      <td>Arabic</td>
+      <td class="style31"><span class="style31">&#1575;&#1604;&#1605;&#1587;&#1575;&#1603;&#1606; &#1601;&#1610; &#1605;&#1576;&#1606;&#1610;&#1610;&#1606; &#1576;&#1605;&#1583;&#1610;&#1606;&#1577; &#1575;&#1604;&#1582;&#1604;&#1610;&#1604; &#1601;&#1610; &#1575;&#1604;&#1590;&#1601;&#1577; &#1575;&#1604;&#1594;&#1585;&#1576;&#1610;&#1577;</span></td>
+    </tr>
+    <tr>
+      <td>Hangul</td>
+      <td>Korean</td>
+      <td class="style31"><span class="style31">&#44608;&#50689;&#45824;&#48512;&#50948;&#50896;&#51109;&#51060; &#50945;&#45224;&#51312;&#49440;&#52828;&#49440;&#54801;&#54924;&#45824;&#54364;&#45800;&#51012; &#47564;&#45228;&#45796;</span></td>
+    </tr>
+    <tr>
+      <td>Han</td>
+      <td>Chinese, Japanese </td>
+      <td class="style31"><span class="style31">&#27700;&#29986;&#21697;&#31105;&#37559;&#20013; &#21360;&#23612;&#30097;&#36973;&#22577;&#24489;&#28271;&#21733;&#28271;&#23234; &#20063;&#24819;&#25293;&#33399;&#29031;</span></td>
+    </tr>
+    <tr>
+      <td>Thai</td>
+      <td>Thai</td>
+      <td class="style31"><span class="style31">&#3619;&#3623;&#3610;&#3627;&#3609;&#3640;&#3656;&#3617;&#3609;&#3633;&#3585;&#3649;&#3594;&#3605; &#3621;&#3623;&#3591;&#3627;&#3597;&#3636;&#3591;&#3652;&#3611;&#3627;&#3621;&#3633;&#3610;&#3609;&#3629;&#3609; &#3585;&#3656;&#3629;&#3609;&#3586;&#3650;&#3617;&#3618;&#3586;&#3629;&#3591;&#3627;&#3609;&#3637;</span></td>
+    </tr>
+    <tr>
+      <td>Hiragana</td>
+      <td>Japanese</td>
+      <td class="style31"><span class="style31">&#12356;&#12429;&#12399;&#12395;&#12411;&#12408;&#12392;&#12385;&#12426;&#12396;&#12427;&#12434;&#12354;&#12373;&#12365;&#12422;&#12417;&#12415;&#12375;</span></td>
+    </tr>
+    <tr>
+      <td>Katakana</td>
+      <td>Japanese</td>
+      <td class="style31"><span class="style31">&#12458;&#12506;&#12524;&#12540;&#12486;&#12451;&#12531;&#12464;&#12539;&#12471;&#12473;&#12486;&#12512;&#12452;&#12531;&#12479;&#12540;&#12493;&#12483;&#12488;</span></td>
+    </tr>
+  </table>
+</blockquote>
+<p>Due to the large number of characters in Chinese, Japanese, and Korean, it is not possible to make a bitmapped font for these languages without it looking fairly ugly. Your best bet is to use a TrueType font (or possibly one of Bitstream's stroke fonts if you have little RAM) and enable some form of anti-aliasing. Also, a font size of 16 or greater allows for much more readable Asian characters.</p>
+<h2>Effects</h2>
+<p>Two common font effects used in software are shadows and outlines. </p>
+<blockquote>
+  <p><img src="images/TextShadow.png" width="123" height="35"><br>
+  <img src="images/TextOutline.png" width="138" height="37"></p>
+</blockquote>
+<p>The question of how to draw shadowed text may be the most oft-asked question about EAText. There are basically two solutions:</p>
+<ul>
+  <li>Use the kEffectShadow style from EATextStyle, which builds a shadow into each glyph.</li>
+  <li>Draw the text in two passes: draw the shadows for all glyphs, then draw the glyphs.</li>
+</ul>
+<p>The problem with kEffectShadow is that it produces inferior shadows and in fact in some cases can produce drawing errors when a shadow of one glyphs draws over the body of another glyph. This error is most often seen when drawing non-Western text or when drawing Western text that is very tightly spaced. The bigger/fuzzier the shadow, the more likely this error. But bigger/fuzzier shadows are key to making pleasant looking shadows.</p>
+<p>Drawing the text in two (or more) passes results in much nicer looking shadows and avoids the aforementioned overlap errors. The problem with it is that it requires multiple drawing passes. At the very least, you need two passes: one for a shadow and one for the glyphs. But how do you make a fuzzy shadow? You can either draw glyphs multiple times with offset and alpha, or you can come up with a GPU shader program that implements this (usually via multi-sampling as it draws). The EATextRNA package demo provides an example of the former solution. The latter solution turns out to be less easy than it might seem due to the way pixel programs work, but there is probably a viable means of doing this. Another method of drawing shadows is to simply use a bitmapped font of shadows. </p>
+<p>In any case, there is no single simple solution to solving this problem properly, as should be obvious from the kEffectShadow discussion above. </p>
+<p>Outlined text has issues similar to shadowed text (discussed above). However, if text outline thickness is less than two or three pixels you successfully implement outlined text via a single pass. The kEffectOutline style from EATextStyle implements the automatic outlining of glyphs from TrueType font files. This results in mediocre quality, whereas a bitmapped font generated by Photoshop results in better quality. As with shadowed text, you can implement outlined text via a multi-pass technique. An basic example of this multi-pass technique is shown in the image at the top of this file. </p>
+<h2>Video Displays</h2>
+<p>CRT (cathode ray tube) monitors are quickly becoming a thing of the past. These monitors are rarely found with desktop computers any more, and CRT televisions are hardly sold any more in the United States. Newer tech such as LCD and Plasma screens is taking over and now commands 90% of the new television market. The result of this is that you can probably assume that PC video games will be using LCD monitors and that console video games sold in the United States after about 2008 will be using LCD monitors. Outside the United States the console gaming market is a little different and families will more often use old hand-me-down TVs for their children's gaming consoles. So outside the United States you might not be able to rely on LCD monitors will the year 2010 or so. </p>
+<p>LCD monitors are sharper than CRT monitors and often provide HD (high definition) as well. On top of that, LCD monitors provide the ability for resolution enhancing technologies such as ClearType. The result of all this is that games that can assume they will be used on an LCD monitor can get away with using significantly smaller text sizes and will have higher quality text at larger text sizes. Sure, all graphics are improved by higher resolution, but text graphics in particular benefit from LCD monitors due to the sharp edges of text. </p>
+<h2>EATextViewer</h2>
+<p>EATextViewer is a tool which allows for testing and viewing fonts rendered by EATextViewer. It makes the process of testing font quality and options much quicker, though you will want to test your fonts in your application on its target hardware as well. EATextViewer is distributed as a Windows application but in fact it can be built to run on the XBox 360 and PS3 platforms as well. The picture below gives a sense of its feature set. You can download it from the EA Package Server at <a href="http://packages.eac.ad.ea.com/package.aspx?id=760">http://packages.eac.ad.ea.com/package.aspx?id=760</a></p>
+<blockquote>
+  <p><img src="images/EATextViewer2.png" width="900" height="707"></p>
+</blockquote>
+<h2>Summary Strategy</h2>
+<ul>
+  <li>Use screen-hinted fonts if you can get them and they look right for your application.</li>
+  <li>If you can't get hinted fonts, consider implementing your main body font as bitmapped for English. If your main body font is &gt;= 16 in size then it might look good without using bitmaps. If your main body font is a well-hinted font, then it might look good without using bitmaps. </li>
+  <li>For any outline fonts you choose to use, steer towards TrueType fonts instead of PostScript fonts. </li>
+  <li>Graphically simple fonts (e.g. Arial) are easier to work with but tend to make applications look less unique. </li>
+  <li>If you expect your title to have a long life (e.g. multiple years plus expansion packs), consider spending more time on your fonts, as users will be looking at them for a long time.</li>
+  <li>Use TrueType fonts for non-Western languages and for large fonts in general.</li>
+  <li>At runtime, use  DXT encoding for TrueType fonts and low color bitmap fonts. Use  ARGB encoding for higher colored bitmap fonts.</li>
+  <li>At runtime, ignore the GASP table in TrueType fonts and instead take explicit control of hinting and anti-aliasing at your artist's discretion.</li>
+  <li>Do a lot of experimentation.</li>
+  <li>In addition to trying out text in your application, you can quickly try it out with the EATextViewer tool. </li>
+  <li>Feel free to ask questions of the EAText team or the UTF Users mailing list. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p>End of document<br>
+  <br>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

@@ -1,0 +1,6 @@
+apply plugin: "com.android.library"
+
+android {
+	compileSdkVersion nsight_tegra_compile_sdk_version
+	buildToolsVersion nsight_tegra_build_tools_version
+}

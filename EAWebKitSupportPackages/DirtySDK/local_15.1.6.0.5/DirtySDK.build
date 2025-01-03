@@ -1,0 +1,34 @@
+<project default="build">
+
+    <package name="DirtySDK"/>
+
+    <do if="${dirtysdk-uniquesln??false}">
+        <property name="slnplatform" value="${config-system}" local="true"/>
+
+        <property name="runtime.gen.slnname.template" value="%outputname%_${slnplatform}"/>
+        <property name="runtime.gen.projectname.template" value="${slnplatform}_%outputname%"/>
+    </do>
+    
+    <!-- need these defines for gen4 only titles still using the separate Interface-only packages can build without upgrading - Trama.x only change -->
+    <dependent name="EAUser" if="${config-system} == 'kettle' or ${config-system} == 'capilano' or ${config-system} == 'xbsx' or ${config-system} == 'nx' or ${config-system} == 'ps5' or ${config-system} == 'stadia'"/>
+    <dependent name="EASystemEventMessageDispatcher" if="${config-system} == 'kettle'"/>
+    
+    <!-- bring in the init and build files for dirtysock -->
+    <include file="scripts/dirtysock-buildtypes.xml"/>
+    <include file="scripts/dirtysock-build.xml" />
+
+    <!-- define release targets for DirtySDK -->
+    <do if="@{FileExists('scripts/release-targets.xml')}" >
+        <include file="scripts/release-targets.xml" />
+    </do>
+
+    <!-- build the enabled contribs -->
+    <foreach property="contrib" item="String" in="${package.DirtySDK.contribs.available}">
+        <include file="scripts/contrib/${contrib}-build.xml"/>
+    </foreach>
+
+    <!-- build the enabled samples -->
+    <foreach property="sample" item="String" in="${package.DirtySDK.samples.available}">
+        <include file="scripts/sample/${sample}-build.xml"/>
+    </foreach>
+</project>

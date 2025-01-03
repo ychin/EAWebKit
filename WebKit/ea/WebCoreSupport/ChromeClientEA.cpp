@@ -60,9 +60,9 @@
 #include "ViewportArguments.h"
 #include "WindowFeatures.h"
 
-#include "webframe_p.h"
-#include "webpage.h"
-#include "webpage_p.h"
+#include "WebFrame_p.h"
+#include "WebPage.h"
+#include "WebPage_p.h"
 #include <wtf/CurrentTime.h>
 #include "HTMLNames.h"
 
@@ -539,7 +539,7 @@ void ChromeClientEA::reachedMaxAppCacheSize(int64_t size)
     // FIXME: Free some space.
     notImplemented();
 	// abaldeva: This should not be really fired since the quota is set to ApplicationCacheStorage::noQuota() by default.
-	EAW_ASSERT_FORMATTED(false, "Max App Cache Size %lld reached. Need a way to handle this.",size);
+	EAW_ASSERT_FORMATTED(false, "Max App Cache Size %lld reached. Need a way to handle this.", size);
 }
 
 

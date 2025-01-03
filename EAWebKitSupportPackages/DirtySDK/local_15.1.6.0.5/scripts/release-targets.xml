@@ -1,0 +1,30 @@
+<project>
+    <!-- overridden by the dashboard -->
+    <property name="dirtysdk-release-clientdir" value="C:\dirty15.x\${package.name}" />
+    <property name="dirtysdk-source-zipname" value="${package.name}-${package.version}.zip" />
+
+    <!-- include custom release files -->
+    <include file="release\target-builddoc.xml"/>
+
+    <target name="dirtysdk-dashboard-edit-chmdocs" description="Open the chm files for edit and overwrites them with the newly generated chm files of the release" hidden="true">
+        <foreach item="String" in="xboxone ps4 pc unix" property="platform">
+            <p4edit files="${dirtysdk-release-clientdir}\doc\chm\${platform}\DirtySock.chm" change="${p4.change}"/>
+            <copy file="${dirtysdk-chm-dir}\${platform}\DirtySock.chm" tofile="${dirtysdk-release-clientdir}\doc\chm\${platform}\DirtySock.chm" clobber="true" />
+        </foreach>
+    </target>
+
+    <target name="dirtysdk-dashboard-chmmaparse" description="Adds the package zips and updated chm docs/version files to a perforce changelist and, if dirtysdk-nosubmit is not defined, submits it and creates the version label" hidden="true">
+        <p4change desc="[nobug][DirtySDK] DirtySDK-${package.version} --- Updated the DirtySock.chm files for all required platforms"/>
+        <call target="dirtysdk-dashboard-edit-chmdocs" unless="@{PropertyExists('dirtysdk-fast')}"/>
+        <p4submit change="${p4.change}" unless="@{PropertyExists('dirtysdk-nosubmit')}"/>
+    </target>
+
+    <target name="publish" description="Copy zip file to the incoming folder">
+        <fail message="build-location property must be defined!" unless="@{PropertyExists('build-location')}"/>
+        <echo message="Copying package file to package server drop folder"/>
+        <copy file="${build-location}\${dirtysdk-source-zipname}" tofile="\\eac-as5.eac.ad.ea.com\incoming\${dirtysdk-source-zipname}"/>
+        <echo message="Manual steps:"/>
+        <echo message="1) Complete publication of package at http://packages.worldwide.ea.com/admin/upload.aspx "/>
+        <echo message="2) Create a new version on EATechNet at http://eatechnet.ea.com/Support "/>
+    </target>
+</project>

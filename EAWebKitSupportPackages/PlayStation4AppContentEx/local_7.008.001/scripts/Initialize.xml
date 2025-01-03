@@ -1,0 +1,12 @@
+<project>
+    <publicdata packagename="PlayStation4AppContentEx">
+        <module name="PlayStation4AppContentEx">
+            <includedirs>
+                ${package.PlayStation4AppContentEx.dir}/installed/target/include
+            </includedirs>
+            <libs>
+                <includes name="${package.PlayStation4AppContentEx.dir}/installed/target/lib/*.a" />
+            </libs>
+        </module>
+    </publicdata>
+</project>

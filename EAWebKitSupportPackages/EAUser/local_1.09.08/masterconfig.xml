@@ -1,0 +1,78 @@
+<project>
+	<globalproperties>
+		<globalproperty name="package.Foundation.nant.warningsuppression">2015</globalproperty>
+	</globalproperties>
+
+	<masterversions>
+		<package name="ConsoleRemote" version="0.03.11" />
+		<package name="ConsoleRemoteServer" version="0.03.11" />
+		<package name="coreallocator" version="1.04.06" />
+		<package name="CoreFileSystem" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/CoreFileSystem/dev?cl=5778486" version="dev" />
+		<package name="CoreFileSystemEAIO" version="1.05.01" />
+		<package name="CoreStream" version="1.05.05" />
+		<package name="EAAssert" version="1.05.13" />
+		<package localondemand="true" name="EABase" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EABase/2.10.02?cl=7600555" version="2.10.02" />
+		<package name="EACallstack" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EACallstack/2.03.04?cl=7849937" version="2.03.04" />
+		<package name="EACOM" version="3.00.07" />
+		<package name="EAConcurrentHeap" version="0.40.06" />
+		<package name="EAController" version="1.09.04" />
+		<package name="EAControllerUserPairing" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAControllerUserPairing/1.12.11?cl=7694625" version="1.12.11" />
+		<package name="EACrypto" version="1.03.07" />
+		<package name="EADotNetMath" version="2.03.01" />
+		<package name="EAIO" version="3.01.12" />
+		<package name="EAJson" version="3.08.14" />
+		<package localondemand="true" name="EAMain" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAMain/3.03.04?cl=7708892" version="3.03.04" />
+		<package name="EAMessage" version="2.10.08" />
+		<package name="EAPatchClient" version="1.12.05" />
+		<package name="EASaveLoad" version="1.10.06" />
+		<package name="EAStdC" version="1.26.10" />
+		<package name="EASTL" version="3.16.08" />
+		<package name="EAStringIntern" version="1.05.04" />
+		<package name="EASystemEventMessageDispatcher" version="1.05.03" />
+		<package name="EAThread" version="1.33.04" />
+		<package name="EATrace" version="2.12.09" />
+		<package name="EAUser" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAUser/1.09.06?cl=7620745" version="1.09.06" />
+		<package localondemand="true" name="ExceptionHandler" version="1.19.18" />
+		<package name="FBMath" version="0.00.15">
+			
+			<exception propertyname="useFBMathDevHead">
+				<condition uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/fbmath/dev?head" value="true" version="dev" />
+			</exception>
+		</package>
+		<package name="FreeType" version="2.9.0.02" />
+		<package localondemand="false" name="gtest" version="1.10.0.ea.4" />
+		
+		<package localondemand="true" name="IEAController" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEAController/shim?cl=5112285" version="shim" />
+
+		<package localondemand="true" name="IEASaveLoad" version="1.09.02" />
+		<package localondemand="true" name="IEASystemEventMessageDispatcher" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEASystemEventMessageDispatcher/shim?cl=5112285" version="shim" />
+		<package localondemand="true" name="IEAUser" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEAUser/shim?cl=5112285" version="shim" />
+		<package localondemand="true" name="InputMan" version="2.37.10" />
+		<package name="job_manager" version="4.05.09" />
+		<package name="libjpeg" version="1.01.08" />
+		<package localondemand="true" name="libpng" version="1.6.34.00-7" />
+		<package name="libtiff" version="1.00.00-7" />
+		<package name="libxml2" version="1.00.11" />
+		<package localondemand="true" name="lua" version="5.3.1.06" />
+		<package name="lz4" version="1.8.0-4" />
+		<package name="lzma" version="4.65-8" />
+		<package name="MemoryMan" version="2.02.02" />
+		<package name="Oodle" version="2.8.7-1" />
+		<package name="PPMalloc" version="1.26.10" />
+		<package localondemand="true" name="rwmath" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/rwmath/shim?cl=5132615" version="shim" />
+		<package name="Symmogriffer" version="1.08.03" />
+		<package name="UTFInternet" version="3.08.04" />
+
+		<package name="UTFSockets" version="2.15.15">
+			<exception propertyname="config-system-is-android">
+				<condition localondemand="true" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/UTFSockets/2.15.14-fb?cl=5630689" value="true" version="2.15.14-fb" />
+			</exception>
+		</package>
+
+		<package name="UTFXml" version="3.08.15" />
+		<package name="zlib" version="1.2.11-7" />
+		<package name="ZSTD" version="1.04.04-2" />
+	</masterversions>
+
+	<config default="pc64-vc-opt" includes="pc64-vc-opt pc64-vc-debug" package="eaconfig" />
+<packageroots><packageroot>../..</packageroot></packageroots><ondemand>true</ondemand><ondemandroot>D:\ondemand</ondemandroot></project>

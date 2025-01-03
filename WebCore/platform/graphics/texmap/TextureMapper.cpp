@@ -45,14 +45,14 @@ std::unique_ptr<TextureMapper> TextureMapper::create()
 
 TextureMapper::TextureMapper()
     : m_context(0)
-    , m_interpolationQuality(InterpolationDefault)
-    , m_textDrawingMode(TextModeFill)
 //+EAWebKitChange
 //10/06/2015 construct the m_texturePool too
 #if PLATFORM(EA)    
 	, m_texturePool(std::make_unique<BitmapTexturePool>(this))
 #endif
 //-EAWebKitChange
+    , m_interpolationQuality(InterpolationDefault)
+    , m_textDrawingMode(TextModeFill)
     , m_isMaskMode(false)
     , m_wrapMode(StretchWrap)
 { }

@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAText -- Motivation</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta content="Description of the Motivation for creating EAText."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1>Motivation</h1>
+<p>There are multiple motivations behind the desire to create EAText. This
+  document describes a number of these motivations.</p>
+<h3>Globalization</h3>
+<p>The biggest motivation for EAText is globalization. A Reuters report observed the following in 2004: </p>
+<blockquote>
+  <p><small><small><font color="#003366">Worldwide PC Market Seen Doubling by 2010</font></small></small></p>
+  <p><font color="#003366"><small><small>New York (Reuters) - The number of personal computers worldwide is expected to double to about 1.3 billion by 2010, driven by explosive growth in emerging markets such as China, Russia and India, according to a report released on Tuesday by Forrester Research Inc. China is expected to lead the growth, with 178 million new PC users by 2010, Forrester, a technology research firm, said in a statement. Some 566 million new PCs are expected to be in use in emerging markets by 2010, based on a study of adoption rates across 16 emerging markets, Forrester said in a statement. The 575 million PCs currently in use globally include about 75 million in emerging markets. Mature markets in the United States, Europe and Asia-Pacific are expected to add 150 million new PCs by 2010, according to the study. Growth in emerging markets will be driven by low-priced PCs made by local companies, Forrester said. "Today's products from Western PC vendors won't dominate in those markets in the long term," Simon Yates, a senior analyst for Forrester, said in a statement. "Instead local PC makers like Lenovo Group (0992.HK) in China and Aquarius in Russia that can better tailor the PC form factor, price point and applications to their local markets will ultimately win the market share battle," he said. Forrester forecast that there will be 80 million new PC users in India by 2010, with an annual growth rate of 37 percent. Indonesia is expected to see 40 percent annual growth, with 40 million new users. Of the 16 emerging markets included in the study, Mexico is expected to see the deepest PC market penetration, with 46 percent of Mexicans owning a PC by 2010, Forrester said.</small></small></font></p>
+</blockquote>
+<p>Additionally, Electronic Arts has identified a similarly growing gaming market for new European and East-Asian languages. </p>
+<p>The emergence of the Unicode Standard over the last few years and the advent of &quot;next-generation&quot; console gaming machines such as the XBox 360 and the PS3 have made it feasible to target difficult languages such as Arabic and Hindi. In the past these languages have been unsupported or poorly supported. Some of these languages are rather difficult to support but are nevertheless feasible with our current expertise. </p>
+<p>EAText aims to support all languages conceivably useful to EA for the next ten years.</p>
+<h3>Performance</h3>
+<p>Third party libraries exist which do some of the things that EAText does. The Windows operating system provides a number of such features to Windows applications. However, most of the time these implementations are not performance-friendly and instead assume a somewhat Unix-like or Windows-like memory and processor environment. EAText implements this functionality in a higher performance, no memory allocation manner. There are some other text/font libraries within EA which also are designed to have high performance, and EAText makes no claims with respect to these libraries. An exception regarding the lack of useful third party text/font functionality is the class of libraries available for TrueType font rasterization; these include Font Fusion and FreeType, for example. EAText makes use of these libraries for its outline font support. </p>
+<h3>Features</h3>
+<p>EAText is driven by a set of somewhat advanced requirements, especially with respect to text characterization and layout. These requirements are often seen as a superset of requirements for a number of typical EA console-based games. However, they are a logical set of requirements for PC games or games that want advanced text layout and language support for any platform. Before EAText, there was no library within EA or available in any practical form from a third party which had these features. There was no library within EA largely because such a feature set was difficult to achieve and because EA hadn't fully globalized. There was no library from a third party because such things are  typically supported by the operating system and GUI toolkits for desktop platforms and aren't available in a form that a game application can use.</p>
+<p>The EAText requirements list can be found in the <a href="Requirements.html"> Requirements.html</a> document.  </p>
+<h3>Flexibility</h3>
+<p>EAText aims to provide a flexible text/font/typesetting library in which the user has a lot of flexibility in working with it. The text layout engine is written in such a way that the user can slip into the pipeline and modify its input, intermediate results, and output in a flexible way. This isn't just about overridable C++ interfaces, though EAText has that. This is also about creating a text/font/typesetting pipeline which is malleable. </p>
+<h3>Standardization</h3>
+<p>The advent of the Unicode, CSS, and XHTML standards provide the foundation upon which EAText stands. EAText follows these standards fairly closely and thus allows for a more predictable production environment with respect to text characterization, styles, fonts, layout, localization, etc. Indeed a standards-conforming multi-locale XHTML parsing and display engine has been built on top of EAText and is available as a separate package from the developers of EAText. </p>
+<hr style="width: 100%; height: 2px;">
+<p>End of document<br>
+  <br>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

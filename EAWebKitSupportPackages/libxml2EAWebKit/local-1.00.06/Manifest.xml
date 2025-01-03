@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>EATech</contactName>
+  <contactEmail>EATechCoreTeam@ea.com</contactEmail>
+  <summary>libxml2</summary>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Core</owningTeam>
+  <tags>eatech</tags>
+  <licenseDetails />
+  <sourceLocation>//EAOS/EATechThirdParty/DL/libxml2/dev</sourceLocation>
+  <driftVersion>dev</driftVersion>
+  <relationship>
+    <builds>
+      <build name="solution" supported="true" />
+      <build name="nant" supported="true" targets="build test-build example-build" />
+      <build name="test" supported="false" targets="" />
+    </builds>
+    <platforms>
+      <platform name="pc" build="Supported" test="NotSupported" configs="pc-vc-dev" />
+      <platform name="pc64" build="Supported" test="NotSupported" configs="pc64-vc-dev" />
+      <platform name="xenon" build="Supported" test="NotSupported" />
+      <platform name="ps3" build="Supported" test="NotSupported" />
+      <platform name="freebox" build="Supported" test="NotSupported" />
+      <platform name="unix" build="Supported" test="NotSupported" />
+      <platform name="unix64" build="Supported" test="NotSupported" />
+      <platform name="osx" build="Supported" test="NotSupported" />
+      <platform name="iphone" build="Supported" test="NotSupported" />
+      <platform name="iphonesim" build="Supported" test="NotSupported" />
+      <platform name="android" build="Supported" test="NotSupported" />
+      <platform name="palm" build="Supported" test="NotSupported" />
+      <platform name="bb10" build="Supported" test="NotSupported" />
+      <platform name="psp2" build="Supported" test="NotSupported" />
+      <platform name="caps" build="Supported" test="NotSupported" />
+      <platform name="winrt" build="Supported" test="NotSupported" />
+      <platform name="kettle" build="Supported" test="NotSupported" />
+      <platform name="stv" build="Supported" test="NotSupported" />
+    </platforms>
+  </relationship>
+  <automation>
+    <targets>
+      <target name="Solution" type="build" defaultSupported="true" defaultTarget="slngroupall visualstudio" />
+      <target name="Build" type="build" defaultSupported="true" defaultTarget="build test-build example-build" />
+    </targets>
+    <defaultConfigSupport>
+      <config config="pc" supported="true" />
+      <config config="pc64" supported="true" />
+      <config config="xenon" supported="true" />
+      <config config="ps3" supported="true" />
+      <config config="freebox" supported="true" />
+      <config config="unix" supported="true" />
+      <config config="unix64" supported="true" />
+      <config config="osx" supported="true" />
+      <config config="iphone" supported="true" />
+      <config config="iphonesim" supported="true" />
+      <config config="android" supported="true" />
+      <config config="palm" supported="true" />
+      <config config="playbook" supported="true" />
+      <config config="psp2" supported="true" />
+      <config config="caps" supported="true" />
+      <config config="winrt" supported="true" />
+      <config config="kettle" supported="true" />
+      <config config="stv" supported="true" />
+    </defaultConfigSupport>
+  </automation>
+  <Status>Official</Status>
+</package>

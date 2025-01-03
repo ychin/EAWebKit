@@ -1,0 +1,15 @@
+/*!
+    \Moduledef Comm Comm
+
+    \Description
+        The Comm module provides packet-level communications protocols.
+
+        <b>Overview</b>
+
+        The Comm module provides a unified calling structure as well as unified
+        status and error values for a collection of transport protocols.  Currently
+        supported are TCP and a reliable UDP implementation, however, the TCP
+        implementation exists for demonstration purposes only and should not be used
+        otherwise.
+*/
+

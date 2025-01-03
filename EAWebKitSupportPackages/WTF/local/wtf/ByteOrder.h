@@ -34,7 +34,7 @@
 
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(EA_PLATFORM_SONY)
+#if OS(UNIX) || defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_STADIA)
 //-EAWebKitChange
 #include <arpa/inet.h>
 #endif

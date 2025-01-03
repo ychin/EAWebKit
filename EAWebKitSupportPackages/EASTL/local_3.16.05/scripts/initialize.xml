@@ -1,0 +1,85 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<!-- The build script is using custom buildtypes that extend these default build types,
+	but for determining the binary locations in the public data using the default build types will be fine-->
+	<property name="EASTLBuildType" local="true" value="Library"/>
+	<property name="EASTLBuildType" local="true" value="DynamicLibrary" if="${Dll??false}"/>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EASTL.libs">
+			<includes name="${package.EASTL.builddir}/${config}/lib/${lib-prefix}EASTL${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<!-- EASTL header files location. -->
+	<property name="package.EASTL.includedirs">
+		${package.EASTL.dir}/include
+	</property>
+
+	<property name="EASTLDefines" local="true">
+		EASTL_EASTDC_VSNPRINTF=${EASTL.EASTL_EASTDC_VSNPRINTF??1}
+		EASTL_CORE_ALLOCATOR_ENABLED=${EASTL.EASTL_CORE_ALLOCATOR_ENABLED??1}
+	</property>
+
+	<property name="EASTL.configDefines" local="true">
+		EASTL_DEBUG
+		EASTL_DEV_DEBUG
+		EASTL_USER_CONFIG_HEADER
+		EASTL_NAME_ENABLED
+		EASTL_DEFAULT_NAME_PREFIX
+		EASTL_ASSERT_ENABLED
+		EASTL_DEV_ASSERT_ENABLED
+		EASTL_ASSERT
+		EASTL_DEV_ASSERT
+		EASTL_DEBUG_BREAK
+		EASTL_DEBUG_BREAK_OVERRIDE
+		EASTL_ALLOCATOR_COPY_ENABLED
+		EASTL_FIXED_SIZE_TRACKING_ENABLED
+		EASTL_EXCEPTIONS_ENABLED
+		EASTL_LIST_SIZE_CACHE
+		EASTL_SLIST_SIZE_CACHE
+		EASTL_MAX_STACK_USAGE
+		EASTL_VALIDATION_ENABLED
+		EASTL_VALIDATE_COMPARE_ENABLED
+		EASTL_VALIDATE_INTRUSIVE_LIST
+		EASTL_RESET_ENABLED
+		EASTL_MINMAX_ENABLED
+		EASTL_ALLOCATOR_EXPLICIT_ENABLED
+		EASTL_STD_ITERATOR_CATEGORY_ENABLED
+		EASTL_SIZE_T_32BIT
+		EASTL_OPERATOR_EQUALS_OTHER_ENABLED
+		EASTL_EASTDC_VSNPRINTF
+		EASTL_DEFAULT_SORT_FUNCTION
+		EASTL_DEFAULT_STABLE_SORT_FUNCTION
+		EASTL_ALLOCATOR_MIN_ALIGNMENT
+	</property>
+
+	<foreach item="String" in="${EASTL.configDefines}" property="configDefine" local="true">
+		<property name="EASTLDefines" if="@{PropertyExists('EASTL.${configDefine}')}">
+			${property.value}
+			${configDefine}=${EASTL.${configDefine}}
+		</property>
+	</foreach>
+
+	<property name="package.EASTL.defines">
+		${EASTLDefines}
+	</property>
+	<publicdata packagename="EASTL" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="EASTL" buildtype="${EASTLBuildType}">
+				<includedirs>
+					${package.EASTL.includedirs}
+				</includedirs>
+
+				<defines>
+					${EASTLDefines}
+				</defines>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EASTLTest"/>
+		</tests>
+	</publicdata>
+
+</project>

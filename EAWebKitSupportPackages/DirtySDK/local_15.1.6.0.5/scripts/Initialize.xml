@@ -1,0 +1,123 @@
+<project>
+    <!-- determine which samples/contribs are enabled
+         if dirtysdk-samples == false then an empty property is created -->
+    <include file="${package.DirtySDK.dir}/scripts/select-contribs.xml"/>
+    <include file="${package.DirtySDK.dir}/scripts/select-samples.xml"/>
+
+    <!-- the buildtype we use for our library targets -->
+    <property name="dirtysdk-buildtype" value="CLibrary"/>
+    <property name="dirtysdk-buildtype" value="CDynamicLibrary" if="${Dll??false}"/>
+
+    <!-- Temporary backwards compatibility for the GSDK -> GDK package renaming -->
+    <property name="dirtysdk-gdk-package-name" value="GDK" if="${package.GDK.dir??''} != ''"/>
+    <property name="dirtysdk-gdk-package-name" value="GSDK" if="${package.GSDK.dir??''} != ''"/>
+
+    <!-- now specify include directories and library directory -->
+    <publicdata packagename="DirtySDK">
+        <module name="dirtysock" buildtype="${dirtysdk-buildtype}">
+            <includedirs>
+                ${package.DirtySDK.dir}/include
+            </includedirs>
+
+            <dlls-external>
+                <!-- add the gamechat2 dll to external to make sure it is copied -->
+                <do if="${config-system} == 'capilano' and ${gdk.enabled??false} == false">
+                    <includes name="${package.CapilanoSDK.extensionsdkdir}/Xbox.Game.Chat.2.Cpp.API/8.0/Redist/CommonConfiguration/neutral/GameChat2.dll"/>
+                </do>
+            </dlls-external>
+
+            <!-- Add the external libs if we are not building as a DLL
+                 In the case we are building as a DLL the library will link the required libraries itself -->
+            <libs-external unless="${Dll??false}">
+                <do if="${config-system} == 'pc' or ${config-system} == 'pc64'">
+                    <includes name="iphlpapi.lib" asis="true"/>
+                    <includes name="ws2_32.lib" asis="true"/>
+                </do>
+
+                <do if="${config-system} == 'pc' or ${config-system} == 'pc64' or ${config-system} == 'capilano'">
+                    <includes name="bcrypt.lib" asis="true"/>
+                </do>
+
+                <do if="${config-system} == 'capilano' or ${config-system} == 'xbsx'">
+                    <includes name="xaudio2.lib" asis="true"/>
+                    <includes name="${package.CapilanoSDK.extensionsdkdir}/Xbox.Game.Chat.2.Cpp.API/8.0/DesignTime/CommonConfiguration/Neutral/Lib/GameChat2.lib" asis="true" unless="${gdk.enabled??false}"/>
+                    <do if="${gdk.enabled??false}">
+                        <includes name="XGamePlatform.lib" asis="true"/>
+                        <includes name="Crypt32.lib" asis="true"/>
+                    </do>
+                </do>
+
+                <do if="${config-system} == 'kettle'">
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceAjm_stub_weak.a"            asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceAudioIn_stub_weak.a"        asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceAppContent_stub_weak.a"     asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceCommonDialog_stub_weak.a"   asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceHttp_stub_weak.a"           asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceInvitationDialog_stub_weak.a" asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceMsgDialog_stub_weak.a"      asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNetCtl_stub_weak.a"         asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNet_stub_weak.a"            asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNpAuth_stub_weak.a"         asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNpCommerce_stub_weak.a"     asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNpCommon_stub_weak.a"       asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNpManager_stub_weak.a"      asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceNpWebApi_stub_weak.a"       asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceRandom_stub_weak.a"         asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceSsl_stub_weak.a"            asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceSysmodule_stub_weak.a"      asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceUserService_stub_weak.a"    asis="true"/>
+                    <includes name="${package.kettlesdk.libdir}/${lib-prefix}SceVoice_stub_weak.a"          asis="true"/>
+                </do>
+
+                <do if="${config-system} == 'ps5'">
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceAudioIn_stub_weak.a"        asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceCommonDialog_stub_weak.a"   asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceHttp_stub_weak.a"           asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceMsgDialog_stub_weak.a"      asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNetCtl_stub_weak.a"         asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNet_stub_weak.a"            asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNpAuth_stub_weak.a"         asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNpCommerce_stub_weak.a"     asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNpEntitlementAccess_stub_weak.a"         asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNpManager_stub_weak.a"      asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceNpWebApi2_stub_weak.a"      asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceRandom_stub_weak.a"         asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceSsl_stub_weak.a"            asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceSysmodule_stub_weak.a"      asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceSystemService_stub_weak.a"  asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceUserService_stub_weak.a"    asis="true"/>
+                    <includes name="${package.ps5sdk.libdir}/${lib-prefix}SceVoice_stub_weak.a"          asis="true"/>
+                </do>
+            </libs-external>
+
+            <!-- exported defines -->
+            <defines>
+                <do if="${dirtysdk_debug_enable??false}">
+                    DIRTYCODE_LOGGING=1
+                </do>
+                <do if="${dirtysdk_debug_disable??false}">
+                    DIRTYCODE_LOGGING=0
+                </do>
+            </defines>
+
+            <publicdependencies>
+                EABase
+            </publicdependencies>
+        </module>
+
+        <!-- Export the includes/libs for the contribs -->
+        <foreach property="contrib" item="String" in="${package.DirtySDK.contribs.available}">
+            <module name="${contrib}" buildtype="${dirtysdk-buildtype}">
+                <!-- If a contrib needs to export headers, it needs to put those in the respective include directory -->
+                <includedirs>
+                    ${package.DirtySDK.dir}/contrib/${contrib}/include
+                </includedirs>
+            </module>
+        </foreach>
+    </publicdata>
+
+    <property name="package.DirtySDK.networking-manifest-files" value="${package.DirtySDK.dir}/scripts/dirtysock-networkmanifest.xml"/>
+
+    <!-- bring in DirtySDK.warningsuppression and AddDirtySDKNetworkManifest -->
+    <include file="dirtysock-external.xml" />
+</project>

@@ -1,0 +1,5 @@
+(c) 2004-2015 Electronic Arts
+
+Copyright for portions of this software are held by others.
+Full details in the accompanying 3RDPARTYLICENSES.txt file.
+

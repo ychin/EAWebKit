@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>SmallBlockAllocator</title>
+<style type="text/css">
+<!--
+.smallCode {
+    font-family: "Courier New", Courier, mono;
+    font-size: x-small;
+}
+.Code {
+    font-family: "Courier New", Courier, mono;
+    font-size: small;
+}
+.style3 {color: #999999}
+-->
+</style>
+</head>
+
+<body>
+<h1>ScratchpadAllocator</h1>
+<h3><a name="Overview">Overview</a></h3>
+<p> ScratchpadAllocator is an allocator adapter which implements a per-thread StackAllocator (a.k.a. LinearAllocator). The purpose of this is to allow code to make fast temporary allocations from a heap without interfering with the main application heap(s). It works by maintaining a container of StackAllocators, with each StackAllocator being created on-demand per thread.</p>
+<h3>Who would want to use this?</h3>
+<p>This class is useful for when you want to quickly allocate temporary memory in a  function but don't want to hit the main heap for it. Allocating this memory is much faster than allocating main heap memory because it's allocated via a StackAllocator (a.k.a. LinearAllocator) with no thread synchronization required. Avoiding the main heap has the benefit of reducing memory fragmentation in that heap</p>
+<h3>How efficient is this system?</h3>
+<p>  There are two primary costs in this system: 1) a Futex lock/unlock in the construction of the first (and only the first) instance of a ScratchpadAllocator for a thread, and 2) the heap allocation cost needed when a ScratchpadAllocator needs to expand its memory. The large majority of the time there are no synchronization primitives required and no heap allocation done and so allocation is similar in speed to directly using a growable StackAllocator or alloca.</p>
+<h3>Basic usage</h3>
+<p>  The end-user of ScratchpadAllocator simply creates a local instance of ScratchpadAllocator in a function, and uses its Malloc and (optionally) Free functionality. You can declare these in multiple functions, as per the example usage below. End users don't normally  need to care about the ScratchpadManager class except for custom cases, and can usually leave the ScratchpadManager constructor argument NULL. However, if you don't want to use the default global ScratchpadManager then you can create one yourself and use it instead of the default one. This will result in a separate StackAllocator that you can use instead of, and in parallel to, the default one.<br>
+  <br>
+  The application normally needs to create the default global ScratchpadManager instance which serves as the default for ScratchpadAllocator instances. You would normally do this on startup by declarating an instances of ScratchpadManager, calling its setup functions and calling SetScratchpadManager with it. The ScratchpadAllocator class instances will automatically find that global manager class via GetScratchpadManager.</p>
+<p>There are two primary limiting requirements of ScratchpadAllocator:</p>
+<ul>
+  <li>For any individual thread, the order of ScratchpadAllocator destruction must be the reverse of construction. If you you create instances of it on the stack like in the example below, this will naturally work out.</li>
+  <li>The user of a ScratchpadAllocator may not call its Malloc if another ScratchpadAllocator has become the  current one for the thread. This could conceivably occur if you create two ScratchpadAllocators in a single function scope (which use the same manager) and interweave Malloc/Free calls to them.</li>
+</ul>
+<h3>  ScratchpadManager</h3>
+Users of ScratchpadAllocator typically don't need to use this class, as the default global instance of this class will be used automatically by default. However, you can create a custom instance of this class and use it with ScratchpadAllocator instances.
+<h3>Example usage</h3>
+<blockquote>
+  <pre>EA::Allocator::ScratchpadManager gScratchpadManager;
+
+
+void DoSomething2()
+{
+    ScratchpadAllocator scratchpad;
+     
+     void* p1 = scratchpad.Malloc(10);
+     void* p2 = scratchpad.MallocAligned(10, 64);
+
+     scratchpad.Free(p1); // Calling Free is optional, though it allows for the potential of more efficient usage of scatch memory.
+     scratchpad.Free(p2);
+}
+
+void DoSomething1()
+{
+     ScratchpadAllocator scratchpad;
+
+     void* p1 = scratchpad.Malloc(10);
+     DoSomething2();
+     scratchpad.Free(p1);
+}
+
+int main(int, char**)
+{
+    EA::Allocator::SetScratchpadManager(&amp;gScratchpadManager);
+    gScratchpadManager.SetAllocatorCallbacks(ScratchpadAllocationFunction, ScratchpadFreeFunction, NULL);
+
+    // Possibly call other manager setup functions.
+
+    DoSomething1();
+}</pre></blockquote>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,273 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAWebKit", ".\EAWebKit.vcxproj", "{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", ".\..\..\cairo\local-1.12.14\cairo.vcxproj", "{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coreallocator", ".\..\..\coreallocator\local_1.04.05\coreallocator.vcxproj", "{84809069-50FF-302B-BA7A-19700854AE26}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dirtysock", ".\..\..\DirtySDK\local_15.1.6.0.5\dirtysock.vcxproj", "{3785ECC6-FAD1-0282-174E-4BA55594CD7A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAAssert", ".\..\..\EAAssert\local_1.05.11\EAAssert.vcxproj", "{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EABase", ".\..\..\EABase\local_2.10.01\EABase.vcxproj", "{616312F7-3D52-8788-1611-B1F9DB83B8A7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EACallstack", ".\..\..\EACallstack\local_2.03.04\EACallstack.vcxproj", "{AB7D3309-B630-24BC-81D8-5FE5978D7406}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAController", ".\..\..\EAController\local_1.08.00\EAController.vcxproj", "{2217D233-E3A2-D60D-6888-A1F4F052FC87}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAIO", ".\..\..\EAIO\local_3.01.13\EAIO.vcxproj", "{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAStdC", ".\..\..\EAStdC\local_1.26.08\EAStdC.vcxproj", "{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EASTL", ".\..\..\EASTL\local_3.16.05\EASTL.vcxproj", "{F741D66C-94C2-1776-A80D-5FE6FCCC8890}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAText", ".\..\..\EAText\local_1.21.00\EAText.vcxproj", "{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAThread", ".\..\..\EAThread\local_1.33.04\EAThread.vcxproj", "{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAUser", ".\..\..\EAUser\local_1.09.08\EAUser.vcxproj", "{6E7694DB-C96A-DD28-AB03-425ED83413EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeType", ".\..\..\FreeType\local_2.9.0.02\FreeType.vcxproj", "{4836B6A6-0EA6-81E9-164C-55D84863E469}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEAController", ".\..\..\EAController\local_1.08.00\IEAController.vcxproj", "{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEAUser", ".\..\..\EAUser\local_1.09.08\IEAUser.vcxproj", "{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JavaScriptCore", ".\..\..\JavaScriptCore\local\JavaScriptCore.vcxproj", "{545B2B54-2E05-D685-49DA-280D6D6A90D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpegEAWebKit", ".\..\..\libjpegEAWebKit\local-1.00.06-01\libjpegEAWebKit.vcxproj", "{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpngEAWebKit", ".\..\..\libpngEAWebKit\local-1.01.00-01\libpngEAWebKit.vcxproj", "{C77E27F0-AA71-6169-241E-0184FBD0F95B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2EAWebKit", ".\..\..\libxml2EAWebKit\local-1.00.06\libxml2EAWebKit.vcxproj", "{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", ".\..\..\pixman\local-0.28.2\pixman.vcxproj", "{E0C359C8-17A5-C1EE-D97F-86677C6226DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPMalloc", ".\..\..\PPMalloc\local_1.26.11\PPMalloc.vcxproj", "{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLiteEAWebKit", ".\..\..\SQLiteEAWebKit\local\SQLiteEAWebKit.vcxproj", "{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WTF", ".\..\..\WTF\local\WTF.vcxproj", "{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibEAWebKit", ".\..\..\zlibEAWebKit\local-1.2.5-7-01\zlibEAWebKit.vcxproj", "{03994ABE-57B1-4D7C-896F-62AEE8658914}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		capilano-vc-debug|Durango = capilano-vc-debug|Durango
+		capilano-vc-opt|Durango = capilano-vc-opt|Durango
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{4836B6A6-0EA6-81E9-164C-55D84863E469}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{84809069-50FF-302B-BA7A-19700854AE26}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{AB7D3309-B630-24BC-81D8-5FE5978D7406}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{D75A8CCA-45E3-CF7E-EFE5-87E6EE5EEA76}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-debug|Durango.ActiveCfg = capilano-vc-debug|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-debug|Durango.Build.0 = capilano-vc-debug|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-opt|Durango.ActiveCfg = capilano-vc-opt|Durango
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.capilano-vc-opt|Durango.Build.0 = capilano-vc-opt|Durango
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

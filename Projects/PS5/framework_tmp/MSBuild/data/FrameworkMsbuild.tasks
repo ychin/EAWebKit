@@ -1,0 +1,220 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
+
+	<!-- custom copy task with advanced features like retry and creating hard links -->
+	<UsingTask
+		TaskName="EA.Framework.MsBuild.FrameworkCopyWithAttributes"
+		AssemblyFile="$(MSBuildThisFileDirectory)..\bin\FrameworkCopyWithAttributes.dll"
+	/>
+	<UsingTask
+		TaskName="EA.Framework.MsBuild.FrameworkTouchFiles"
+		AssemblyFile="$(MSBuildThisFileDirectory)..\bin\FrameworkCopyWithAttributes.dll"
+	/>
+
+	<!-- this task emulates MS's built in CustomBuild features for CPP in C# builds, allowing Framework to treate custombuildfiles for both more or less identically -->
+	<Target Name="FrameworkCSharpCustomBuild" Inputs="%(CustomBuild.Fullpath);%(CustomBuild.AdditionalInputs)" Outputs="%(CustomBuild.Outputs)">
+		<Message Text="%(CustomBuild.Message)" Condition="%(CustomBuild.Message) != ''"/>
+		<Exec Command="%(CustomBuild.Command)" Outputs="%(CustomBuild.Outputs)"/>
+	</Target>
+
+	<!-- native modules don't inherently support copy local in msbuild, and managed modules don't support copy local of native dependencies - roll our own task here
+	to perform these kinds of copy locals 
+	target needs to be inserted before build so that all copie shave timestamps older than primary build output (to prevent unnecessary rebuilding)
+	we insert this into c++ and c# builds just befoore CopyFilesToOutputDirectory -->	
+	<Target Name="FrameworkExecuteCopyLocal" BeforeTargets="CopyFilesToOutputDirectory">
+    <ItemGroup>
+      <_ResolvedCopyLocal Include="%(FrameworkCopyLocal.PrebuildDestinations)">
+        <Source>%(FrameworkCopyLocal.Fullpath)</Source>
+        <SkipUnchanged>%(FrameworkCopyLocal.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(FrameworkCopyLocal.UseHardLink)</UseHardLink>
+        <Retries>%(FrameworkCopyLocal.Retries)</Retries>
+        <RetryDelayMilliseconds>%(FrameworkCopyLocal.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(FrameworkCopyLocal.NonCritical)</NonCritical>
+        <MaintainAttributes>%(FrameworkCopyLocal.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(FrameworkCopyLocal.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(Content.PrebuildDestinations)">
+        <Source>%(Content.Fullpath)</Source>
+        <SkipUnchanged>%(Content.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(Content.UseHardLink)</UseHardLink>
+        <Retries>%(Content.Retries)</Retries>
+        <RetryDelayMilliseconds>%(Content.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(Content.NonCritical)</NonCritical>
+        <MaintainAttributes>%(Content.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(Content.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(Resource.PrebuildDestinations)">
+        <Source>%(Resource.Fullpath)</Source>
+        <SkipUnchanged>%(Resource.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(Resource.UseHardLink)</UseHardLink>
+        <Retries>%(Resource.Retries)</Retries>
+        <RetryDelayMilliseconds>%(Resource.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(Resource.NonCritical)</NonCritical>
+        <MaintainAttributes>%(Resource.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(Resource.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(EmbeddedResource.PrebuildDestinations)">
+        <Source>%(EmbeddedResource.Fullpath)</Source>
+        <SkipUnchanged>%(EmbeddedResource.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(EmbeddedResource.UseHardLink)</UseHardLink>
+        <Retries>%(EmbeddedResource.Retries)</Retries>
+        <RetryDelayMilliseconds>%(EmbeddedResource.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(EmbeddedResource.NonCritical)</NonCritical>
+        <MaintainAttributes>%(EmbeddedResource.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(EmbeddedResource.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+    </ItemGroup>
+
+		<FrameworkCopyWithAttributes Condition="'@(_ResolvedCopyLocal)'!=''"
+			SourceFiles="%(_ResolvedCopyLocal.Source)"
+			DestinationFiles="%(_ResolvedCopyLocal.Fullpath)"
+			SkipUnchangedFiles="%(_ResolvedCopyLocal.SkipUnchanged)"
+			UseHardlinksIfPossible="%(_ResolvedCopyLocal.UseHardLink)"
+			ProjectPath="$(MSBuildProjectDirectory)"
+			Retries="%(_ResolvedCopyLocal.Retries)"
+			RetryDelayMilliseconds="%(_ResolvedCopyLocal.RetryDelayMilliseconds)"
+			ContinueOnError="%(_ResolvedCopyLocal.NonCritical)"
+			MaintainAttributes="%(_ResolvedCopyLocal.MaintainAttributes)"
+			PreserveTimestamp="%(_ResolvedCopyLocal.PreserveTimestamp)"
+			LogMessageLevel="High" />
+	</Target>
+
+	<!-- Update timestamp of copied local files (Only Needed for copylocal files that are listed in UpToDateCheckOutput). Make sure preserve timestamp is set to false for those files and hard link is not used! -->
+	<Target Name="FrameworkExecuteTimestampUpdate" Inputs="%(FrameworkTimestampUpdate.BaseTimeFile)" Outputs="%(FrameworkTimestampUpdate.UpdateFile)" AfterTargets="CopyFilesToOutputDirectory">
+		<FrameworkTouchFiles Files="%(FrameworkTimestampUpdate.UpdateFile)" />
+	</Target>
+
+  
+	<!-- copy for postbuild copy local files - performed after copy to output because final output is probably included in items to copy -->
+	<Target Name="FrameworkExecutePostBuildCopyLocal" AfterTargets="CopyFilesToOutputDirectory">
+    <ItemGroup>
+      <_ResolvedCopyLocal Include="%(FrameworkCopyLocal.PostBuildDestinations)">
+        <Source>%(FrameworkCopyLocal.Fullpath)</Source>
+        <SkipUnchanged>%(FrameworkCopyLocal.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(FrameworkCopyLocal.UseHardLink)</UseHardLink>  
+        <Retries>%(FrameworkCopyLocal.Retries)</Retries>
+        <RetryDelayMilliseconds>%(FrameworkCopyLocal.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(FrameworkCopyLocal.NonCritical)</NonCritical> 
+        <MaintainAttributes>%(FrameworkCopyLocal.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(FrameworkCopyLocal.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(Content.PostBuildDestinations)">
+        <Source>%(Content.Fullpath)</Source>
+        <SkipUnchanged>%(Content.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(Content.UseHardLink)</UseHardLink>
+        <Retries>%(Content.Retries)</Retries>
+        <RetryDelayMilliseconds>%(Content.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(Content.NonCritical)</NonCritical>
+        <MaintainAttributes>%(Content.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(Content.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(Resource.PostBuildDestinations)">
+        <Source>%(Resource.Fullpath)</Source>
+        <SkipUnchanged>%(Resource.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(Resource.UseHardLink)</UseHardLink>
+        <Retries>%(Resource.Retries)</Retries>
+        <RetryDelayMilliseconds>%(Resource.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(Resource.NonCritical)</NonCritical>
+        <MaintainAttributes>%(Resource.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(Resource.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+      <_ResolvedCopyLocal Include="%(EmbeddedResource.PostBuildDestinations)">
+        <Source>%(EmbeddedResource.Fullpath)</Source>
+        <SkipUnchanged>%(EmbeddedResource.SkipUnchanged)</SkipUnchanged>
+        <UseHardLink>%(EmbeddedResource.UseHardLink)</UseHardLink>
+        <Retries>%(EmbeddedResource.Retries)</Retries>
+        <RetryDelayMilliseconds>%(EmbeddedResource.RetryDelayMilliseconds)</RetryDelayMilliseconds>
+        <NonCritical>%(EmbeddedResource.NonCritical)</NonCritical>
+        <MaintainAttributes>%(EmbeddedResource.MaintainAttributes)</MaintainAttributes>
+        <PreserveTimestamp>%(EmbeddedResource.PreserveTimestamp)</PreserveTimestamp>
+      </_ResolvedCopyLocal>
+    </ItemGroup>
+
+	<FrameworkCopyWithAttributes Condition="'@(_ResolvedCopyLocal)'!=''"
+		SourceFiles="%(_ResolvedCopyLocal.Source)" 
+		DestinationFiles="%(_ResolvedCopyLocal.Fullpath)" 
+		SkipUnchangedFiles="%(_ResolvedCopyLocal.SkipUnchanged)" 
+		UseHardlinksIfPossible="%(_ResolvedCopyLocal.UseHardLink)" 
+		ProjectPath="$(MSBuildProjectDirectory)" 
+		Retries="%(_ResolvedCopyLocal.Retries)" 
+		RetryDelayMilliseconds="%(_ResolvedCopyLocal.RetryDelayMilliseconds)" 
+		ContinueOnError="%(_ResolvedCopyLocal.NonCritical)" 
+		MaintainAttributes="%(_ResolvedCopyLocal.MaintainAttributes)" 
+		PreserveTimestamp="%(_ResolvedCopyLocal.PreserveTimestamp)"
+		LogMessageLevel="High" />
+	</Target>
+
+	<!-- override the default Microsoft of GetResolvedLinkLibs with a minor change, we filter project references by
+	LinkLibraryDependencies - without this you can a very insidious error when you have a .exe => .lib = (no link) => .dll 
+	dependency tree where, if and only if the .lib rebuilds itself it creates an internal import lib metadata for the dependent
+	.dll which gets passed up to the .exe. This only happens on build because for some reason the Lib target resolves link
+	dependencies, if it doesn't then the ItemGroup _ResolvedNativeProjectReferencePaths is never created (see StaticLibraryResolveLinkLib
+	in the .props).-->
+	<Target Name="GetResolvedLinkLibs" Returns="@(LibFullPath)" DependsOnTargets="$(StaticLibraryResolveLinkLib)">
+		<!--  Add a tmp Link incase it doesn't exist.-->
+		<ItemGroup>
+			<Link Include="tmp" Condition="'@(Link)'==''">
+				<DeleteSoon>true</DeleteSoon>
+			</Link>
+			<Lib Include="tmp"  Condition="'@(Lib)'==''">
+				<DeleteSoon>true</DeleteSoon>
+			</Lib>
+		</ItemGroup>
+		<PropertyGroup>
+			<_LinkImportLibraryTemp>%(Link.ImportLibrary)</_LinkImportLibraryTemp>
+			<!-- ORIGINAL -->
+			<!-- <_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '%(_ResolvedNativeProjectReferencePaths.FileType)' =='lib'">@(_ResolvedNativeProjectReferencePaths->'%(fullpath)')</_LibFullPath>-->
+			<!-- /ORIGINAL -->
+			<!-- EA --> 
+			<_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '%(_ResolvedNativeProjectReferencePaths.FileType)' =='lib' and '%(_ResolvedNativeProjectReferencePaths.LinkLibraryDependencies)'!='false'">@(_ResolvedNativeProjectReferencePaths->'%(fullpath)')</_LibFullPath>
+			<!-- /EA --> 
+			<_LibFullPath Condition="'$(ConfigurationType)'=='DynamicLibrary' and '$(IgnoreImportLibrary)'!='true' and '$(_LinkImportLibraryTemp)' != ''">$([System.IO.Path]::GetFullPath($(_LinkImportLibraryTemp)))</_LibFullPath>
+			<_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '$(GetResolvedLinkLibs_Order)' == 'BreadthFirst'">@(Lib->MetaData('OutputFile')->FullPath()->Distinct());$(_LibFullPath)</_LibFullPath>
+			<_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '$(GetResolvedLinkLibs_Order)' != 'BreadthFirst'">$(_LibFullPath);@(Lib->MetaData('OutputFile')->FullPath()->Distinct())</_LibFullPath>
+		</PropertyGroup>
+		<ItemGroup>
+			<LibFullPathTemp Include="$(_LibFullPath)">
+				<ProjectType>$(ConfigurationType)</ProjectType>
+				<FileType>lib</FileType>
+				<ResolveableAssembly>false</ResolveableAssembly>
+				<WindowsAppContainer Condition="'$(ConfigurationType)' == 'DynamicLibrary'">$(WindowsAppContainer)</WindowsAppContainer>
+			</LibFullPathTemp>
+			<LibFullPath Condition="'$(ConfigurationType)'!='StaticLibrary' or '$(GetResolvedLinkLibs_Order)' != 'BreadthFirst'" Include="@(LibFullPathTemp)" />
+			<LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '$(GetResolvedLinkLibs_Order)' == 'BreadthFirst'" Include="@(LibFullPathTemp->Reverse()->Distinct()->Reverse())" />
+			<Link Remove="@(Link)" Condition="'%(Link.DeleteSoon)'=='true'" />
+			<Lib Remove="@(Lib)" Condition="'%(Lib.DeleteSoon)'=='true'" />
+		</ItemGroup>
+		<Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="LibFullPath=@(LibFullPath)"/>
+	</Target>
+	
+	<!-- handy debugging task, usage:
+		<PrintMetaData Prefix="MyItems:" ItemGroup="@(MyItems)">
+	-->
+	<UsingTask
+		TaskName="PrintMetaData"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+		Condition="'$(FRAMEWORK_MSBUILD_DEBUGGING)' == 'true' or '$(FRAMEWORK_MSBUILD_DEBUGGING)' == '1'" >
+		<ParameterGroup>
+			<ItemGroup ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<Prefix/>
+		</ParameterGroup>
+		<Task>
+			<Using Namespace="System"/>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+					StringBuilder metaDataDump = new StringBuilder();
+					foreach (ITaskItem item in ItemGroup)
+					{
+						metaDataDump.AppendFormat("{0}ItemName={1}\r\n", Prefix, item);
+						foreach (string parameter in item.MetadataNames)
+						{
+						  metaDataDump.AppendFormat("\t{0}={1}\r\n", parameter, item.GetMetadata(parameter));
+						}
+						metaDataDump.AppendFormat("\r\n");
+					}
+					Log.LogMessage(MessageImportance.High, metaDataDump.ToString());
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+</Project>

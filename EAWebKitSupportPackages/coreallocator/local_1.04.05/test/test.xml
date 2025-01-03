@@ -1,0 +1,29 @@
+﻿<project>
+
+    <property name="test.buildmodules" value="testcoreallocator"/>
+    <property name="test.testcoreallocator.buildtype" value="Program" />
+	<property name="test.testcoreallocator.copylocal" value="true" />
+
+    <fileset name="test.testcoreallocator.deploy-contents-fileset" basedir="${package.configbindir}/test">
+        <includes name="**"/>
+    </fileset>
+
+    <property name="test.testcoreallocator.includedirs">
+        ${package.dir}/include
+    </property>
+
+    <fileset name="test.testcoreallocator.sourcefiles">
+        <includes name="*.cpp"/>
+    </fileset>
+
+    <property name="test.testcoreallocator.builddependencies">
+        EAAssert
+        EABase
+        EAMain
+		EAStdC
+		EASTL
+		EATest	
+		EAThread
+    </property>
+	
+</project>

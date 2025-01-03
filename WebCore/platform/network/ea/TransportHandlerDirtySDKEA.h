@@ -38,8 +38,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKitTransport.h>
 #include <EAWebKit/EAWebkitAllocator.h>
 
-#include <eastl/fixed_string.h>
-#include <eastl/fixed_map.h>
+#include <EASTL/fixed_string.h>
+#include <EASTL/fixed_map.h>
 
 namespace EA
 {
@@ -74,8 +74,8 @@ namespace TransportHelper
 }
 }
 
-#include "protohttpmanager.h"
-#include "dirtyvers.h" // Defines (e.g.) #define DIRTYVERS (0x07000000)
+#include <DirtySDK/proto/protohttpmanager.h>
+#include <DirtySDK/dirtyvers.h> // Defines (e.g.) #define DIRTYVERS (0x07000000)
 
 
 namespace EA
@@ -102,11 +102,11 @@ public:
 	bool Tick			();
 
 #if DIRTYVERS > 0x07050300 
-	static int32_t DirtySDKSendHeaderCallbackStatic(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderSize, const char* pData, uint32_t uDataLen, void* pUserRef);
+    static int32_t DirtySDKSendHeaderCallbackStatic(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderSize, const char* pData, int64_t uDataLen, void* pUserRef);
 #else
 	static void DirtySDKSendHeaderCallbackStatic(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderSize, const char* pData, uint32_t uDataLen, void* pUserRef);
 #endif
-	int32_t        DirtySDKSendHeaderCallback(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderSize, const char* pData, uint32_t uDataLen, EA::WebKit::TransportInfo* pTInfo);
+    int32_t        DirtySDKSendHeaderCallback(ProtoHttpRefT* pState, char* pHeader, uint32_t uHeaderSize, const char* pData, uint32_t uDataLen, EA::WebKit::TransportInfo* pTInfo);
 
 #if DIRTYVERS > 0x07050300
 	static int32_t DirtySDKRecvHeaderCallbackStatic(ProtoHttpRefT* pState, const char* pHeader, uint32_t uHeaderSize, void* pUserRef);
@@ -157,7 +157,7 @@ private:
 
 struct ProtoSSLRefT;
 
-#include <eastl/list.h>
+#include <EASTL/list.h>
 namespace EA
 {
 namespace WebKit

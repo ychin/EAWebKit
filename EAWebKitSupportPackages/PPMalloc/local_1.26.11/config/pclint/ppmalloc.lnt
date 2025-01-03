@@ -1,0 +1,25 @@
+//******************************************************************************************
+//
+// Copyright (c) 2004 Electronic Arts Inc.
+//
+//******************************************************************************************
+
+// the PPM_ASSERT macro generates a LOT of warnings
+-emacro(506, PPM_ASSERT)
+-emacro(909, PPM_ASSERT)
+-emacro(920, PPM_ASSERT)
+-emacro(944, PPM_ASSERT)
+-emacro(960, PPM_ASSERT)
+
+// another troublesome macro: compile-time asserts
+-emacro(944, LOCAL_CT_ASSERT)
+-emacro(752, LOCAL_CT_ASSERT)
+
+// NULL is defined as 0 in eabase, Lint doesn't like this
+-emacro(910, NULL)
+
+-e909		// implicit conversion to bool
+
+-e928		// cast from pointer to pointer
+
+-e1924		// C-style casts OK

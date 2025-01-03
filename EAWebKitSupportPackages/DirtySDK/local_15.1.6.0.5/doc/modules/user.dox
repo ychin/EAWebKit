@@ -1,0 +1,7 @@
+/*!
+    \Moduledef User User
+
+    \Description
+        The UserList module abstracts the 1st party friends, blocked, muted and
+        recently met functionality.
+*/

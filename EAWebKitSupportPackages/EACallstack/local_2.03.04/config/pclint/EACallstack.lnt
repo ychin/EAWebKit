@@ -1,0 +1,64 @@
+// ===========================================================================
+// Pc-Lint policy for the EACallstack package
+// ===========================================================================
+
+
+// ===========================================================================
+// Include the pclintconfig legacy policy file which contains the EAC minimal
+// pclint warnings set.
+// ===========================================================================
+policy_legacy.lnt
+
+-esym(613, EA::Callstack::DWARF2SectionReader::mpDWARF2)	// [DWARF2File.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function from external call.
+-esym(613, EA::Callstack::DWARF2File::mpStream)	// [DWARF2File.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function from external call.
+-efunc(539, EA::Callstack::DWARF2File::Init)	// [DWARF2File.cpp] Suppress: Unexpected positive indentation. Coding style is consistent with the rest of the code after #ifdef.
+-efunc(539, EA::Callstack::DWARF2SectionReader::ReadSLEB128)	// [DWARF2File.cpp] Suppress: Unexpected positive indentation. Coding style is consistent with the rest of the code after #ifdef.
+-esym(1740, EA::Callstack::DWARF2File::mpCoreAllocator)	// [DWARF2File.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(1740, EA::Callstack::DWARF2File::mpStream)		// [DWARF2File.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-efunc(1506, EA::Callstack::DWARF2File::~DWARF2File)	// [DWARF2File.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-esym(1740, EA::Callstack::AddressRepLookupSet::mpCoreAllocator)	// [EEAAddressRep.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(1540, EA::Callstack::AddressRepCache::mpCoreAllocator)		// [EEAAddressRep.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(644, win32CONTEXT)		// [EACallstack_Win32.cpp] Suppress: Variable may not have been initialized. Under GetCallstackContext in EACallstack_Win32.cpp, the variable was initialized in both of the if-else conditions.
+-esym(1540, *Win32DbgHelp::mhDbgHelp)	// [EACallstack_Win32.cpp] Suppress: Not freed or zeroed by destructor. This member is freed at the shutdown procedure which is called externally.
+-esym(1540, EA::Callstack::CallstackRecorder::mpCoreAllocator)		// [EACallstackRecorder.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-efunc(416, EA::Callstack::RecordCurrentCallstack)		// [EACallstackRecorder.cpp] Suppress: Likely creation of out-of-bounds pointer (2 beyond end of data). Variable pointing to an array of at least 2.
+-efunc(514, EA::Dasm::PowerPC::WriteThreeRegisterOperation)	// [EADasm.cpp] Suppress: Unusual use of a Boolean expression. Binary operator '&' was used as intended.
+-efunc(514, EA::Dasm::PowerPC::WriteTwoRegisterOperation)	// [EADasm.cpp] Suppress: Unusual use of a Boolean expression. Binary operator '&' was used as intended.
+-efunc(514, EA::Dasm::PowerPC::WriteVdab)		// [EADasm.cpp] Suppress: Unusual use of a Boolean expression. Binary operator '&' was used as intended.
+-efunc(795, EA::Dasm::DetectProcessor)	// [EADasm.cpp] Suppress: Conceivable division by 0. Denorminator cannot be 0 logically.
+-efunc(1506, EA::Callstack::MapFileGCC3::~MapFileGCC3)	// [MapFile.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-efunc(1506, EA::Callstack::MapFileMSVC::~MapFileMSVC)	// [MapFile.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-efunc(1506, EA::Callstack::MapFileSN::~MapFileSN)		// [MapFile.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-esym(1740, EA::Callstack::MapFileGCC3::mpCoreAllocator)	// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(1740, EA::Callstack::MapFileMSVC::mpCoreAllocator)	// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(1740, EA::Callstack::MapFileSN::mpCoreAllocator)		// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-efunc(1506, EA::Callstack::PDBFileMS::~PDBFileMS)			// [PDBFile.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-efunc(1506, EA::Callstack::PDBFileCustom::~PDBFileCustom)	// [PDBFile.cpp] Suppress: Call to virtual function within destructor. The function intends to perform shutdown for the current class.
+-esym(1740, EA::Callstack::PDBFileMS::mhSymbols)			// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer is freed in Shutdown called by the destructor.
+-esym(1740, EA::Callstack::PDBFileCustom::mpCoreAllocator)	// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(1740, EA::Callstack::PDBFileCustom::mpTOC)			// [MapFile.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer is freed in Shutdown called by the destructor.
+-efunc(661, EA::Callstack::PDBFileCustom::LoadSymbolInfo)	// [PDBFile.cpp] Suppress: Access of out-of-bounds pointer. Pointer used as dynamic array with mpTOC being allocated with malloc.
+-efunc(662, EA::Callstack::PDBFileCustom::LoadSymbolInfo)	// [PDBFile.cpp] Suppress: Access of out-of-bounds pointer. Pointer used as dynamic array with mpTOC being allocated with malloc.
+-efunc(420, EA::Callstack::PDBFileCustom::IterateSymbols)	// [PDBFile.cpp] Suppress: Access beyond array. The array index nBufferPosition1 is guaranteed to be < mHeader.mBlockSize and size of symbolBuffer is 2x mHeader.mBlockSize
+-esym(1740, EA::Callstack::Win32Runner::mpCancelCheckFunctionContext)		// [Win32Runner.cpp] Suppress: Not directly freed or zeroed by destructor. The pointer refers to a function.
+-esym(1740, CabReader::mhCabinetDll)	// [CabReader.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer is freed in Shutdown called by the destructor.
+-esym(1740, CabReader::mhFDIContext)	// [CabReader.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer is freed in Shutdown called by the destructor.
+-esym(1740, CabReader::mpContext)		// [CabReader.cpp] Suppress: Not directly freed or zeroed by destructor. Pointer refers to an external resource.
+-esym(613, CabReader::mfFdiCopy)		// [CabReader.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function. The init function returns false if the pointer is null.
+-esym(613, CabReader::mfFdiCreate)		// [CabReader.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function. The init function returns false if the pointer is null.
+-esym(613, CabReader::mfFdiDestroy)		// [CabReader.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function. The init function returns false if the pointer is null.
+-esym(613, EA::Callstack::ELFFile::mpStream)	// [ELFFile.cpp] Suppress: Possible use of null pointer. The member pointer is assigned in the init function. The init function returns false if the pointer is null.
+
+// [EASymbolUtil.cpp] Suppress: Likely use of null pointer in left argument to operator. 
+// The parameter variable in the Unpack recursive function is only used without being checked for NULL when the 
+// bGetFuncname parameter is true, which is when the function is first called with the actual parameter of pFuncname 
+// pointing to a defined array.
+-esym(413, pFuncname)
+
+-efunc(418, EA::Callstack::Unpack)	// [EASymbolUtil.cpp] Suppress: Passing null pointer to function. The parameter pFuncname passed to strcpy points to a defined array in the condition when bGetFuncname is true.
+-efunc(668, EA::Callstack::Unpack)	// [EASymbolUtil.cpp] Suppress: Possibly passing a null pointer to function. The function memcpy is called with pReturnTypeStart only when isReturnType is true, which only happens if pReturnTypeStart is not null.
+-esym(613, pReturnTypeStart)		// [EASymbolUtil.cpp] Suppress: Passing null pointer. The variable is only referenced when isReturnType is true, which only happens if pReturnTypeStart is not null.
+
+// PS3 specific
+-efunc(24, EA::Callstack::GetCallstackContext)	// [EACallstack_PS3.cpp] Suppress: Expected an expression, found '&&'. The line is specific to GCC.
+-efunc(64, EA::Callstack::GetCallstackContext)	// [EACallstack_PS3.cpp] Suppress: Type mismatch (void* = int). The line is specific to GCC.

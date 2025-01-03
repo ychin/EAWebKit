@@ -1,0 +1,21 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+  <publicdata packagename="coreallocator" >
+    <!--
+		Dependent packages may use ${package.coreallocator.includedirs} in their 
+		includedirs element of build tasks.
+    -->
+    <property name="package.coreallocator.includedirs">
+      ${package.coreallocator.dir}/include
+    </property>
+    
+    <runtime>
+      <module name="coreallocator">
+        <includedirs>
+          ${package.coreallocator.dir}/include
+        </includedirs>
+      </module>
+    </runtime>
+  </publicdata>
+
+</project>

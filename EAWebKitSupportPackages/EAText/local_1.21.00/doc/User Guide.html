@@ -1,0 +1,695 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAText -- User Guide</title>
+  <meta content="Basic instructions on how to use EAText."
+ name="description">
+  <meta content="Paul Pedriana" name="author">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+<!--
+.style1 {color: #0000FF}
+-->
+  </style>
+</head>
+<body>
+<h1>User Guide</h1>
+<h2>What is EAText?</h2>
+<p>EAText is an advanced next-generation text characterization, layout, and font engine.</p>
+<p>The biggest difference between EAText and other systems is that EAText supports all conceivable EA locales, including Western, Chinese, Japanese, Korean, and complex locales such as Thai, Hebrew, Hindi, and Arabic. This is the first time the problem of complex script layout has been universally solved within Electronic Arts and in doing so it should help lower one of the most significant barriers to multi-locale development. By using EAText, you automatically get support for about 25 languages in your game. This support includes basic layout and display, HTML/styled display, and interactive text editing. EAText additionally comes with a set of basic pipeline tools that can be used with EAText but can also be used with other systems due to their pipeline/engine-neutral design. Lastly, EAText and its associated packages follow standards such as Unicode, CSS, and XHTML, so expectations and behavior follow well-known conventions. </p>
+<h2>Features</h2>
+<p>A summary of the primary features is as follows:</p>
+<ul>
+  <li>Scalable functionality; advanced features can be compiled away if desired. Users with lower requirements "pay" only for what they need. Much of the functionality listed below is optional and goes away if it's not used. Also configuration #defines allow for functionality stripping as well. </li>
+  <li>Cross-platform portable. Runs the same on all platforms, including advanced script layout. </li>
+  <li>Supports all conceivable languages EA could ship to within the next ten years; see below for a detailed listing.</li>
+  <li>Supports complex script composition and layout features, such as:
+      <ul>
+        <li>Bidirectional layout (e.g. Hebrew, Arabic). </li>
+        <li>Contextual shaping (e.g. Thai, Hindi, Arabic). </li>
+        <li>Combining characters.</li>
+      </ul>
+  </li>
+  <li>Simple high level API (Typesetter). Drawing a line of plain text at the application level can be done with a single line of C++ code. </li>
+  <li>Provides a fast ASCII layout option for non-localized (e.g. debug) text.</li>
+  <li>Reasonably high performance. Low memory usage, including little or no runtime memory allocation. </li>
+  <li>Fast execution, including the ability to create and save pre-built display lists.</li>
+  <li>Fast startup. Supports the pre-loading of glyphs from disk. </li>
+  <li>TrueType and OpenType font support (via Font Fusion, and thus Japanese Stroked Font support). </li>
+  <li>Bitmapped font support (and thus multi-colored font support). </li>
+  <li>Supports polygonal fonts, for true 3D fonts (flat or extruded). </li>
+  <li>Supports contour fonts -- outlined fonts.</li>
+  <li>Supports multiple scripts and fonts within a line of text arbitrarily, allowing not just for HTML but also for overcoming font glyph support problems.</li>
+  <li>Supports the CSS standard and comes with an optional CSS-compliant in-game font server. </li>
+  <li>Supports advanced layout features such as ellipsizing, box-fitting, picking, justification, wrapping modes, underlining, highlighting, and password display/entry.</li>
+  <li>Comes with an optional style engine so an application can work with styles instead of hard-coded fonts.</li>
+  <li>Supports the Unicode standard with respect to text characterization and layout. </li>
+  <li>Supports Unicode compliant locale-proper string sorting (collation) and normalization.</li>
+  <li>Supports line breaking options as per the CSS standard.</li>
+  <li>Supports curved/Bezier path following (text along an arbitrary curve).</li>
+  <li>Includes generic Unicode-proper char/word/sentence/line/paragraph break iterators. </li>
+  <li>Supports locale-proper left-aligned, right-aligned, centered, and justified text; plus vertical alignment.</li>
+  <li>Provides basic dynamically generated text effects functionality (shadow, outline, raise).</li>
+  <li>Comes with support for standards-compliant XHTML parsing and rendering via the XHTML package.</li>
+  <li>Comes with generic interactive multi-line multi-language text editor which can be adapted to any GUI system.</li>
+  <li>Comes with BitmapFontEditor, an advanced multicolor/bitmapped font generator and WYSIWYG editor.</li>
+  <li>Comes with a font WYSIWYG preview tool (EATextViewer) that lets you tinker with fonts and styles on the target platform.</li>
+  <li>Allows for relatively easy porting to different rendering systems (six as of this writing).</li>
+</ul>
+<h2>Locale Support </h2>
+<p>EAText supports layout and interactive editing in 28 languages from 9 scripts, including:</p>
+<blockquote>
+  <table border="1">
+    <tbody>
+      <tr>
+        <td>Arabic (bidirectional)</td>
+        <td>French</td>
+        <td>Italian</td>
+        <td>Russian</td>
+      </tr>
+      <tr>
+        <td>Chinese</td>
+        <td>German</td>
+        <td>Japanese (kanji, hiragana, katakana)</td>
+        <td>Spanish</td>
+      </tr>
+      <tr>
+        <td>Czech</td>
+        <td>Greek</td>
+        <td>Korean</td>
+        <td>Swedish</td>
+      </tr>
+      <tr>
+        <td>Danish</td>
+        <td>Hebrew (bidirectional) </td>
+        <td>Norwegian</td>
+        <td>Thai (complex composition and breaking) </td>
+      </tr>
+      <tr>
+        <td>Dutch</td>
+        <td>Hindi (complex composition) </td>
+        <td>Polish</td>
+        <td>Tagalog</td>
+      </tr>
+      <tr>
+        <td>English</td>
+        <td>Hungarian</td>
+        <td>Portuguese</td>
+        <td>Turkish</td>
+      </tr>
+      <tr>
+        <td>Finnish</td>
+        <td>Icelandic</td>
+        <td>Romanian</td>
+        <td>Vietnamese</td>
+      </tr>
+    </tbody>
+  </table>
+</blockquote>
+<h2>Modules<span
+ style="font-weight: bold;"></span> </h2>
+<p>The following is a listing of the primary EAText modules in alphabetical order. </p>
+<div style="margin-left: 40px;">
+  <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><span style="font-weight: bold;">Module</span><br>
+        </td>
+        <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span></td>
+      </tr>
+      <tr>
+        <td>EAText.h/cpp<br>
+        </td>
+        <td>Provides definitions of basic EAText data types and shared functions.</td>
+      </tr>
+      <tr>
+        <td>EATextBaseline.h/cpp</td>
+        <td>Implements text along a curve.</td>
+      </tr>
+      <tr>
+        <td>EATextCache.h/cpp</td>
+        <td>Implements a cache of rasterized glyphs for fast rendering. </td>
+      </tr>
+      <tr>
+        <td>EATextCompression.h/cpp</td>
+        <td>Implements a generic Unicode text compression algorithm that reduces the required size of text strings in game data. </td>
+      </tr>
+      <tr>
+        <td>EATextConfig.h</td>
+        <td>Provides the standard set of configurable defines for EAText.</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">EATextFont.h/cpp<br>
+        </td>
+        <td style="vertical-align: top;">Defines and implements font interpretation and high level glyph representation.</td>
+      </tr>
+      <tr>
+        <td>EATextFontServer.h/cpp</td>
+        <td>Implements a font server, which is a repository of fonts that can be used at runtime. </td>
+      </tr>
+      <tr>
+        <td>EATextIterator.h/cpp</td>
+        <td>Implements walking through text and identifying paragraph breaks, sentence breaks, line break opportunities, word breaks, character breaks. </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">EATextScript.h/cpp<br>
+        </td>
+        <td style="vertical-align: top;">Defines standard writing scripts defined by the Unicode standard and provides a few utility functions for working with script identifiers.</td>
+      </tr>
+      <tr>
+        <td>EATextStyle.h/cpp</td>
+        <td>Provides text style definitions, such as font weight, font families, etc. Also provides a StyleManager which manages an enumerated set of unique style definitions.</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">EATextTypesetter.h/cpp<br>
+        </td>
+        <td style="vertical-align: top;">Defines and implements the EAText layout (typesetting) engine.</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">EATextUnicode.h/cpp<br>
+        </td>
+        <td style="vertical-align: top;">Provides utility functionality related to the classification of text characters. </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>The modules listed above have a somewhat layered hierarchy and thus you can use some of them without needing the others. For example, the EATextUnicode module is a somewhat independent module that the other modules use to do Unicode queries of various types. EATextTypesetter, on the other hand, is the core layout engine of EAText and is dependent on most of the rest of EAText. </p>
+<h2>Runtime Pipeline</h2>
+<p>Below is a flow diagram of the EAText runtime engine. Not all parts of the diagram need to be used by any given application. In summary, Runtime Data (on disk) consists of primarily text, style information, and fonts. To draw a block of text on the screen, text, text styles, fonts, and layout settings are fed to the Typesetter layout engine and a LineLayout is produced. A LineLayout has all the information needed to render a block of text on the screen. Typically, an application will convert the LineLayout to a GPU vertex buffer and shader (Glyph Mesh). The Renderer (or graphics driver) uses the Glyph Mesh plus the Glyph Cache (which stores individual glyphs on textures) to draw to the screen. An entity missing from the diagram below is a StyleManager, which manages Text Styles much like the Font Server manages Fonts. </p>
+<blockquote>
+  <p><img src="images/Font%20Runtime%20Pipeline.png" width="697" height="313"> </p>
+</blockquote>
+<h2>Using EAText</h2>
+<p>An application that wants to use EAText will need to have the following (which is detailed in <a href="Graphics%20Engine%20Support.html">Graphics Engine Support</a>):</p>
+<ul>
+  <li>An subclass of GlyphCache which knows how to create and modify textures in the application's graphics environment.</li>
+  <li>A GlyphMesh which knows how to represent vertex, texture, and shader information in the application's graphics environment. 
+	This isn't required but it's usually pretty useful.</li>
+</ul>
+<p>A typical application that uses EAText will want to do the following:</p>
+<ul>
+  <li>Create a FontServer, which owns the current set of fonts available for use by the application.</li>
+  <li>Create some Fonts (usually OutlineFonts or BitmapFonts) and hand them to the FontServer to manage. </li>
+  <li>Create a GlyphCache, which stores individual glyphs packed together on a texture ready for drawing.</li>
+  <li>Possibly set up the default LayoutSettings for use by the application.</li>
+  <li>Possibly set up a StyleManager, which owns an enumerated set of text styles used by the application. </li>
+  <li>Possibly set up some TextStyles to be managed by the StyleManager.</li>
+  <li>Layout a block of text via an instance of the <a href="Typesetter.html">Typesetter</a> class to yield a LineLayout object.</li>
+  <li>Convert the resulting LineLayout (abstract platform-independent info) to a GlyphMesh (rendering system-specific info).</li>
+  <li>Repeatedly render the GlyphMesh until the text changes or is no longer needed.</li>
+</ul>
+<p>Caveats:</p>
+<ul>
+  <li>You generally want to have only one FontServer, StyleManager, GlyphCache, and LayoutSettings.</li>
+  <li>You can have more than one Typesetter, though in most cases you don't really more than one. </li>
+  <li> You can omit TextStyles and a StyleManager if your application wants to work directly with Fonts. Typesetter allows you to do this. </li>
+  <li>Similarly, you can omit the FontServer if your application doesn't work with TextStyles but instead directly works with Fonts. However, the FontServer is still useful as a repository for Fonts even if you don't ever use the FontServer's style-based lookup functionality.</li>
+  <li>While you might use a single Typesetter, you can use it to lay out any number of blocks of text into any number of LineLayouts.</li>
+  <li>There is usually one GlyphMesh generated from each LineLayout. A GlyphMesh is merely a GPU-specific version of a LineLayout. </li>
+</ul>
+<h2>Example Usage </h2>
+<p>Probably the best example usage of EAText can be found in one of the EAText adapter packages, such as EATextRNA. This package provides an adapter for EAText to the RNA graphics system and also provides a demonstration application which demonstrates many of the features of EAText. Another source for example usage is EATexts's own unit test code. The following provides some example usage of EAText that should at least give you a sense of it. The following consists of a number of simple but complete test applications. See the EAText/demo/ source files for more detailed examples. </p>
+<p>Example of how to do various kinds of line breaking: </p>
+<pre><p class="code-example">#include &lt;EAText/EATextBreak.h&gt;<br>#include &lt;EAStdC/EAString.h&gt;<br>
+
+int main(int, char**)
+{
+    using namespace EA::Text;
+    using namespace EA::StdC;
+
+    {
+<span class="code-example-comment">        // Demo line breaking
+        // Iterates all the breakable opportunities as well as forced breaks in the line.
+</span>
+        const char16_t    pTest[] = L"a\x0300 b\x0301 c\x0302 d\x0303 efghijk";
+        TextRun           tr(pTest, (uint32_t)Strlen(pTest));
+        LineBreakIterator bi(&tr, 1);
+        uint32_t          breakPos;
+
+        do{
+            breakPos = bi.GetNextLineBreak(kLineBreakTypeEmergency);
+<span class="code-example-comment">            // Do something with breakPos
+</span>        }while(breakPos != tr.mnTextSize);
+    }
+
+    {
+<span class="code-example-comment">        // Demo character breaking
+        // Iterates all the word divisions.
+</span>
+        const char16_t         pTest[] = L"First line\nSecond line\nThird line";
+        TextRun                tr(pTest, (uint32_t)Strlen(pTest));
+        CharacterBreakIterator bi(&tr, 1);
+        uint32_t               breakPos;
+
+        do{
+            breakPos = bi.GetNextCharBreak();
+<span class="code-example-comment">            // Do something with breakPos
+</span>        }while(breakPos != tr.mnTextSize);
+    }
+
+    {
+<span class="code-example-comment">        // Demo word breaking
+        // Iterates all the word divisions.
+</span>
+        const char16_t    pTest[] = L"First line\nSecond line\nThird line";
+        TextRun           tr(pTest, (uint32_t)Strlen(pTest));
+        WordBreakIterator bi(&tr, 1);
+        uint32_t          breakPos;
+
+        do{
+            breakPos = bi.GetNextWordBreak();
+            // Do something with breakPos
+        }while(breakPos != tr.mnTextSize);
+    }
+
+    {
+<span class="code-example-comment">        // Demo sentence breaking
+        // Iterates all the sentence divisions.
+</span>
+        const char16_t        pTest[] = L"First sentence. Second sentence.\nThird sentence.";
+        TextRun               tr(pTest, (uint32_t)Strlen(pTest));
+        SentenceBreakIterator bi(&tr, 1);
+        uint32_t              breakPos;
+
+        do{
+            breakPos = bi.GetNextSentenceBreak();
+<span class="code-example-comment">            // Do something with breakPos
+</span>        }while(breakPos != tr.mnTextSize);
+    }
+
+    {   
+        // Demo sentence breaking
+        // Iterates all the paragraph divisions.
+
+        const char16_t        pTest[] = L"First sentence. Second sentence.\nThird sentence.";
+        TextRun               tr(pTest, (uint32_t)Strlen(pTest));
+        SentenceBreakIterator bi(&tr, 1);
+        uint32_t              breakPos;
+
+        do{
+            breakPos = bi.GetNextSentenceBreak();
+<span class="code-example-comment">            // Do something with breakPos
+</span>        }while(breakPos != tr.mnTextSize);
+    }
+
+    return 0;
+}</p></pre>
+<p>Example of how to do Unicode queries: </p>
+<pre><p class="code-example">#include &lt;EAText/EATextUnicode.h&gt;<br>
+int main(int, char**)
+{
+    using namespace EA::Text;
+
+    {
+<span class="code-example-comment">        // Example usage of IsSpace
+</span>        bool bNonBreakingSpace       = IsSpace(' ', kSTNoBreak);
+        bool bZeroWidthAndBreakable  = IsSpace(' ', kSTZeroWidth | kSTBreak);
+        bool bIsCRuntimeLibrarySpace = IsSpace(' ', kSTWidth | kSTControl);
+        bool bIsAnySpace             = IsSpace(' ', kSTAll, false);
+    }
+
+    {
+<span class="code-example-comment">        // Example usage of GetMirrorChar
+</span>        Char c1 = GetMirrorChar('[');   // Returns ']'
+        Char c2 = GetMirrorChar('a');   // Returns 'a'
+        Char c3 = GetMirrorChar('$');   // Returns '$'
+    }
+
+    {
+<span class="code-example-comment">        // Example usage of IsCharUppercase
+</span>        bool b1 = IsCharUppercase('A'); // Returns true
+        bool b2 = IsCharUppercase('a'); // Returns false
+        bool b3 = IsCharUppercase('$'); // Returns false
+    }
+
+    {
+<span class="code-example-comment">        // Example of IsCharSTerm (sentence termination)
+</span>        bool b1 = IsCharSTerm('!');     // Returns true
+        bool b2 = IsCharSTerm(' ');     // Returns false
+        bool b3 = IsCharSTerm('.');     // Returns true
+        bool b4 = IsCharSTerm('a');     // Returns false
+        bool b5 = IsCharSTerm(0xFF61);  // Returns true (Japanese period).
+    }
+
+    return 0;
+}</p></pre>
+<p>Example of how to use a FontServer: </p>
+<pre><p class="code-example">int main(int, char**)
+{
+    using namespace EA::Text;
+    using namespace EA::StdC;
+
+    // Need to tell Font Fusion how to allocate memory.
+	#ifdef FONTFUSIONMEMMANAGER_H // If using the FontFusion Fw2 package instead of using the regular commercial FontFusion version.
+		FontFusionMemObject::SetAllocatorCallbacks(FF_Alloc, FF_Free, FF_Realloc);
+	#endif
+
+    // Need to tell EAText how to allocate memory. Any ICoreAllocator will do. 
+    CoreAllocatorMalloc coreAllocator;
+    EA::Text::SetAllocator(&coreAllocator);
+
+
+    {
+        // Create and init a FontServer. Usually you would have one of these for an app.
+        // Set the global font server to our FontServer, so anybody that wants to 
+        // find it can get it from a central location.
+        FontServer fontServer;
+        fontServer.Init();
+        EA::Text::SetFontServer(&fontServer);
+
+
+        // You will probably want to tell the FontServer what the GlyphCache is if you
+        // are going to be creating bitmapped fonts (BmpFont objects).
+        // fontServer.SetDefaultGlyphCache(pSomeGlyphCache);
+
+
+        // Add fonts to the FontServer.
+        #if defined(EA_PLATFORM_WINDOWS)
+            // Add some fonts from disk file sources.
+            char16_t pFontDirectory[EA::IO::kMaxPathLength];
+            char16_t pFontPath[EA::IO::kMaxPathLength];
+
+            EA::Text::GetSystemFontDirectory(pFontDirectory, EA::IO::kMaxPathLength);
+
+            // Add Arial normal
+            Strcpy(pFontPath, pFontDirectory);
+            Strcat(pFontPath, L"arial.ttf");
+            fontServer.AddFace(pFontPath);
+
+            // Add Arial bold
+            Strcpy(pFontPath, pFontDirectory);
+            Strcat(pFontPath, L"arialb.ttf");
+            fontServer.AddFace(pFontPath);
+
+            // Add Courier New normal
+            Strcpy(pFontPath, pFontDirectory);
+            Strcat(pFontPath, L"cour.ttf");
+            fontServer.AddFace(pFontPath);
+        #endif
+
+        // Add a font face from a memory image.
+        EA::IO::MemoryStream* const pMemoryStream = new EA::IO::MemoryStream(const_cast<unsigned char*>(gTrueTypeFont), kTrueTypeFontSize, true, false);
+        pMemoryStream->AddRef();
+        fontServer.AddFace(pMemoryStream, kFontTypeOutline);
+        pMemoryStream->Release();
+
+        // Add a Font directly to the FontServer.
+        OutlineFont* pOutlineFont = new OutlineFont; 
+        pOutlineFont->AddRef();
+        pOutlineFont->Open(gTrueTypeFont, kTrueTypeFontSize);
+        pOutlineFont->SetTransform(16);
+        fontServer.AddFont(pOutlineFont);
+        pOutlineFont->Release();
+
+
+        // Enumerate the existing font faces registered with the FontServer.
+        FontDescription fd[16];
+        const uint32_t faceCount = fontServer.EnumerateFonts(fd, 16);
+        (void)faceCount;
+        // Do something with the FontDescription items.
+
+
+        // Do a simple FontServer lookup.
+        TextStyle ts;
+        Strcpy(ts.mFamilyNameArray[0], L"Arial");
+        ts.mfSize = 16;
+        ts.mStyle = kStyleItalic;
+
+        Font* pFont = fontServer.GetFont(&ts, NULL); // GetFont AddRefs any fonts it returns.
+        // Use pFont here.
+        pFont->Release();
+
+        // Do a multi-font lookup, whereby the best matches are given.
+        FontSelection fontSelection;
+        Strcpy(ts.mFamilyNameArray[0], L"Arial");
+        Strcpy(ts.mFamilyNameArray[1], L"Courier New");
+
+        fontServer.GetFont(&ts, fontSelection);
+        // There will be two fonts in fontSelection.
+        // fontSelection will auto-release its fonts.
+
+        // Shutdown
+        EA::Text::SetFontServer(NULL);
+        fontServer.Shutdown();
+    }
+
+    return 0;
+}&nbsp;</p></pre>
+<p>Example of how to use a StyleManager: </p>
+<pre><p class="code-example">int main(int, char**)
+{
+    using namespace EA::Text;
+    using namespace EA::StdC;
+
+    // Need to tell EAText how to allocate memory. Any ICoreAllocator will do. 
+    CoreAllocatorMalloc coreAllocator;
+    EA::Text::SetAllocator(&coreAllocator);
+
+
+    StyleManager styleManager;
+    TextStyle    ts;
+
+    // Create an Arial Italic 16, and give it a style id of 0x11111111
+    Strcpy(ts.mFamilyNameArray[0], L"Arial");
+    ts.mfSize  = 16;
+    ts.mStyle  = kStyleItalic;
+    ts.mSmooth = kSmoothNone;
+    styleManager.AddStyle(0x11111111, ts);
+
+
+    // Create an Arial 10, and give it a style id of 0x22222222
+    Strcpy(ts.mFamilyNameArray[0], L"Arial");
+    ts.mfSize  = 10;
+    ts.mStyle  = kStyleNormal;
+    ts.mSmooth = kSmoothNone;
+    styleManager.AddStyle(0x22222222, ts);
+
+
+    // Create an Russell Square 20 smoothed, and give it a style id of 0x33333333.
+    // Make it so that Arial Unicode MS is a backup font for this style so that 
+    // Asian characters which are supported by Russell Square can be supported by Arial Unicode MS.
+    Strcpy(ts.mFamilyNameArray[0], L"Russell Square");
+    Strcpy(ts.mFamilyNameArray[1], L"Arial Unicode MS");
+    ts.mfSize  = 20;
+    ts.mStyle  = kStyleNormal;
+    ts.mSmooth = kSmoothEnabled;
+    styleManager.AddStyle(0x33333333, ts);
+
+
+    // Create and register styles from a text description (usually part of game resource).
+    const char* pMultiStyle =
+        "   Helv10(0x00000001){                         \n"
+        "      font-family: \"Helvetica Neue\", arial;  \n"
+        "      font-size: 10px;                         \n"
+        "   }                                           \n"
+        "                                               \n"
+        "   Helv12{                                     \n"
+        "      font-family: \"Helvetica Neue\", arial;  \n"
+        "      font-size: 12px;                         \n"
+        "   }                                           \n"
+        "                                               \n"
+        "   Helv14(0x00000003) : Style1{                \n"
+        "      font-family: \"Helvetica Neue\", arial;  \n"
+        "      font-size: 14px;                         \n"
+        "   }                                           \n";
+
+    char      pStyleName[24][32];
+    uint32_t  pIdArray[24];
+    TextStyle ssCSSArray[24];
+
+    memset(pStyleName, 0, sizeof(pStyleName));
+    memset(pIdArray,   0, sizeof(pIdArray));
+    memset(ssCSSArray, 0, sizeof(ssCSSArray));
+    EA::Text::ParseStyleText(pMultiStyle, pStyleName, pIdArray, ssCSSArray, 24, &styleManager); 
+
+
+    // Retrieve a style based on its id.
+    const TextStyle* pStyle = styleManager.GetStyle(0x22222222);
+    (void)pStyle;
+
+
+    return 0;
+}&nbsp;</p></pre>
+<p>Example of how to use Typesetter: </p>
+<pre><p class="code-example">int main(int, char**)
+{
+    using namespace EA::Text;
+    using namespace EA::StdC;
+
+    // Need to tell Font Fusion how to allocate memory.
+	#ifdef FONTFUSIONMEMMANAGER_H // If using the FontFusion Fw2 package instead of using the regular commercial FontFusion version.
+		FontFusionMemObject::SetAllocatorCallbacks(FF_Alloc, FF_Free, FF_Realloc);
+	#endif
+
+    // Need to tell EAText how to allocate memory. Any ICoreAllocator will do. 
+    CoreAllocatorMalloc coreAllocator;
+    EA::Text::SetAllocator(&coreAllocator);
+
+
+    // Create a GlyphCache for the rest of this app. Usually you create one of 
+    // these on startup and use it for the entire app.
+    // Usually you will create a GlyphCache that is specialized to your 
+    // graphics system. But EAText provides a default memory cache that is 
+    // useful for testing and no-op graphics drivers.
+    GlyphCache* const pGlyphCache = new GlyphCache_Memory;
+    pGlyphCache->Init(8, 0);
+
+
+    // Create a FontServer for the rest of this app. Usually you create one of 
+    // these on startup and use it for the entire app.
+    FontServer fontServer;
+    fontServer.Init();
+    EA::Text::SetFontServer(&fontServer);
+
+    // You will probably want to tell the FontServer what the GlyphCache is if you
+    // are going to be creating bitmapped fonts (BmpFont objects).
+    fontServer.SetDefaultGlyphCache(pGlyphCache);
+
+    // Add a Font directly to the FontServer.
+    OutlineFont* pOutlineFont = new OutlineFont; 
+    pOutlineFont->AddRef();
+    pOutlineFont->Open(gTrueTypeFont, kTrueTypeFontSize);
+    pOutlineFont->SetTransform(16);
+    fontServer.AddFont(pOutlineFont);
+    pOutlineFont->Release();
+
+
+    // Demonstrate LayoutSimple, which is useful for drawing (non-localized) debug text.
+    // Note that we don't use the FontServer for this, but directly use a Font.
+    {
+        // Create a font.
+        OutlineFont font; 
+        font.AddRef(); // We're using a refcounted object on the stack. So AddRef it.
+        font.Open(gTrueTypeFont, kTrueTypeFontSize);
+        font.SetTransform(12);
+
+        // Layout some text.
+        LineLayout lineLayout;
+        LayoutSimple(L"Hello world", 11, 0, 0, &font, lineLayout);
+
+        // Now you would take the LineLayout and write it to your vertex buffer system.
+        // This is much like how the GlyphMesh class does things in the EATextRNA package.
+    }
+
+
+    // Demonstrate the high level layout functionality
+    {
+        Typesetter  ts;
+        LineLayout& lineLayout = ts.GetLineLayout();
+        TextStyle   textStyle;
+
+        Strcpy(textStyle.mFamilyNameArray[1], L"Arial");
+        textStyle.mfSize = 12;
+
+        ts.LayoutLine(L"Hello World", 11, 150, 150, &textStyle);
+        // Use lineLayout. Possibly give it to a GlyphMesh class which reads LineLayout info.
+        // lineLayout has glyph info and metrics info.
+
+        ts.LayoutParagraph(L"Four score and seven years ago our forefathers ...", 11, 150, 150, 200, 200, &textStyle, lineLayout);
+        // Use lineLayout. Possibly give it to a GlyphMesh class which reads LineLayout info.
+    }
+
+
+    return 0;
+}&nbsp;</p></pre>
+<p>Example of how to use Typesetter to draw styled text: </p>
+<pre><p class="code-example">(to-do)</p></pre>
+<p>Example of how to implement a text editor: </p>
+<pre><p class="code-example">(to-do)</p></pre>
+<p>Example of how to make text follow a curve: </p>
+<pre><p class="code-example">#include &lt;EAText/EATextOutlineFont.h&gt;<br>#include &lt;EAText/EATextTypesetter.h&gt;<br>#include &lt;EAText/EATextBaseline.h&gt;<br>
+int main(int, char**)
+{
+    using namespace EA::Text;
+
+<span class="code-example-comment">    // Need to tell Font Fusion how to allocate memory.
+</span>	#ifdef FONTFUSIONMEMMANAGER_H // If using the FontFusion Fw2 package instead of using the regular commercial FontFusion version.
+		FontFusionMemObject::SetAllocatorCallbacks(FF_Alloc, FF_Free, FF_Realloc);
+	#endif
+
+<span class="code-example-comment">    // Need to tell EAText how to allocate memory. Any ICoreAllocator will do. 
+</span>    CoreAllocatorMalloc coreAllocator;
+    EA::Text::SetAllocator(&coreAllocator);
+
+
+<span class="code-example-comment">    // Demonstrate a line of text following a Bezier curve.
+</span>    {
+<span class="code-example-comment">        // Create a font.
+</span>        OutlineFont font; 
+        font.AddRef(); // We're using a refcounted object on the stack. So AddRef it.
+        font.Open(gTrueTypeFont, kTrueTypeFontSize);
+        font.SetTransform(12);
+
+<span class="code-example-comment">        // Layout some text.
+</span>        LineLayout lineLayout;
+        LayoutSimple(L"Hello world", 11, 0, 0, &font, lineLayout);
+
+<span class="code-example-comment">        // Curve the text.
+</span>        Bezier2DIterator  it;
+        BaselineLayout    baselineLayout;
+        GlyphLayoutInfoEx gliArray[16];
+
+        it.MakeSemicircle(Point(0, 0), 100);
+        baselineLayout.FollowBaseline(&lineLayout, gliArray, &it, 0.f, 0.f, kHALeft, kDirectionLTR);
+
+<span class="code-example-comment">        // Now you would take the lineLayout and gliArray and write it to your 
+        // vertex buffer system. The EATextRNA package has an example of this.
+</span>    }
+
+    return 0;
+}&nbsp;</p></pre>
+<p>Example of how to do Unicode compression: </p>
+<pre><p class="code-example">#include "Demo.h"
+#include &lt;EAText/EATextCompression.h&gt;<br>#include &lt;EASTL/string.h&gt;<br>
+
+int main(int, char**)
+{
+    using namespace EA::Text;
+
+    {
+        // Demo SCSU compression
+        eastl::string16 sOriginal(L"abcdefg xyzpdq four score and seven years ago save the cheerleader save the world");
+        eastl::string16 sCompressed;
+        eastl::string16 sDecompressed;
+
+        const uint32_t compressedSize = CompressSCSU(sOriginal.data(), (uint32_t)sOriginal.length(), NULL, 0);
+        sCompressed.resize(compressedSize);
+        CompressSCSU(sOriginal.data(), (uint32_t)sOriginal.length(), &sCompressed[0], sCompressed.length());
+
+        sDecompressed.resize(sOriginal.size());
+        DecompressSCSU(sCompressed.data(), (uint32_t)sCompressed.length(), &sDecompressed[0], (uint32_t)sDecompressed.length());
+    }
+
+    {
+        // Demo BOCU compression
+        eastl::string16 sOriginal(L"abcdefg xyzpdq four score and seven years ago save the cheerleader save the world");
+        eastl::string16 sCompressed;
+        eastl::string16 sDecompressed;
+
+        const uint32_t compressedSize = CompressBOCU(sOriginal.data(), (uint32_t)sOriginal.length(), NULL, 0);
+        sCompressed.resize(compressedSize);
+        CompressBOCU(sOriginal.data(), (uint32_t)sOriginal.length(), &sCompressed[0], sCompressed.length());
+
+        sDecompressed.resize(sOriginal.size());
+        DecompressBOCU(sCompressed.data(), (uint32_t)sCompressed.length(), &sDecompressed[0], (uint32_t)sDecompressed.length());
+    }
+
+    return 0;
+}
+&nbsp;</p>
+</pre>
+<pre>&nbsp;
+</pre>
+<p></p>
+<hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

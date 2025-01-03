@@ -1,0 +1,17 @@
+///////////////////////////////////////////////////////////////////////////////
+// dllinfo.h
+//
+// Copyright (c) 2007, Electronic Arts. All Rights Reserved.
+// By Paul Pedriana
+///////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef PPMALLOC_INTERNAL_DLLINFO_H
+#define PPMALLOC_INTERNAL_DLLINFO_H
+
+
+#include <PPMalloc/internal/config.h>
+
+
+#endif
+

@@ -1,0 +1,29 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="EAAssertBuildType" value="Library"/>
+	<property name="EAAssertBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<!-- EAAssert libraries location. -->
+		<fileset name="package.EAAssert.libs">
+			<includes name="${package.EAAssert.builddir}/${config}/lib/${lib-prefix}EAAssert${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<property name="package.EAAssert.includedirs">
+		${package.EAAssert.dir}/include
+	</property>
+	
+	<publicdata packagename="EAAssert" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="EAAssert" buildtype="${EAAssertBuildType}">
+				<includedirs>
+					${package.EAAssert.includedirs}
+				</includedirs>
+			</module>
+
+		</runtime>
+	</publicdata>
+
+</project>

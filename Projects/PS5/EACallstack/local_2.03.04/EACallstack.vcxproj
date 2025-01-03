@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AB7D3309-B630-24BC-81D8-5FE5978D7406}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>EACallstack</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include";"..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SCEDBG_ENABLED=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\libEACallstack.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\EACallstack" mkdir "ps5-clang-debug\build\EACallstack" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\EACallstack\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\EACallstack\v.tlog\</TLogLocation>
+    <TargetName>libEACallstack</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include";"..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include";"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SCEDBG_ENABLED=0;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\libEACallstack.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\EACallstack" mkdir "ps5-clang-opt\build\EACallstack" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\EACallstack\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\EACallstack\v.tlog\</TLogLocation>
+    <TargetName>libEACallstack</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\EACallstack.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EAAddressRep.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EACallstack.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EACallstackRecorder.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EADasm.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\FAQ.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\PS3DumpFile.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Allocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Context.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\DWARF3File.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EAAddressRep.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EACallstack.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EACallstackRecorder.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EADasm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EAModule.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EASymbolUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\ELFFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\IAddressRep.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\MapFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\PDBFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Apple\EACallstackApple.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\CabReader.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\DemangleGCC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EACallstackUtils.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EADasmARM.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EASTLCoreAllocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\ELF.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Intrin.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Minidump.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Win32Runner.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\scripts\EACallstack_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\AddressRepCache.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\AddressRepCache.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\AddressRepCache.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\AddressRepLookupSet.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\AddressRepLookupSet.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\AddressRepLookupSet.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\Allocator.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\Allocator.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\Allocator.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\DWARF3File.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\DWARF3File.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\DWARF3File.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EAAddressRep.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EAAddressRep.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EAAddressRep.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstack.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EACallstack.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EACallstack.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstackRecorder.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EACallstackRecorder.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EACallstackRecorder.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstackUtils.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EACallstackUtils.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EACallstackUtils.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasm.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EADasm.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EADasm.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmARM.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EADasmARM.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EADasmARM.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmARMThumb.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EADasmARMThumb.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EADasmARMThumb.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmPowerPC.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EADasmPowerPC.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EADasmPowerPC.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmx86.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EADasmx86.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EADasmx86.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EAModule.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EAModule.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EAModule.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EASymbolUtil.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\EASymbolUtil.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\EASymbolUtil.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\ELFFile.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\ELFFile.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\ELFFile.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\MapFile.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\MapFile.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\MapFile.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\PDBFile.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\PDBFile.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\PDBFile.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\cxa_demangle.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\internal\cxa_demangle.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\internal\cxa_demangle.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\DemangleGCC.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\internal\DemangleGCC.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\internal\DemangleGCC.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\Minidump.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\EACallstack\internal\Minidump.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\EACallstack\internal\Minidump.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Apple\EACallstack_Apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Apple\EAModule_Apple.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\null\EACallstack_null.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\null\EAModule_null.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\nx\EACallstack_nx.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\nx\EAModule_nx.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Sony\EACallstack_Sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Sony\EAModule_Sony.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_execinfo.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_unwind.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EAModule_unix.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win32\EACallstack_Win32.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win32\EAModule_Win32.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win64\EACallstack_Win64.cpp">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">TRUE</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

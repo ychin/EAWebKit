@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/InputBinding/EAWebKitPolarRegion.h>
 #include <internal/include/InputBinding/EAWebKitUtils.h>
 #include <EAWebKit/EAWebkitAllocator.h>
-#include <eastl/fixed_vector.h>
+#include <EASTL/fixed_vector.h>
 #include <platform/graphics/IntPoint.h>
 #include <platform/graphics/FloatPoint.h>
 #include <platform/graphics/IntRect.h>

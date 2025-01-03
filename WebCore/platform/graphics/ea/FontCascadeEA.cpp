@@ -36,7 +36,7 @@
 #include <EAWebKit/EAWebKitTextInterface.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <EASTL/fixed_vector.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <wtf/MathExtras.h>
 #include "PlatformContextCairo.h"
 #include "TextRun.h"
@@ -542,6 +542,58 @@ void FontCascade::drawGlyphs(GraphicsContext* pGraphicsContext, const Font* pSim
     pFont->EndDraw();    
 }
 
+/*
+ * Webkit splits text fields into textRun for rendering. Simply textRun is an individual chunk of text rendered at one time as single object.
+ * For RTL languages textRun's with symbols below located at the beginning of textRun or at the end have to be moved into the end or at the beginning
+ * of textRun for correct representation. List of symbols may be updated if needed.
+ */
+__inline bool needSwap(const UChar symbol)
+{
+    if (symbol == ' ' ||
+        symbol == '[' ||
+        symbol == ']' ||
+        symbol == '{' ||
+        symbol == '}' ||
+        symbol == '(' ||
+        symbol == ')' ||
+        symbol == '.' ||
+        symbol == '!' ||
+        symbol == '-' ||
+        symbol == ',' ||
+        symbol == ';' ||
+        symbol == ':' ||
+        symbol == '\'' ||
+        symbol == '\"' ||
+        symbol == 160)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/*
+ * For paired symbols like brackets which not exists in RTL languages and has direction we need to swap symbols to opposite direction
+ */
+__inline String replaceIfNeeded(const UChar symbol)
+{
+    if (symbol == '[')
+        return EA_CHAR16("]");
+    if (symbol == ']')
+        return EA_CHAR16("[");
+    if (symbol == '{')
+        return EA_CHAR16("}");
+    if (symbol == '}')
+        return EA_CHAR16("{");
+    if (symbol == '(')
+        return EA_CHAR16(")");
+    if (symbol == ')')
+        return EA_CHAR16("(");
+    return String(&symbol, 1);
+}
+
 float FontCascade::drawComplexText(GraphicsContext* ctx, const TextRun& run, const FloatPoint& point, int from, int to) const
 {
     EA::WebKit::ITextSystem *pTextSystem = EA::WebKit::GetTextSystem();
@@ -575,6 +627,49 @@ float FontCascade::drawComplexText(GraphicsContext* ctx, const TextRun& run, con
     }
     else
         pTextRun = run.characters16();
+/*
+ * Updating textRun for RTL languages.
+ */
+//Moving declarations to the front since String not making copy of byte arrays representing current string when we calling .characters16() method.
+    String reorderingEndToFront;
+    String reorderingFrontToEnd;
+    if (run.rtl() && to - from > 1)
+    {
+        int posSource;
+        int posDest = from;
+/*
+ * First step. Moving suffix from the back to the front if needed. If we have directional brackets here also changing their direction.
+ */
+        String _character;
+        reorderingEndToFront = String(pTextRun, to);
+        if (needSwap(pTextRun[to - 1]))
+        {
+            do
+            {
+                _character = replaceIfNeeded(reorderingEndToFront[to - 1]);
+                reorderingEndToFront.remove(to - 1);
+                reorderingEndToFront.insert(_character, posDest++);
+            } while (needSwap(reorderingEndToFront[to - 1]) && posDest < to);
+            pTextRun = reorderingEndToFront.characters16();
+        }
+/*
+ * Second step. Moving prefix from the front (where it was in original textRun and keep piece that we just moved in first step) to the back if needed.
+ * If we have directional brackets here also changing their direction.
+ */
+        if (needSwap(pTextRun[posDest]) && posDest < to)
+        {
+            reorderingFrontToEnd = String(pTextRun, to);
+            posSource = posDest;
+            posDest = to - 1;
+            do
+            {
+                _character = replaceIfNeeded(reorderingFrontToEnd[posSource]);
+                reorderingFrontToEnd.remove(posSource);
+                reorderingFrontToEnd.insert(_character, posDest--);
+            } while (needSwap(reorderingFrontToEnd[posSource]));
+            pTextRun = reorderingFrontToEnd.characters16();
+        }
+    }
 
     const EA::WebKit::Char* pText = (const EA::WebKit::Char*) (pTextRun + from); 
     EA::WebKit::TextDrawInfo dInfo;

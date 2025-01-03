@@ -1,0 +1,3 @@
+source/dirtysock/ps4/dirtyeventmanagerps4.cpp
+source/dirtysock/netconnlocaluser.cpp
+source/dirtysock/ps4/netconnps4.cpp

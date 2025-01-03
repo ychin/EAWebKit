@@ -57,14 +57,14 @@ public:
 
 
     // Overlay event handling (mostly input)
-    void OverlayBegin(void);
-	void OverlayEnd(void);
-    void OnKeyboardEvent(const EA::WebKit::KeyboardEvent& keyboardEvent);
-	void OnMouseMoveEvent(const EA::WebKit::MouseMoveEvent& mouseMoveEvent);
-	void OnMouseButtonEvent(const EA::WebKit::MouseButtonEvent& mouseButtonEvent);
-	void OnMouseWheelEvent(const EA::WebKit::MouseWheelEvent& mouseWheelEvent);
-	bool OnButtonEvent(const EA::WebKit::ButtonEvent& buttonEvent);     
-	void OnFocusChangeEvent(bool hasFocus);               
+    void OverlayBegin(void) override;
+	void OverlayEnd(void) override;
+    void OnKeyboardEvent(const EA::WebKit::KeyboardEvent& keyboardEvent) override;
+	void OnMouseMoveEvent(const EA::WebKit::MouseMoveEvent& mouseMoveEvent) override;
+	void OnMouseButtonEvent(const EA::WebKit::MouseButtonEvent& mouseButtonEvent) override;
+	void OnMouseWheelEvent(const EA::WebKit::MouseWheelEvent& mouseWheelEvent) override;
+	bool OnButtonEvent(const EA::WebKit::ButtonEvent& buttonEvent) override;
+	void OnFocusChangeEvent(bool hasFocus) override;
 
 private:
     // ScrollableArea
@@ -78,7 +78,7 @@ private:
     virtual bool isScrollCornerVisible() const override { return false; }
     virtual IntRect scrollCornerRect() const override { return IntRect(); }
     virtual Scrollbar* verticalScrollbar() const override { return m_scrollBar.get(); }
-	virtual IntSize visibleSize() const;
+	virtual IntSize visibleSize() const override;
     virtual IntSize contentsSize() const override;
     virtual IntRect scrollableAreaBoundingBox() const override;
     virtual bool updatesScrollLayerPositionOnMainThread() const override { return true; }

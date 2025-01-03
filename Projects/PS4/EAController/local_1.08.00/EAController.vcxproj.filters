@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html">
+      <UniqueIdentifier>{19D303E2-3E96-BED5-B277-E2BAE4A46210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html\img">
+      <UniqueIdentifier>{700DABE3-E392-CFFB-DD19-FB49EF92BF68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts">
+      <UniqueIdentifier>{EBD83D84-3586-9BAD-7398-E0ED3BA1AB5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight">
+      <UniqueIdentifier>{64B4BEFF-B21F-0760-DEF9-0D5E85B67231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight\languages">
+      <UniqueIdentifier>{4EE6F5F4-39A7-2A56-61D1-86E244DAE313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\style_sheet">
+      <UniqueIdentifier>{92502084-1DA1-F0D7-29E7-AAAE542CDB22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAController">
+      <UniqueIdentifier>{29ED5A17-DA45-6C2B-668D-B63BB2E439DD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAController\internal">
+      <UniqueIdentifier>{84E3C02C-5FE6-E021-BCEB-69B586F3242B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\kettle">
+      <UniqueIdentifier>{A64E0B69-AB4E-2222-2B71-9FE6FEA3D276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\kettle\EAController">
+      <UniqueIdentifier>{B414D30A-392B-3A5C-BB0D-E2BCE32B29AF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\sony">
+      <UniqueIdentifier>{F717CD10-B949-1642-0FA7-88DCD085CD13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\sony\EAController">
+      <UniqueIdentifier>{F029AB73-01FE-0573-466D-9D345944E882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\sony">
+      <UniqueIdentifier>{62FE81E2-52FE-3952-D332-729CCB63B23C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\changelog.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\img\logo.png">
+      <Filter>doc\html\img</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\index.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\toc.js">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\index.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\highlight.js">
+      <Filter>doc\scripts\highlight</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\1c.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\axapta.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\dynamic.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\javascript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rib.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rsl.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\smalltalk.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\sql.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\static.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\vbscript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\www.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\style_sheet\style_sheet.css">
+      <Filter>doc\style_sheet</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\EAController.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\EAController_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\EAController.h">
+      <Filter>include\EAController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\internal\Config.h">
+      <Filter>include\EAController\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\version.h">
+      <Filter>include\EAController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle\EAController\KettleController.h">
+      <Filter>include\kettle\EAController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony\EAController\SonyController.h">
+      <Filter>include\sony\EAController</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\source\sony\SonyController.cpp">
+      <Filter>source\sony</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>SmallBlockAllocator</title>
+<style type="text/css">
+<!--
+.smallCode {
+    font-family: "Courier New", Courier, mono;
+    font-size: x-small;
+}
+.Code {
+    font-family: "Courier New", Courier, mono;
+    font-size: small;
+}
+.style3 {color: #999999}
+-->
+</style>
+</head>
+
+<body>
+<h1>SmallBlockAllocator</h1>
+<p><em>SmallBlockAllocator is a candidate alternative or replacement for SmallObjectAllocator. Don't worry; there's nothing wrong with SmallObjectAllocator. However, SmallBlockAllocator offers a slightly different approach which you might find works better for you. Feel free to try out this SmallBlockAllocator. </em></p>
+<h3><a name="Content">Contents</a></h3>
+<p>
+<a href="#Overview">Overview</a> <br>
+<a href="#Features">Features</a><br>
+<a href="#Differences_From_CMemPoolMgr">Differences from CMemPoolMgr</a><br>
+<a href="#Details">Details</a><br>
+<a href="#Is_this_allocator_for_you">Is this allocator for you?</a><br>
+<a href="#TuningAdvice">Tuning advice</a><br>
+<a href="#ExampleUsage">Example Usage</a><br>
+</p>
+<h3><a name="Overview">Overview</a></h3>
+<p>
+SmallBlockAllocator implements a zero external fragmentation memory heap designed as a general solution for the fragmentation issues caused by the thousands of small allocations in many of our games. It is very fast compared to general allocators. In terms of memory efficiency it is fantastic for small allocations but memory usage efficiency goes down as allocation size goes up. To control this, the maximum allocation size that will be handled by a SmallBlockAllocator is user configurable &hellip; thus the user can choose the balance between eliminating external fragmentation and memory usage efficiency for larger allocations.
+</p>
+<p>
+This technology (originally called CMemPoolMgr) was developed for Superman and used on PS2, XBox, and X360. CMemPoolMgr was subsequently used on PS3 and X360 by Tiger, NASCAR, and NFL Tour to remedy various fragmentation issues. Details on differences between SmallBlockAllocator and the original CMemPoolMgr are detailed <a href="#Differences_From_CMemPoolMgr">below</a>.
+More recently it has shipped in Gen 4 Madden, Gen 3 Madden, NCAA Football, and EASports MMA.
+</p>
+<h3><a name="Features">Features</a></h3>
+<ul>
+  <li> Initialization Parameters that affect the size &amp; alignment of allocations the system will handle and the efficiency of the system allow the users to get up and running quickly using default values or manually configure each SmallBlockAllocator to best suite their needs &hellip; </li>
+  <li> mnCoreBlocksSize &ndash; specifies size of core blocks (aka pages). When an individual pool grows or shrinks it does so one core block at a time.</li>
+  <li> mnInitCoreBlockCount &ndash; specifies the number of core blocks that will be allocated/reserved up front using the user specified allocation callback. </li>
+  <li> mnGrowCoreBlockCount &ndash; controls how many additional core blocks will be allocated at a time if mnInitCoreBlockCount is not enough and the allocator needs more memory.</li>
+  <li> mnMinAlignment &ndash; lets the user specify the minimum alignment that all allocations will have. The default = 8 but 4 is probably a better value for anyone using this allocator to handle massive quantities of small allocations.</li>
+  <li> mnMaxAlignment &ndash; lets the user specify the maximum alignment that needs to be supported, requests for memory with larger alignments will return NULL (default = 64).</li>
+  <li> mnMaxAllocSize &ndash; lets the user define the maximum allocation size the system should handle, requests for larger sizes will return NULL. If you want all allocations up to the maximum supported size to be handled just set this option as 0xffff.</li>
+  <li> mnCustomPoolSize &ndash; lets the user explicitly define the pool sizes to be created if desired. This is not really recommended though as the best memory efficiency is gained from letting all pools share pages of the same size (the default behavior).</li>
+  <li> User specified allocation callbacks for core memory management</li>
+  <li> User specified debug allocation context allows users to recognize allocations for &lsquo;debug&rsquo; type features (such as tracking file/line and auditing) and fund them from a separate heap if desired.</li>
+  <li> Memory dumps. The DumpPools method writes detailed information on the page pool and all of the individual pools along with stats for the whole system to a user specified callback.</li>
+  <li> Reporting supported via ReportBegin/ReportNext/ReportEnd methods &hellip; can be used to easily implement customized memory dumps.</li>
+  <li> File, line, and name tracking per allocation. This data is included in memory reports/dumps when enabled.</li>
+  <li> Memory auditing support (for detecting memory leaks)</li>
+  <li> User Hooks for various events (Alloc, Free, Grow, Shrink, etc).</li>
+  <li> High water marks and other statistics tracking</li>
+  <li> FreeSafe method returns false if the memory to be freed does not belong to this SmallBlockAllocator &hellip; this makes it easy to implement an allocator which uses a general allocator for larger allocations and SmallBlockAllocator for smaller ones (if soa.FreeSafe returns false, free to the general allocator).</li>
+  <li> <a href="SmallBlockAllocatorCalculator.html">HTML based Calculator</a> for quickly validating potential parameters and previewing pool layout based on those parameters.</li>
+</ul>
+<h3><a name="Differences_From_CMemPoolMgr">Differences from CMemPoolMgr</a></h3>
+<p>Much of the change from CMemPoolMgr is actually cosmetic ... various terms and names have been updated to match conventions and standards existing in the PPMalloc package and everything has moved into the EA::Allocator namespace. These are most of the other changes/additions that have been made:</p>
+<ul>
+    <li> No allocation forwarding &ndash; We now leave it to the user to handle forwarding allocations that can't be handled by the SmallBlockAllocator. This is to be consistent with other PPMalloc allocators and to give the user more control.</li>
+    <li> Better alignment support &ndash; CMemPoolMgr could only handle alignment requests if it could find a chunk that was implicitly aligned as requested (otherwise it would forward to the general allocator), now we can return a pointer to within a chunk if needed.</li>
+    <li> Hooks support added &ndash; see SetHookFunction and EA_SOA_HOOKS_ENABLED</li>
+    <li> Debug features are now controlled by defines &ndash; See EA_SOA_EXTENSIONS_ENABLED and EA_SOA_HOOKS_ENABLED (these are enabled by default for debug builds, if you don't want the features disable them to improve performance of your debug build)</li>
+    <li> The 'Monitor' class is gone &ndash; This provided an awkward means for the user to override debug functionality and reporting ... debug functionality is now handled internally and reporting uses the cleaner PPMalloc ReportBegin/ReportNext/ReportEnd style.</li>
+    <li> If EA_SOA_EXTENSIONS_ENABLED, debug builds will now track requested size for each allocation and this information will be available in reports/dumps.</li>
+    <li> Default pool sizes improvement &ndash; We no longer require/desire the user to specify the number of pools (though this is still an available option), instead we automatically decide on the number of pools based on the other initialization parameters. This simplifies the required parameters a little and allows us to choose the optimal number/sizes for pools.
+        Previously we assumed a pool per multiple of mnMinAlignment but at larger sizes some of these pools are redundant/wasteful so now we consolidate them.
+        For example, with a core block size of 2048 we will not create a pool for 136 byte allocations and 144 byte allocations because for both cases we get 14 allocations per core block. Since we fit 14 allocations per core block in either case we just consolidate them into one pool (chunk size=144).</li>
+    <li> <a href="#FreeOptimization">Free Optimization</a> &ndash; borrowed from Paul Pedriana's SmallObjectAllocator, we now support faster mask based freeing if mnMaxAlignment == mnCoreBlockSize</li>
+    <li> Realloc added</li>
+    <li> Custom Pool sizes &ndash; The user can optionally explicitly specify the number and size for each pool rather than letting the system decide</li>
+    <li> User can specify assert & trace methods &ndash; Similar to other PPMalloc tech</li>
+    <li> Unit test was added</li>
+    <li> Later versions of CMemPoolMgr had a SetAssertOnGrow method added to allow the users to get an assert when additional coreblocks are requested. This is removed but the user can assert on the same condition by installing a hook and asserting when the hook function is called with type kHookTypeGrowHeap.</li>
+</ul>
+<h3><a name="Details">Details</a></h3>
+<p>The system is implemented as a series of memory pools for various allocation sizes which are all funded by another shared memory pool (called the Page Pool). When an individual pool needs more memory it will take a core block from the Page Pool and divide it up into chunks of the appropriate size (for example, if the pool manages 16 byte allocations, it will divide the core block into as many 16 byte chunks as possible). When the Page Pool itself needs memory it will first attempt to reclaim core blocks that are no longer in use from the individual pools (the pool implementation keeps track of free chunks per core block so that un-used core blocks can be relinquished). The system will only request additional memory when all core blocks have been assigned to the individual pools and none are available for re-use &hellip; in this case an additional block of core blocks will be requested from a user specified callback.</p>
+<p>The diagram below depicts the memory layout of a SmallBlockAllocator after some usage given that the following hypothetical parameters were used to initialize the system (assume those not listed are set to default values):</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <th>Variable</th>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td>mnCoreBlockSize</td>
+      <td>128</td>
+      <td>Each core block will be 128 bytes. After the 32 byte header, this perfectly fits 12 8 byte allocs, 6 16 byte allocs, 4 24 byte allocs, or 3 32 byte allocs per block. For 40 byte allocs we can fit 2 per core block but there is 16 bytes of waste.</td>
+    </tr>
+    <tr>
+      <td>mnInitCoreBlockCount</td>
+      <td>9</td>
+      <td>We&rsquo;ll start with 9 core blocks (128 bytes each as specified by mnCoreBlockSize).</td>
+    </tr>
+    <tr>
+      <td>mnGrowCoreBlockCount</td>
+      <td>3</td>
+      <td>If we need more core blocks we&rsquo;ll allocate 3 at a time. This only comes into play if mnInitCoreBlockCount is not big enough to handle your high water mark.</td>
+    </tr>
+    <tr>
+      <td>mnMinAlignment</td>
+      <td>8</td>
+      <td>All allocations will be at least 8 byte aligned.</td>
+    </tr>
+    <tr>
+      <td>mnMaxAlignment</td>
+      <td>16</td>
+      <td>Allocations which need alignment more than 16 are not supported.</td>
+    </tr>
+    <tr>
+      <td>mnMaxAllocSize</td>
+      <td>40</td>
+      <td>Only handle allocations &lt;=40 bytes.</td>
+    </tr>
+  </table>
+  <p><img src="images/SmallBlockAllocator.png" width="622" height="645"></p>
+</blockquote>
+<p>See EASmallBlockAllocator.h and the <a href="#TuningAdvice">Tuning Advice</a> section below for more details on the available parameters and how to tune them.</p>
+<p>
+This example is somewhat contrived since users will generally want mnCoreBlockSize to be something larger than 128, however it serves to demonstrate how memory usage efficiency decreases as allocation size goes up relative to mnCoreBlockSize.
+For example, for 32 bytes of overhead (the core block header) we can fit 12 8 byte allocations so the overhead per 8 byte allocation is 32/12 = 2.666 bytes per allocation.
+However, for 40 byte allocations in this same system our overhead is 24 bytes per allocation! That's (32 (core block header) + 16 (wasted bytes due to 40 bytes not fitting perfectly into core block size)) / 2 (number of 40 byte allocations per core block).
+</p>
+<p>
+If you actually wanted to store 40 byte allocations you could get much better efficiency by bumping up your mnCoreBlockSize ... at 2048 you can fit 50 40 byte allocations per core block while still having 48 bytes of overhead so you get 0.96 bytes of overhead per 40 byte allocation. However, you also don't want to make your core block size too large ... see <a href="#TuningAdvice">'Tuning Advice'</a> for more details on deciding core block sizes and other considerations.
+</p>
+<h3><a name="Is_this_allocator_for_you">Is this allocator for you?</a></h3>
+<h4>Compared to dynamicsba (from MemoryFramework)</h4>
+<p>This allocator is very similar in terms of algorithm employed. However, I've had very favorable results using EASmallBlockAllocator in its place. In one extreme case (involving an SBA handling many thousands of allocations) switching saved us around 2 megs.</p>
+<p>I think the key reasons for these gains were:</p>
+<ul>
+    <li>SmallBlockAllocator spends a few cycles to attempt to maximize the chances that pages will be freed and re-used (less internal fragmentation causing pools to hold on to excess pages)</li>
+    <li>SmallBlockAllocator has greater support for satisfying various alignment requests (letting more small blocks fit in)</li>
+    <li>SmallBlockAllocator has optimizations to avoid redundant page sizes for better memory re-use and better memory efficiency when handling larger block sizes</li>
+    <li>Extensive memory reports available that make it easy to see your usage and tweak your configuration to maximize memory efficiency</li>
+</ul>
+<h4>Compared to independent pool SBAs (such as EASmallObjectAllocator from ppmalloc)</h4>
+<p>Allocators with independently tuned pool sizes are harder to maintain because you have to monitor and maintain a set of parameters for each pool size instead of for the whole system. Worse, there is no sharing of pages between pools so any spike in allocations of a particular size will lead to that memory being foever relegated to handling that allocation size. This can lead to extreme internal fragmentation which EASmallBlockAllocator is much less vulnerable to.</p>
+<h4>Compared to EA::Allocator::GeneralAllocator (aka PPMalloc aka rw::core::GeneralAllocator)</h4>
+<p>SmallBlockAllocator is less memory efficient for allocations of large sizes, therefore you should probably continue to use GeneralAllocator (or PPMalloc or whatever) for large size allocations. SmallBlockAllocator however offers much better memory usage efficiency for small blocks For example, one SmallBlockAllocator in superman that managed &gt;28,000 allocations had an average 1.75 bytes of overhead per allocation (as compared with 4 bytes per alloc for GeneralAllocator). This efficiency is achieved since there is no per chunk overhead (the overhead comes from core block headers and waste that can occur from chunk sizes not dividing evenly into core blocks).</p>
+<p>In terms of performance, SmallBlockAllocator is faster (todo: get updated performance metrics from SmallBlockAllocator and GeneralAllocator). With SmallBlockAllocator, allocating is faster and freeing is comparable as long as mnInitCoreBlockCount is large enough to handle your worse-case (freeing may be much faster depending on how the SmallBlockAllocator is configured). Additionally, SmallBlockAllocator does not suffer from performance dips due to fragmentation which may occur in a very fragmented GeneralAllocator heap.</p>
+<p>The main benefit of SmallBlockAllocator vs. GeneralAllocator is that SmallBlockAllocator will eliminate external fragmentation issues due to smaller allocations. If you&rsquo;re having fragmentation problems, consider using SmallBlockAllocator for the small allocations.</p>
+<h4>Compared to additional heaps as a solution to fragmentation</h4>
+<p>Some of our teams have turned to additional heaps as a solution to fragmentation. Examples are creating an STL heap for STL allocations to keep them from fragmenting the main heap. Similar things have been done for Strings. In all cases I&rsquo;ve examined, switching the problem heap to use SmallBlockAllocator for small allocations has proven a better solution than moving a subset of the allocations into another heap.</p>
+<ul>
+  <li>Usually the allocations being moved into the new heap are small so you get better memory usage efficiency with SmallBlockAllocator over a general allocator. </li>
+  <li>Usually the new heap still has fragmentation problems, they just take longer to actually cause a failure or cost extra memory for padding in the heap (or both). SmallBlockAllocator actually eliminates the external fragmentation. </li>
+  <li>Usually it&rsquo;s a set of related allocations being moved into a new heap which is usually just a subset of the problem allocations in the original heap. By switching the original heap to use a SmallBlockAllocator you can address the fragmenting of all small allocations in the heap rather than just a subset that&rsquo;s easy to separate out. </li>
+  <li>Maintenance should be easier. Less heaps means less maintenance. </li>
+</ul>
+<h4>Compared to creating fixed allocators for many small allocation types</h4>
+<p>Often fixed allocators are created for various individual object types. This may be done for performance, to fix fragmentation, or both. In terms of performance, fixed allocators will always beat SmallBlockAllocator (since they don&rsquo;t have the overhead required to support shrinking, finding which chunk to free from, etc). If you are using fixed allocators already and performance is a critical factor, keep using them. However, keep in mind that SmallBlockAllocator does perform well compared to GeneralAllocator &hellip; so if you&rsquo;re currently using GeneralAllocator (or some other general allocator) and are looking to address fragmentation (or if you&rsquo;re using multiple fixed allocators where performance isn&rsquo;t more important than ease of maintenance) consider these advantages SmallBlockAllocator offers over creating fixed allocators for various object types:</p>
+<p>If you&rsquo;re making a fixed allocator per object type or an array of fixed allocators then you will have to track a high water mark per allocator and maintain the pool sizes for each (or risk having wasted space allocated for various pools that may no longer need it). SmallBlockAllocator is significantly easier to maintain. Using a few parameters you can tune SmallBlockAllocator to handle any set of allocation sizes and alignment requirements. From there you only have one high water mark that you need to maintain (if you want to keep the Page Pool from growing) since all of the individual pools are funded by a single page pool. <br>
+  If you have (or are considering creating) fixed allocators for each of various object types then you&rsquo;re looking at using enough memory to handle the worse-case for each of those object types simultaneously. SmallBlockAllocator only needs enough memory to handle the worse case total pages required by the underlying pools (often significantly less than the sum of the worse case for each of the pools). Additionally, the worse case for each pool is dictated by the number of simultaneously outstanding allocations of the size managed by that pool (often significantly less than the sum of the worse case for each object type of a given size). <br>
+  SmallBlockAllocator offers leak detection (I don&rsquo;t think any of our fixed allocators have this). <br>
+  SmallBlockAllocator can track file, line, and allocname per allocation (if provided) <br>
+  In summary, if absolute fastest performance is an issue, fixed allocators may be a good choice, otherwise consider SmallBlockAllocator.</p>
+<h4>Compared to DOGMA (eadogma)</h4>
+<p>SmallBlockAllocator offers several memory usage efficiencies that DOGMA does not have:</p>
+<ul>
+  <li>With DOGMA, once a given chunk of memory is freed it is added to a free list of chunks of that size. If no more chunks of that size are ever requested it will never be used again and never be freed back to the underlying heap. This can lead to excess waste if there are many (or a few large) chunk sizes that are rarely used. SmallBlockAllocator can identify completely freed core blocks for a given chunks size and re-use that core block for chunks of a new size. </li>
+  <li>Related to above, DOGMA can never re-use memory designated for chunks of one size for chunks of another. Since SmallBlockAllocator tracks free chunks per core block, it can recognize when an entire core block of chunks for a given size has become freed and re-assign that core block to hold chunks of a new size if needed. </li>
+  <li>Also related to the above, DOGMA pools only grow, they can never shrink. Therefore, the memory used by a DOGMA allocator will (over time) equal the sum of the worst case memory needed for pools of EVERY size. Because SmallBlockAllocator can shrink pools with unused core blocks to feed other pools, your worst case total memory usage should be much less (especially when a variety of allocation sizes are being used). </li>
+  <li>DOGMA requires you to supply the allocation size when calling Free while SmallBlockAllocator does not. This is not a problem in some cases, however, it will be much easier to use SmallBlockAllocator in cases where it&rsquo;s not optimal and/or convenient to have the user keep track of allocation size. </li>
+</ul>
+<p>DOGMA has these advantages over SmallBlockAllocator:</p>
+<ul>
+  <li>DOGMA Alloc and Free methods are likely faster than SmallBlockAllocator Alloc and Free since SmallBlockAllocator has some extra overhead associated with keeping track of a free list per page and the current page to use per pool for allocations. This is not to say that SmallBlockAllocator is not fast but DOGMA should be faster.</li>
+  <li>Additionally, DOGMA does not suffer from the potential per page waste issue with larger allocation sizes mentioned above for SmallBlockAllocator. HOWEVER, DOGMA has a different issue with large allocations. Due to the fact that once a chunk is designated for a given size it is retained for future allocations of that size it is quite possible to have many large chunks pooled in a DOGMA pool that are never going to be used again or rarely used &hellip; this led to serious waste on Superman. In contrast, SmallBlockAllocator might have some waste per page while they are in use but when they are no longer in use they will be freed back to the page pool and re-used for whatever chunk size is needed.</li>
+</ul>
+<h3><a name="TuningAdvice">Tuning advice</a></h3>
+<p>The default parameters should be a good starting point!</p>
+<p>The main reasons to tune the params are if you want to increase/decrease the number and sizes of allocations handled by the allocator or you want absolutely maximimze your memory usage efficiency based on your observed usage.
+The main tools you have are tweaking mnMinAlignment to 4 (to create more pools but have less potential unused space per allocation) and/or tweaking mnCoreBlockSize (to increase or decrease the size of allocations supported and/or the number of allocations per core block).
+See the <a href="SmallBlockAllocatorCalculator.html">HTML based Calculator</a> for quickly validating potential parameters and previewing pool layout based on those parameters.
+Additionally, the comments in EASmallBlockAllocator.h give important details about each tunable parameter and their ramifications. When tuning always take advantage of the heap reporting functions to see how your changes affect memory usage efficiency and numbers of allocations managed by pools. Some additional things to bear in mind:</p>
+<h4>mnCoreBlockSize</h4>
+<p>
+Size of CoreBlocks (when an individual pool grows or shrinks it does so one 'CoreBlock' at a time). It must be a multiple of mnMaxAlignment.
+A reasonable value would be SmallBlockAllocator::CoreBlockOverhead() + N times the max allocation size you want to manage where
+N is somewhere between 1-4. Larger core block sizes mean more allocations fit per core block (better memory efficiency) but it
+also means more memory is required to fund a pool, even a pool with a single allocation (wasting the rest of that core block until
+that alloc is freed or more allocations of that size come in).
+</p>
+<p>
+In other words, a core block size of 262144 would let you hold 1023 256 byte allocations with the 32 byte header + 224 bytes of waste. That's an overhead of ~0.25 bytes per allocation ((32+224)/1023). That sounds great but if you only make 1 256 byte allocation you're actually reserving that whole 262144 bytes for additional 256 byte allocations that you will never make. Not good.
+On the other extreme you could make your core block size 512. If you're supporting 256 byte allocations, you'll have 256 bytes of waste per 256 byte allocation ... BAD! That's because you can only fit one 256 byte allocation per 512 core block due to the 32 byte overhead.
+Pick something big enough that you're comfortable with the per allocation efficiency but not so big that a ton of memory will be wasted by pools that get light usage OR just pick something that fits your large allocation sizes well (for this example, 512+32 is a much better size than 512 because now two 256 byte allocs fit perfectly).
+</p>
+<h4><a name="FreeOptimization">Free optimization</a></h4>
+<p>If mnMaxAlignment == mnCoreBlockSize, the Free operation will be much faster (though it should perform reasonably fast even if this isn&rsquo;t the case). Setting mnMaxAlignment to mnCoreBlockSize may not be an option if your supplied CoreAllocation function cannot handle large alignments because all core block allocations will have to be aligned to mnMaxAlignment. However, if you&rsquo;re underlying allocator can handle the alignment requirements then setting mnMaxAlignment == mnCoreBlockSize is worthwhile &hellip; it lets SmallBlockAllocator use a mask to calculate the location of the core block for a given allocation rather than having to search the core block allocations for the one that contains the core block.</p>
+<h4>kOptionMaxAllocWaste</h4>
+<p>If you want all allocations up to the maximum supported size to be handled just set this option to 0xffff. This option &lsquo;kOptionMaxAllocWaste&rsquo; can be used to control how much waste is allowed per allocation. It is recommended that you not try to tune this value unless you know what you are doing and you&rsquo;re using a memory dump for reference so you can see the before and after affects on efficiency AND number of allocations managed for the heap. Setting this value to 0 means that you&rsquo;ll have great per allocation memory usage efficiency but you&rsquo;ll extremely limit which allocations can be handled &hellip; only those that fall exactly on a pool size will succeed (i.e., if pool sizes are 16, 32, 48, etc &hellip; a 47 byte allocation will fail because it doesn&rsquo;t fit exactly into the 48 byte pool &hellip; it &lsquo;wastes&rsquo; more than 0 bytes). This value gives you some control to manually trade-off memory usage efficiency vs number allocations that you don&rsquo;t have to worry about fragmentation for. It can also be very useful when you&rsquo;re pooling large allocations &hellip; it can allow you to pool very large allocations but only pool those that fall within an acceptable threshold for how well they fit into the available memory chunks.</p>
+<h4>Pool sizes</h4>
+<p>Using mnCustomPoolSize is not necessarily recommended but it might be useful when you need an allocator to just handle a few well-known sizes. Generally, especially if you have a large number of allocations, just letting the allocator handle picking pool sizes (based on your mnCoreBlockSize) will get excellent results and be easier to maintain.</p>
+<p>If setting custom pool sizes and/or mnMaxAllocSize the main thing to keep in mind is, in terms of memory usage, this system is fantastic for small allocations but can become inefficient when working with larger sizes. For example, with a core block size of 3488 bytes you could fit 2 1600 byte allocations per core block and there would be 288 un-used bytes left-over. That&rsquo;s 144 bytes of overhead per (1600 byte) allocation (terrible). However, for 8 byte allocations in the same system you could fit 432 chunks per core block (432 instead of 436 because of the header) with .074 bytes of overhead per allocation (pretty good).</p>
+<p>This is not to say that you should not pool 1600 byte allocations. In fact, those numbers above are from the gameplay heap on Superman PS2 &hellip; we actually have an occasional 1600 byte allocation and it does have 144 bytes of overhead (in fact we&rsquo;re pooling blocks in this heap all the way up to 1720 bytes). However, despite that, the AVERAGE overhead per allocation in this heap came out to 1.75 bytes (better than we were doing with the general allocator). This is because we have &gt;28,000 allocations and 90% of them are smaller allocations (which perform significantly better) &hellip; compensating for the overhead of some of the large allocations. This meant we could include these larger allocations in the pooling (to fix fragmentation issues) while still saving memory overhead per allocation (1.75 bytes per alloc beats our general allocator) despite the fact that some allocations have 144 byte overhead.</p>
+<h4>Debug vs Opt</h4>
+<p>Once you&rsquo;ve initially enabled SmallBlockAllocator, if maximizing memory usage efficiency is a goal, you might want to tune your initialization parameters based on data from memory dumps. The SmallBlockAllocator allocates all debug only and metrics tracking type of data using a debug context provided by the user (and all such overhead is excluded from memory dumps). Therefore the data and efficiency seen in dumps from either debug or opt builds should be identical if the same numbers and sizes of allocations are being made in the two types of builds. However, some games have many objects which are different sizes between debug and opt or who make extra debug allocations. If this is the case your usage and efficiency numbers may look different in dumps from the two types of builds. In this case you&rsquo;ll probably want to tune for efficiency using your opt build and just make sure that your mnInitCoreBlockCount is also sufficient to handle the debug build.</p>
+<h3><a name="ExampleUsage">Example Usage</a></h3>
+<b><p>Callbacks that will be used by the examples to alloc & free memory using a general allocator:</p></b>
+<span class="style3">
+<pre>
+    void* AllocFunction(SmallBlockAllocator*, size_t nSize, size_t nAlignment, size_t nAlignmentOffset, void* pContext)
+    {
+        GeneralAllocator* const pGeneralAllocator = (GeneralAllocator*)pContext;
+        return pGeneralAllocator->MallocAligned(nSize, nAlignment, nAlignmentOffset);
+    }
+
+    void FreeFunction(SmallBlockAllocator*, void* pCore, void* pContext)
+    {
+        GeneralAllocator* const pGeneralAllocator = (GeneralAllocator*)pContext;
+        pGeneralAllocator->Free(pCore);
+    }
+</pre>
+</span>
+
+<b><p>1. An example of minimum usage of SmallBlockAllocator:</p></b>
+<pre>
+    SmallBlockAllocator::Parameters defaultParams;
+    SmallBlockAllocator sba(&defaultParams, AllocFunction, FreeFunction, pGeneralAllocator, pGeneralAllcoatorDebug);
+
+    void* p = sba.Malloc(17);
+    sba.Free(p);
+
+    sba.Shutdown();
+</pre>
+
+<b><p>2. A common usage is having a wrapper that forwards small allocations to a SmallBlockAllocator and large allocations to the general allocator. 
+This can be very useful for eliminating fragmentation problems occurring in the general allocator without having to modify the client code using the allocator.
+Here is how the Malloc & Free methods in such a wrapper might be implemented:</p></b>
+<pre>
+    void* MyAllocator::Malloc(size_t size, size_t alignment, size_t alignofs)
+    {
+        mGeneralAllocator.Lock(true);
+
+        void* memPtr(NULL);
+
+        //try to satisfy allocations using the small block allocator
+        if ( mSmallBlockAllocator.IsInitialized() )
+        {
+            memPtr = mSmallBlockAllocator.Malloc(size, alignment, alignofs);
+        }
+
+        //if the small block allocator failed to satisfy the request, use the general allocator
+        //the small block allocator can fail for several reasons ... requested size is greater than
+        //max pool size, requested alignment is unsupported, alignofs is != 0, or (if kOptionMaxAllocWaste
+        //was specified) the allocation did not fit well enough into an available chunk size.
+        if (!memPtr)
+        {
+            memPtr = mGeneralAllocator.Malloc(size, alignment, alignofs);
+        }
+
+        mGeneralAllocator.Lock(false);
+
+        return memPtr;
+    }
+
+    void MyAllocator::Free(void* ptr)
+    {
+        mGeneralAllocator.Lock(true);
+
+        if(!mSmallBlockAllocator.IsInitialized() || !mSmallBlockAllocator.FreeSafe(ptr))
+        {
+            //if the small block allocator is not initialized or if FreeSafe returned false
+            //(indicating that the pointer is was not allocated from the SmallBlockAllocator),
+            //the ptr must have been allocated from the general allocator
+            mGeneralAllocator.Free(ptr);
+        }
+
+        mGeneralAllocator.Lock(false);
+    }
+</pre>
+
+<b><p>3. This example uses mnCustomPoolSize to create a fixed allocator that has pools for allocation sizes 8, 16, 136, 160, and 256.
+It also uses kOptionMaxAllocWaste=16 to tell the allocator not to satisfy allocations if they're not within 16 bytes of fitting perfectly in one of the available pool sizes.
+Using mnCustomPoolSize is not necessarily recommended but it might be useful when you need an allocator to just handle a few well-known sizes. Generally, especially if you have a large number of allocations, just letting the allocator handle picking pool sizes will get excellent results and be easier to maintain.
+</p></b>
+<pre>
+    //determine how much free space in each core block will be taken by overhead for managing the core block
+    uint16_t cbOverhead = static_cast<uint16_t>(EA::Allocator::SmallBlockAllocator::CoreBlockOverhead());
+
+    //create initialization parameters
+    EA::Allocator::SmallBlockAllocator::Parameters params(
+        256*4+cbOverhead, //nCoreBlockSize        - each core block is big enough for 4 256 byte allocations + overhead
+                      50, //nInitCoreBlockCount   - we'll allocate 50 core blocks up front
+                       6  //nGrowCoreBlockCount   - if we consume all 50 core blocks and need more, we'll grow by 6 at a time
+                                           );
+
+    //specify pool sizes to be used
+    uint16_t customPoolSizes[] = {8,16,136,160,256,0}; //this tells the system to create pools for these chunk sizes (0 is the list terminator)
+    params.mnCustomPoolSize = customPoolSizes;
+
+    EA::Allocator::SmallBlockAllocator sba(& params, AllocFunction, FreeFunction, pGeneralAllocator, pGeneralAllcoatorDebug);
+
+    //don't satisfy allocations for requested sizes that would waste more that 16 bytes due to not fitting perfectly into available pool sizes
+    sba.SetOption(EA::Allocator::SmallBlockAllocator::kOptionMaxAllocWaste, 16);
+
+    void* p;
+
+    //this allocation should succeed since 16 is one of our available pool sizes
+    p = sba.Malloc(16);
+    EA_ASSERT(NULL != p);
+    sba.Free(p);
+
+    //this allocation should succeed since 240 is within 16 bytes (as specified by kOptionMaxAllocWaste above) of one of our available pool sizes
+    p = sba.Malloc(240);
+    EA_ASSERT(NULL != p);
+    sba.Free(p);
+
+    //this allocation should fail since 200 is not within 16 bytes (as specified by kOptionMaxAllocWaste above) of our next available pool size
+    p = sba.Malloc(200);
+    EA_ASSERT(NULL == p);
+
+    sba.Shutdown();
+</pre>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

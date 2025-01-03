@@ -94,7 +94,7 @@ detect_cpu_features (void)
     return features;
 }
 
-#elif defined(CS_UNDEFINED_STRING) || defined(ANDROID) /* Android */
+#elif defined(__ANDROID__) || defined(ANDROID) /* Android */
 
 #include <cpu-features.h>
 
